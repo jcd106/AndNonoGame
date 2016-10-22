@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_settings"
     android:layout_width="match_parent"
@@ -10,4 +11,72 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.jcdug.andnonogame.SettingsActivity">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/settings_norm"
+        android:layout_marginTop="62dp"
+        android:id="@+id/imageView2"
+        android:cropToPadding="false"
+        android:adjustViewBounds="false"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/back_bar"
+        android:id="@+id/back_button_settings"
+        android:layout_gravity="left"
+        style="?android:attr/borderlessButtonStyle"
+        android:onClick="onBackClicked" />
+
+    <TextView
+        android:text="Color Scheme:"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/color_scheme_text" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_below="@+id/color_scheme_text"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/spinner_border" />
+
+    <Button
+        android:text="Reset All Puzzles"
+        android:textSize="24sp"
+        android:textAllCaps="false"
+        android:background="@drawable/border_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/instructions_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:id="@+id/reset_all_button" />
+
+    <Button
+        android:text="Instructions"
+        android:textSize="24sp"
+        android:textAllCaps="false"
+        android:background="@drawable/border_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:id="@+id/instructions_button"
+        android:layout_below="@+id/spinner"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
