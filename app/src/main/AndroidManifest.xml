@@ -18,7 +18,8 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".SizeSelectActivity" />
         <activity android:name=".PuzzleSelectActivity" />
-        <activity android:name=".PuzzleActivity"></activity>
+        <activity android:name=".PuzzleActivity" />
+        <activity android:name=".TutorialActivity"></activity>
     </application>
 
 </manifest>
