@@ -37,7 +37,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         Puzzle firstPuzzle = new Puzzle(id,s,sol,r,c);
     }
 
-    public boolean insertPuzzle(int id, Puzzle p, int[] s){
+    public void insertPuzzle(int id, Puzzle p, int[] s){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(colID, id);
