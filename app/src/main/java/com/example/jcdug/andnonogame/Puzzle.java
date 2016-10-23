@@ -14,13 +14,16 @@ public class Puzzle implements Serializable
     private static int[][] solution;
     private static String[] rows;
     private static String[] cols;
-    public Puzzle(int id, int[] s, int[][] sol, String[] r, String[] c){
+    private static int completed;
+
+    public Puzzle(int id, int[] s, int[][] sol, String[] r, String[] c, int comp){
         ID = id;
         size = s;
         currentState = new int[solution.length][solution[0].length];
         solution = sol;
         rows = r;
         cols = c;
+        completed = comp;
     }
     public int getID(){
         return ID;
@@ -42,5 +45,13 @@ public class Puzzle implements Serializable
     }
     public void setCurrentState(int[][] cs){
         currentState = cs;
+    }
+
+    public int isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(int c) {
+        completed = c;
     }
 }
