@@ -1,0 +1,12 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    tools:context="com.example.jcdug.andnonogame.PuzzleFragment"
+    android:id="@+id/fragment_puzzle"
+    android:rowCount="10"
+    android:columnCount="10">
+
+    <!-- TODO: Update blank fragment layout -->
+
+</GridLayout>

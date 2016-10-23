@@ -38,7 +38,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_bar_puzzle"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="74dp"
-        android:id="@+id/puzzle_id" />
+        android:id="@+id/puzzle_id"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_puzzle"
+        android:name="com.example.jcdug.andnonogame.PuzzleFragment"
+        android:id="@+id/puzzle_fragment"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

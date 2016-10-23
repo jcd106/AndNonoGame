@@ -10,6 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
@@ -80,7 +81,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
 
     public void insertPuzzle(int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException{
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
+        ObjectOutput out = new ObjectOutputStream(bos);
         out.writeObject(p);
         byte[] buf = bos.toByteArray();
         out.close();

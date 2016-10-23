@@ -8,13 +8,13 @@ import java.io.Serializable;
 
 public class Puzzle implements Serializable
 {
-    private static int ID;
-    private static int[] size;
+    private int ID;
+    private int[] size;
     private int[][] currentState;
-    private static int[][] solution;
-    private static String[] rows;
-    private static String[] cols;
-    private static int completed;
+    private int[][] solution;
+    private String[] rows;
+    private String[] cols;
+    private int completed;
 
     public Puzzle(int id, int[] s, int[][] sol, String[] r, String[] c, int comp){
         ID = id;
