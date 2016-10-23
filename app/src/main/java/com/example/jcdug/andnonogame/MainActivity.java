@@ -7,10 +7,13 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static PuzzleDatabase db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        db = new PuzzleDatabase(this);
+
     }
 
     public void onPlayClicked(View view)
@@ -29,5 +32,10 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
+    }
+
+    public static PuzzleDatabase getDB()
+    {
+        return db;
     }
 }

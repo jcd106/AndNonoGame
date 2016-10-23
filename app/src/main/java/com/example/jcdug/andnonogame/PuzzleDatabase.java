@@ -43,22 +43,49 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         String[] c = {"3","4","3 1","4","3"};
         int completed = 0;
         Puzzle firstPuzzle = new Puzzle(id, s, sol, r, c, completed);
+        int id2 = 2;
+        int[] s2 = {10,10};
+        int[][] sol2 =  {{0,0,0,0,0,1,1,1,1,0},
+                         {0,0,0,0,0,1,0,0,1,0},
+                         {0,1,0,1,1,1,1,0,1,0},
+                         {1,1,1,1,0,0,1,1,1,1},
+                         {1,0,0,1,1,1,1,1,0,1},
+                         {1,1,1,1,0,0,1,1,1,1},
+                         {1,1,1,0,1,1,0,1,1,1},
+                         {1,1,1,0,1,1,0,1,1,1},
+                         {1,1,1,1,0,0,1,1,1,1},
+                         {1,1,1,1,1,1,1,1,1,1}};
+        String[] r2 = {"4","1 1","1 4 1","4 4","1 5 1","4 4","3 2 3","3 2 3","4 4","10"};
+        String[] c2 = {"7","2 5","1 5","4 2","1 1 2 1","3 1 2 1","1 4 2","1 7","4 5","7"};
+        Puzzle second = new Puzzle(id2,s2,sol2,r2,c2,0);
+        int id3 = 3;
+        int[] s3 = {5,5};
+        int[][] sol3 =  {{0,1,0,1,0},
+                         {1,1,1,1,1},
+                         {1,1,1,1,1},
+                         {0,1,1,1,0},
+                         {0,0,1,0,0}};
+        String[] r3 = {"1 1","5","5","3","1"};
+        String[] c3 = {"2","4","4","4","2"};
+        Puzzle third = new Puzzle(id3,s3,sol3,r3,c3,0);
         try{
-            insertPuzzle(id, firstPuzzle, s, completed);
+            insertPuzzle(id, firstPuzzle, s, completed, db);
+            insertPuzzle(id2, second, s2, 0, db);
+            insertPuzzle(id3, third, s3, 0, db);
         }
         catch(IOException e){
             e.printStackTrace();
         }
     }
 
-    public void insertPuzzle(int id, Puzzle p, int[] s, int completed) throws IOException{
+    public void insertPuzzle(int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException{
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream(bos);
         out.writeObject(p);
         byte[] buf = bos.toByteArray();
         out.close();
         bos.close();
-        SQLiteDatabase db = getWritableDatabase();
+        //SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(colID, id);
         contentValues.put(puzzle, buf);
@@ -79,6 +106,25 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         Cursor curs = db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + row + " = ? AND " + col + " = ?", new String[] {Integer.toString(r), Integer.toString(c)});
         return curs;
     }
+
+    public Cursor getCountBySize() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor curs = db.rawQuery("SELECT " + row + ", " + col + ", COUNT(*) AS numPuzzles FROM " + puzzleTable + " GROUP BY " + row + ", " + col, new String[] {});
+        return curs;
+    }
+    public int getCountBySize(int r, int c) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor curs = db.rawQuery("SELECT COUNT(*) AS numPuzzles FROM " + puzzleTable + " WHERE " + row + " = ? AND " + col + " = ?", new String[] {Integer.toString(r), Integer.toString(c)});
+        curs.moveToFirst();
+        return curs.getInt(curs.getColumnIndex("numPuzzles"));
+    }
+
+    public Cursor getCountCompletedBySize() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor curs = db.rawQuery("SELECT " + row + ", " + col + ", COUNT(*) AS numComplete FROM " + puzzleTable + " WHERE " + comp + " = ? GROUP BY " + row + ", " + col, new String[] {Integer.toString(1)});
+        return curs;
+    }
+
 
     public void updatePuzzle(Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException{
         Cursor curs = getPuzzleByID(id);

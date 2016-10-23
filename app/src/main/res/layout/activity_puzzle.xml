@@ -10,4 +10,35 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.jcdug.andnonogame.PuzzleActivity">
 
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.example.jcdug.andnonogame.BarFragment"
+        android:id="@+id/fragment_bar_puzzle"
+        tools:layout="@layout/fragment_bar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.example.jcdug.andnonogame.UndoBar"
+        android:id="@+id/fragment_undo_bar_puzzle"
+        tools:layout="@layout/fragment_undo_bar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_bar_puzzle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="74dp"
+        android:id="@+id/puzzle_id" />
 </RelativeLayout>
