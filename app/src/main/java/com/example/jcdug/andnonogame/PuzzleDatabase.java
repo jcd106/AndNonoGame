@@ -77,7 +77,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         //String[] r3 = {"1 1","5","5","3","1"};
         int[][] r3 = {{1,1},{0,5},{0,5},{0,3},{0,1}};
         //String[] c3 = {"2","4","4","4","2"};
-        int[][] c3 = {{2},{4},{4},{4},{2}};
+        int[][] c3 = {{2,4,4,4,2}};
         Puzzle third = new Puzzle(id3,s3,sol3,r3,c3,0);
         try{
             insertPuzzle(id, firstPuzzle, s, completed, db);
@@ -140,6 +140,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     public void updatePuzzle(Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException{
         Cursor curs = getPuzzleByID(id);
         int index = curs.getColumnIndex(puzzle);
+        curs.moveToFirst();
         byte[] b = curs.getBlob(index);
         ByteArrayInputStream bis = new ByteArrayInputStream(b);
         ObjectInputStream in = new ObjectInputStream(bis);

@@ -1,6 +1,7 @@
 package com.example.jcdug.andnonogame;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.util.Arrays;
 
 
 /**
@@ -37,7 +40,7 @@ import java.io.ObjectInputStream;
  * Use the {@link PuzzleFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PuzzleFragment extends Fragment {
+public class PuzzleFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -46,6 +49,11 @@ public class PuzzleFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    int id;
+    int[][] currentState;
+    int[][] solutionState;
+    int complete;
 
     private OnFragmentInteractionListener mListener;
 
@@ -89,114 +97,150 @@ public class PuzzleFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_puzzle, container, false);
 
         Bundle bundle = this.getArguments();
-        int id = bundle.getInt("puzzleID");
+        id = bundle.getInt("puzzleID");
         //int id = Integer.parseInt(args);
         //int id = 1;
         try {
-            try {
-                PuzzleDatabase db = MainActivity.getDB();
-                Cursor c1 = db.getPuzzleByID(id);
-                int p1 = c1.getColumnIndex("Puzzle");
-                int row1 = c1.getColumnIndex("Rows");
-                int col1 = c1.getColumnIndex("Cols");
-                c1.moveToFirst();
+            PuzzleDatabase db = MainActivity.getDB();
+            Cursor c1 = db.getPuzzleByID(id);
+            int p1 = c1.getColumnIndex("Puzzle");
+            int row1 = c1.getColumnIndex("Rows");
+            int col1 = c1.getColumnIndex("Cols");
+            c1.moveToFirst();
 
-                byte[] b = c1.getBlob(p1);
-                ByteArrayInputStream bis = new ByteArrayInputStream(b);
-                ObjectInput in = new ObjectInputStream(bis);
-                Puzzle p = (Puzzle) in.readObject();
-                bis.close();
-                in.close();
+            byte[] b = c1.getBlob(p1);
+            ByteArrayInputStream bis = new ByteArrayInputStream(b);
+            ObjectInput in = new ObjectInputStream(bis);
+            final Puzzle p = (Puzzle) in.readObject();
+            bis.close();
+            in.close();
 
-                int[][] currentState = p.getCurrentState();
-                int[] size = p.getSize();
-                //Log.d("myTag",""+currentState[0][0]);
-                int numRows = size[0];
-                int numCols = size[1];
+            currentState = p.getCurrentState();
+            solutionState = p.getSolution();
+            complete = p.isCompleted();
+            int[] size = p.getSize();
+            //Log.d("myTag",""+currentState[0][0]);
+            int numRows = size[0];
+            int numCols = size[1];
 
-                int[][] rowVals = p.getRows();
-                int[][] colVals = p.getCols();
+            int[][] rowVals = p.getRows();
+            int[][] colVals = p.getCols();
 
-                TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
 
-                //puzzleLayout.setRowCount(numRows);
-                //puzzleLayout.setColumnCount(numCols);
-                final Context context = this.getActivity();
-                View.OnClickListener listener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+            TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
+
+            //puzzleLayout.setRowCount(numRows);
+            //puzzleLayout.setColumnCount(numCols);
+            final Context context = this.getActivity();
+            View.OnClickListener listener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
                         //Button b = (Button) view.findViewById(view.getId());
+                        //PuzzleDatabase db = MainActivity.getDB();
                         TextView b = (TextView) view.findViewById(view.getId());
                         Integer buttonState = (Integer) b.getTag(R.id.state);
+                        Integer x = (Integer) b.getTag(R.id.x_loc);
+                        Integer y = (Integer) b.getTag(R.id.y_loc);
+                        int xLoc = x.intValue();
+                        int yLoc = y.intValue();
+                        //int[][] currentState = p.getCurrentState();
+                        //int[][] solutionState = p.getSolution();
 
-                        if(buttonState.intValue() == 0){
-                            b.setTag(R.id.state, buttonState+1);
+
+                        if (buttonState.intValue() == 0) {
+                            b.setTag(R.id.state, buttonState + 1);
+                            currentState[xLoc][yLoc] = 1;
                             b.setBackgroundColor(Color.BLACK);
-                        }
-                        else if(buttonState.intValue() == 1){
-                            b.setTag(R.id.state,buttonState-1);
+                        } else if (buttonState.intValue() == 1) {
+                            b.setTag(R.id.state, buttonState - 1);
+                            currentState[xLoc][yLoc]=0;
                             b.setBackgroundResource(R.drawable.border_button);
                             //b.setBackgroundColor(Color.WHITE);
                         }
+                        if (Arrays.deepEquals(currentState, solutionState))
+                        {
+                            //puzzle.setCompleted(1);
+                            //puzzle.setCurrentState(currentState);
+                            PuzzleDatabase db = MainActivity.getDB();
+                            complete = 1;
+                            db.updatePuzzle(id,currentState,complete);
+                            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                            alertDialog.setTitle("Congratulations!");
+                            alertDialog.setMessage("You have completed the puzzle!");
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which){
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            alertDialog.show();
+                        }
+                        else{
+                            complete = 0;
+                        }
+                    }
+                    catch(IOException e){
 
                     }
-                };
+                    catch (ClassNotFoundException e){
 
-                for(int i = 0; i < numRows + colVals.length; i++) {
-                    TableRow tableRow = new TableRow(this.getActivity());
-                    puzzleLayout.addView(tableRow);
-                    for (int j = 0; j < numCols + rowVals[0].length; j++) {
-
-                        //TableLayout.LayoutParams params = new TableLayout.LayoutParams();
-                        if (i < colVals.length && j < rowVals[0].length)
-                        {
-                            TextView blank = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                            //blank.setText("11");
-                            tableRow.addView(blank);
-                        }
-                        else if (i < colVals.length && j >= rowVals[0].length)
-                        {
-                            TextView columnValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                            int val = colVals[i][j-rowVals[0].length];
-                            if(val != 0)
-                                columnValue.setText(Integer.toString(val));
-                            tableRow.addView(columnValue);
-                        }
-                        else if (i >= colVals.length && j < rowVals[0].length)
-                        {
-                            TextView rowValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                            int val = rowVals[i-colVals.length][j];
-                            if(val != 0)
-                                rowValue.setText(Integer.toString(val));
-                            tableRow.addView(rowValue);
-                        }
-                        else if (i >= colVals.length && j >= rowVals[0].length){
-                            //Button box = (Button) inflater.inflate(R.layout.my_button, tableRow, false);
-                            TextView box = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-
-                            int boxID = Integer.parseInt(i + "" + j);
-                            box.setId(boxID);
-                            box.setTag(R.id.y_loc, new Integer(j));
-                            box.setTag(R.id.x_loc, new Integer(i));
-                            box.setTag(R.id.state, new Integer(currentState[j-rowVals[0].length][i-colVals.length]));
-                            if (currentState[j-rowVals[0].length][i-colVals.length] == 1) {
-                                box.setBackgroundColor(Color.BLACK);
-                            }
-
-                            box.setOnClickListener(listener);
-                            tableRow.addView(box);
-                        }
                     }
                 }
+            };
 
+            for(int i = 0; i < numRows + colVals.length; i++) {
+                TableRow tableRow = new TableRow(this.getActivity());
+                puzzleLayout.addView(tableRow);
+                for (int j = 0; j < numCols + rowVals[0].length; j++) {
+                    //TableLayout.LayoutParams params = new TableLayout.LayoutParams();
+                    if (i < colVals.length && j < rowVals[0].length)
+                    {
+                        TextView blank = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        //blank.setText("11");
+                        tableRow.addView(blank);
+                    }
+                    else if (i < colVals.length && j >= rowVals[0].length)
+                    {
+                        TextView columnValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        int val = colVals[i][j-rowVals[0].length];
+                        if(val != 0)
+                            columnValue.setText(Integer.toString(val));
+                        tableRow.addView(columnValue);
+                    }
+                    else if (i >= colVals.length && j < rowVals[0].length)
+                    {
+                        TextView rowValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        int val = rowVals[i-colVals.length][j];
+                        if(val != 0)
+                            rowValue.setText(Integer.toString(val));
+                        tableRow.addView(rowValue);
+                    }
+                    else if (i >= colVals.length && j >= rowVals[0].length){
+                        //Button box = (Button) inflater.inflate(R.layout.my_button, tableRow, false);
+                        TextView box = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        int boxID = Integer.parseInt(i + "" + j);
+                        box.setId(boxID);
+                        int x_val = i-colVals.length;
+                        int y_val = j-rowVals[0].length;
+                        box.setTag(R.id.x_loc, new Integer(x_val));
+                        box.setTag(R.id.y_loc, new Integer(y_val));
+                        box.setTag(R.id.state, new Integer(currentState[x_val][y_val]));
+                        if (currentState[x_val][y_val] == 1) {
+                            box.setBackgroundColor(Color.BLACK);
+                        }
 
-            } catch (IOException e1) {
+                        box.setOnClickListener(listener);
+                        tableRow.addView(box);
+                    }
+                }
             }
+
+
+        } catch (IOException e1) {
         }
         catch (ClassNotFoundException e2){
         }
-
-
         return view;
     }
 
@@ -237,5 +281,19 @@ public class PuzzleFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        PuzzleDatabase db = MainActivity.getDB();
+        try {
+            db.updatePuzzle(id,currentState,complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 }

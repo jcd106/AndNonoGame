@@ -64,7 +64,8 @@
         android:layout_marginTop="18dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
-        android:id="@+id/reset_all_button" />
+        android:id="@+id/reset_all_button"
+        android:textColor="#000000"/>
 
     <Button
         android:text="Instructions"
@@ -78,5 +79,6 @@
         android:layout_marginRight="50dp"
         android:id="@+id/instructions_button"
         android:layout_below="@+id/spinner"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000"/>
 </RelativeLayout>
