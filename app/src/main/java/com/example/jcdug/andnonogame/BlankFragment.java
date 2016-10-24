@@ -18,7 +18,7 @@ import android.view.ViewGroup;
  * Use the {@link BlankFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class BlankFragment extends Fragment implements View.OnTouchListener{
+public class BlankFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -65,7 +65,8 @@ public class BlankFragment extends Fragment implements View.OnTouchListener{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_blank, container, false);
+        View view =  inflater.inflate(R.layout.fragment_blank, container, false);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -92,24 +93,24 @@ public class BlankFragment extends Fragment implements View.OnTouchListener{
         mListener = null;
     }
 
-    float dX, dY;
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        final int X = (int) event.getRawX();
-        final int Y = (int) event.getRawY();
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                dX = v.getX() - X;
-                dY = v.getY() - Y;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                v.animate().x(X + dX).y(Y + dY).setDuration(0).start();
-                break;
-            default:
-                return false;
-        }
-        return true;
-    }
+//    float dX, dY;
+//    @Override
+//    public boolean onTouch(View v, MotionEvent event) {
+//        final int X = (int) event.getRawX();
+//        final int Y = (int) event.getRawY();
+//        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+//            case MotionEvent.ACTION_DOWN:
+//                dX = v.getX() - X;
+//                dY = v.getY() - Y;
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                v.animate().x(X + dX).y(Y + dY).setDuration(0).start();
+//                break;
+//            default:
+//                return false;
+//        }
+//        return true;
+//    }
 
     /**
      * This interface must be implemented by activities that contain this

@@ -25,16 +25,16 @@
     <fragment
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:name="com.example.jcdug.andnonogame.UndoBar"
-        android:id="@+id/fragment_undo_bar_puzzle"
-        tools:layout="@layout/fragment_undo_bar"
+        android:name="com.example.jcdug.andnonogame.BlankFragment"
+        android:id="@+id/fragment_undo_bar_blank"
+        tools:layout="@layout/fragment_blank"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <TextView
+<!--    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/fragment_bar_puzzle"
@@ -42,7 +42,7 @@
         android:id="@+id/puzzle_id"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
-
+-->
     <fragment
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

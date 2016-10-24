@@ -65,7 +65,8 @@
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
         android:id="@+id/reset_all_button"
-        android:textColor="#000000"/>
+        android:textColor="#000000"
+        android:onClick="onResetAllClicked" />
 
     <Button
         android:text="Instructions"

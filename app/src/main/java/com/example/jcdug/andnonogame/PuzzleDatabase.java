@@ -123,11 +123,27 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         Cursor curs = db.rawQuery("SELECT " + row + ", " + col + ", COUNT(*) AS numPuzzles FROM " + puzzleTable + " GROUP BY " + row + ", " + col, new String[] {});
         return curs;
     }
-    public int getCountBySize(int r, int c) {
+//    public int getCountBySize(int r, int c) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor curs = db.rawQuery("SELECT COUNT(*) AS numPuzzles FROM " + puzzleTable + " WHERE " + row + " = ? AND " + col + " = ?", new String[] {Integer.toString(r), Integer.toString(c)});
+//        curs.moveToFirst();
+//        return curs.getInt(curs.getColumnIndex("numPuzzles"));
+//    }
+
+    public int[] getAllPuzzleIDs() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT COUNT(*) AS numPuzzles FROM " + puzzleTable + " WHERE " + row + " = ? AND " + col + " = ?", new String[] {Integer.toString(r), Integer.toString(c)});
+        Cursor curs = db.rawQuery("SELECT " + colID + " FROM " + puzzleTable, new String[]{});
         curs.moveToFirst();
-        return curs.getInt(curs.getColumnIndex("numPuzzles"));
+        int[] puzzleIDs = new int[curs.getCount()];
+        int i = curs.getColumnIndex(colID);
+        int count = 0;
+        while(!curs.isAfterLast())
+        {
+            puzzleIDs[count] = curs.getInt(i);
+            count++;
+            curs.moveToNext();
+        }
+        return puzzleIDs;
     }
 
     public Cursor getCountCompletedBySize() {
@@ -162,6 +178,33 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         db.update(puzzleTable, contentValues, colID + " = ? ", new String[] {Integer.toString(id)});
     }
 
+    public void resetPuzzle(int id) throws IOException, ClassNotFoundException {
+        Cursor curs = getPuzzleByID(id);
+        int index = curs.getColumnIndex(puzzle);
+        curs.moveToFirst();
+        byte[] b = curs.getBlob(index);
+        ByteArrayInputStream bis = new ByteArrayInputStream(b);
+        ObjectInputStream in = new ObjectInputStream(bis);
+        Puzzle p = (Puzzle) in.readObject();
+        bis.close();
+        in.close();
+        int[] size = p.getSize();
+        int[][] currState = new int[size[0]][size[1]];
+        int completed = 0;
+        p.setCurrentState(currState);
+        p.setCompleted(completed);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream(bos);
+        out.writeObject(p);
+        byte[] buf = bos.toByteArray();
+        out.close();
+        bos.close();
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(puzzle,buf);
+        contentValues.put(comp, completed);
+        db.update(puzzleTable, contentValues, colID + " = ? ", new String[] {Integer.toString(id)});
+    }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 

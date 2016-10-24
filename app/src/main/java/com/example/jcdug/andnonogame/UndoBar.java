@@ -1,12 +1,17 @@
 package com.example.jcdug.andnonogame;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+
+import java.io.IOException;
 
 
 /**
@@ -17,7 +22,7 @@ import android.view.ViewGroup;
  * Use the {@link UndoBar#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UndoBar extends Fragment {
+public class UndoBar extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +31,8 @@ public class UndoBar extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    int id;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,8 +70,15 @@ public class UndoBar extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle bundle = this.getArguments();
+        id = bundle.getInt("puzzleID");
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_undo_bar, container, false);
+        View view = inflater.inflate(R.layout.fragment_undo_bar, container, false);
+        ImageButton undoButton = (ImageButton) view.findViewById(R.id.undo_button);
+        undoButton.setOnClickListener(this);
+        ImageButton resetButton = (ImageButton) view.findViewById(R.id.reset_puzzle_button);
+        resetButton.setOnClickListener(this);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -91,6 +105,30 @@ public class UndoBar extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.reset_puzzle_button:
+                try {
+                    PuzzleDatabase db = MainActivity.getDB();
+                    db.resetPuzzle(id);
+//                    View view = v.findViewById(R.id.fragment_puzzle);
+//                    view.refreshDrawableState();
+                    //this.getActivity().recreate();
+                    PuzzleFragment puzzleFragment = (PuzzleFragment) this.getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                    getFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.undo_button:
+                getActivity().onBackPressed();
+                break;
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -105,4 +143,5 @@ public class UndoBar extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
 }
