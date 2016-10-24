@@ -2,11 +2,12 @@ package com.example.jcdug.andnonogame;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragmentInteractionListener, BarFragment.OnFragmentInteractionListener, PuzzleFragment.OnFragmentInteractionListener{
+public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragmentInteractionListener, BarFragment.OnFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener, PuzzleFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,10 +18,13 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         int id = Integer.parseInt(i.getStringExtra("puzzleID"));
         puzzleID.setText("Puzzle:  "+id);
 
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("puzzleID", id);
-//        PuzzleFragment puzzleFragment = (PuzzleFragment) this.getSupportFragmentManager().findFragmentById(R.id.puzzle_fragment);
-//        puzzleFragment.setArguments(bundle);
+        Bundle bundle = new Bundle();
+        bundle.putInt("puzzleID", id);
+        PuzzleFragment puzzleFragment = new PuzzleFragment();
+        puzzleFragment.setArguments(bundle);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.blank_fragment,puzzleFragment).commit();
+
     }
 
     @Override

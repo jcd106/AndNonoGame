@@ -19,6 +19,8 @@ import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
@@ -86,10 +88,10 @@ public class PuzzleFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_puzzle, container, false);
 
-        //Bundle bundle = this.getArguments();
-        //int id = bundle.getInt("puzzleID");
+        Bundle bundle = this.getArguments();
+        int id = bundle.getInt("puzzleID");
         //int id = Integer.parseInt(args);
-        int id = 1;
+        //int id = 1;
         try {
             try {
                 PuzzleDatabase db = MainActivity.getDB();
@@ -112,9 +114,10 @@ public class PuzzleFragment extends Fragment {
                 int numRows = size[0];
                 int numCols = size[1];
 
-                GridLayout puzzleLayout = (GridLayout) view.findViewById(R.id.fragment_puzzle);
-                puzzleLayout.setRowCount(numRows);
-                puzzleLayout.setColumnCount(numCols);
+                TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
+
+                //puzzleLayout.setRowCount(numRows);
+                //puzzleLayout.setColumnCount(numCols);
                 final Context context = this.getActivity();
                 View.OnClickListener listener = new View.OnClickListener() {
                     @Override
@@ -135,11 +138,14 @@ public class PuzzleFragment extends Fragment {
                     }
                 };
                 for(int i = 0; i < numRows; i++) {
+                    TableRow tableRow = new TableRow(this.getActivity());
+                    puzzleLayout.addView(tableRow);
                     for (int j = 0; j < numCols; j++) {
                         //GridLayout.Spec ro = GridLayout.spec(0,5);
-                        GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                        TableLayout.LayoutParams params = new TableLayout.LayoutParams();
                         //params.setMargins(5, 5, 5, 5);
-                        Button box = new Button(context);
+                        Button box = (Button) inflater.inflate(R.layout.my_button, tableRow, false);
+                        //box.onMeasure(5,5);
                         //box.setLayoutParams(new GridLayout.LayoutParams(l));
                         //box.setHeight(30);
                         //box.setWidth(30);
@@ -148,9 +154,9 @@ public class PuzzleFragment extends Fragment {
                         box.setTag(R.id.y_loc, new Integer(i));
                         box.setTag(R.id.x_loc, new Integer(j));
                         box.setTag(R.id.state, new Integer(currentState[i][j]));
-                        box.setBackgroundResource(R.drawable.border_button);
+                        //box.setBackgroundResource(R.drawable.border_button);
                         box.setOnClickListener(listener);
-                        puzzleLayout.addView(box, params);
+                        tableRow.addView(box);
                     }
                 }
 

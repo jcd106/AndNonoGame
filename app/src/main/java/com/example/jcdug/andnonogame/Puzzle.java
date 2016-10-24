@@ -12,11 +12,11 @@ public class Puzzle implements Serializable
     private int[] size;
     private int[][] currentState;
     private int[][] solution;
-    private String[] rows;
-    private String[] cols;
+    private int[][] rows;
+    private int[][] cols;
     private int completed;
 
-    public Puzzle(int id, int[] s, int[][] sol, String[] r, String[] c, int comp){
+    public Puzzle(int id, int[] s, int[][] sol, int[][] r, int[][] c, int comp){
         ID = id;
         size = s;
         currentState = new int[s[0]][s[1]];
@@ -37,10 +37,10 @@ public class Puzzle implements Serializable
     public int[][] getSolution(){
         return solution;
     }
-    public String[] getRows(){
+    public int[][] getRows(){
         return rows;
     }
-    public String[] getCols(){
+    public int[][] getCols(){
         return cols;
     }
     public void setCurrentState(int[][] cs){

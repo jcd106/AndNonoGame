@@ -9,11 +9,8 @@
         <item>Red and Blue</item>
     </string-array>
   -->
-    <item type="id"
-        name = "x_loc" />
-    <item type="id"
-        name="y_loc" />
-    <item type="id"
-        name="state" />
+    <item name="x_loc" type="id" />
+    <item name="y_loc" type="id" />
+    <item name="state" type="id" />
 
 </resources>
