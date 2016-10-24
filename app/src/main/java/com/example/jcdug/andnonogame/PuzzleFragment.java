@@ -110,9 +110,12 @@ public class PuzzleFragment extends Fragment {
 
                 int[][] currentState = p.getCurrentState();
                 int[] size = p.getSize();
-                Log.d("myTag",""+currentState[0][0]);
+                //Log.d("myTag",""+currentState[0][0]);
                 int numRows = size[0];
                 int numCols = size[1];
+
+                int[][] rowVals = p.getRows();
+                int[][] colVals = p.getCols();
 
                 TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
 
@@ -122,7 +125,8 @@ public class PuzzleFragment extends Fragment {
                 View.OnClickListener listener = new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Button b = (Button) view.findViewById(view.getId());
+                        //Button b = (Button) view.findViewById(view.getId());
+                        TextView b = (TextView) view.findViewById(view.getId());
                         Integer buttonState = (Integer) b.getTag(R.id.state);
 
                         if(buttonState.intValue() == 0){
@@ -137,26 +141,51 @@ public class PuzzleFragment extends Fragment {
 
                     }
                 };
-                for(int i = 0; i < numRows; i++) {
+
+                for(int i = 0; i < numRows + colVals.length; i++) {
                     TableRow tableRow = new TableRow(this.getActivity());
                     puzzleLayout.addView(tableRow);
-                    for (int j = 0; j < numCols; j++) {
-                        //GridLayout.Spec ro = GridLayout.spec(0,5);
-                        TableLayout.LayoutParams params = new TableLayout.LayoutParams();
-                        //params.setMargins(5, 5, 5, 5);
-                        Button box = (Button) inflater.inflate(R.layout.my_button, tableRow, false);
-                        //box.onMeasure(5,5);
-                        //box.setLayoutParams(new GridLayout.LayoutParams(l));
-                        //box.setHeight(30);
-                        //box.setWidth(30);
-                        int boxID = Integer.parseInt(i + "" + j);
-                        box.setId(boxID);
-                        box.setTag(R.id.y_loc, new Integer(i));
-                        box.setTag(R.id.x_loc, new Integer(j));
-                        box.setTag(R.id.state, new Integer(currentState[i][j]));
-                        //box.setBackgroundResource(R.drawable.border_button);
-                        box.setOnClickListener(listener);
-                        tableRow.addView(box);
+                    for (int j = 0; j < numCols + rowVals[0].length; j++) {
+
+                        //TableLayout.LayoutParams params = new TableLayout.LayoutParams();
+                        if (i < colVals.length && j < rowVals[0].length)
+                        {
+                            TextView blank = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                            //blank.setText("11");
+                            tableRow.addView(blank);
+                        }
+                        else if (i < colVals.length && j >= rowVals[0].length)
+                        {
+                            TextView columnValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                            int val = colVals[i][j-rowVals[0].length];
+                            if(val != 0)
+                                columnValue.setText(Integer.toString(val));
+                            tableRow.addView(columnValue);
+                        }
+                        else if (i >= colVals.length && j < rowVals[0].length)
+                        {
+                            TextView rowValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                            int val = rowVals[i-colVals.length][j];
+                            if(val != 0)
+                                rowValue.setText(Integer.toString(val));
+                            tableRow.addView(rowValue);
+                        }
+                        else if (i >= colVals.length && j >= rowVals[0].length){
+                            //Button box = (Button) inflater.inflate(R.layout.my_button, tableRow, false);
+                            TextView box = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+
+                            int boxID = Integer.parseInt(i + "" + j);
+                            box.setId(boxID);
+                            box.setTag(R.id.y_loc, new Integer(j));
+                            box.setTag(R.id.x_loc, new Integer(i));
+                            box.setTag(R.id.state, new Integer(currentState[j-rowVals[0].length][i-colVals.length]));
+                            if (currentState[j-rowVals[0].length][i-colVals.length] == 1) {
+                                box.setBackgroundColor(Color.BLACK);
+                            }
+
+                            box.setOnClickListener(listener);
+                            tableRow.addView(box);
+                        }
                     }
                 }
 
