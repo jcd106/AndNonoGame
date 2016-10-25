@@ -329,11 +329,54 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         int[][] r4 = {{0, 8}, {0, 10}, {1, 8}, {0, 8}, {0, 4}};
         int[][] c4 = {{0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, {2, 1, 4, 4, 5, 5, 5, 5, 4, 3}};
         Puzzle fourth = new Puzzle(id4, s4, sol4, r4, c4, 0);
+
+        int id5 = 5;
+        int[] s5 = {5, 5};
+        int[][] sol5 = {{0, 1, 0, 1, 0},
+                {1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1},
+                {0, 1, 1, 1, 0},
+                {0, 0, 1, 0, 0}};
+        //String[] r3 = {"1 1","5","5","3","1"};
+        int[][] r5 = {{1, 1}, {0, 5}, {0, 5}, {0, 3}, {0, 1}};
+        //String[] c3 = {"2","4","4","4","2"};
+        int[][] c5 = {{2, 4, 4, 4, 2}};
+        Puzzle fifth = new Puzzle(id5, s5, sol5, r5, c5, 0);
+
+        int id6 = 6;
+        int[] s6 = {5, 5};
+        int[][] sol6 = {{0, 1, 0, 1, 0},
+                {1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1},
+                {0, 1, 1, 1, 0},
+                {0, 0, 1, 0, 0}};
+        //String[] r3 = {"1 1","5","5","3","1"};
+        int[][] r6 = {{1, 1}, {0, 5}, {0, 5}, {0, 3}, {0, 1}};
+        //String[] c3 = {"2","4","4","4","2"};
+        int[][] c6 = {{2, 4, 4, 4, 2}};
+        Puzzle sixth = new Puzzle(id6, s6, sol6, r6, c6, 0);
+
+        int id7 = 7;
+        int[] s7 = {5, 5};
+        int[][] sol7 = {{0, 1, 0, 1, 0},
+                {1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1},
+                {0, 1, 1, 1, 0},
+                {0, 0, 1, 0, 0}};
+        //String[] r3 = {"1 1","5","5","3","1"};
+        int[][] r7 = {{1, 1}, {0, 5}, {0, 5}, {0, 3}, {0, 1}};
+        //String[] c3 = {"2","4","4","4","2"};
+        int[][] c7 = {{2, 4, 4, 4, 2}};
+        Puzzle seventh = new Puzzle(id7, s7, sol7, r7, c7, 0);
+
         try {
             insertPuzzle(id, firstPuzzle, s, completed, db);
             insertPuzzle(id2, second, s2, 0, db);
             insertPuzzle(id3, third, s3, 0, db);
             insertPuzzle(id4, fourth, s4, 0, db);
+            insertPuzzle(id5, fifth, s5, 0, db);
+            insertPuzzle(id6, sixth, s6, 0, db);
+            insertPuzzle(id7, seventh, s7, 0, db);
         } catch (IOException e) {
             e.printStackTrace();
         }

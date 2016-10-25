@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/newPuzzleButton"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:background="@drawable/border_button"
+    android:gravity="center"
+    android:textColor="#000000"></Button>
