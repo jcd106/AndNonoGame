@@ -19,7 +19,7 @@ public class Puzzle implements Serializable
     public Puzzle(int id, int[] s, int[][] sol, int[][] r, int[][] c, int comp){
         ID = id;
         size = s;
-        currentState = new int[s[0]][s[1]];
+        currentState = new int[s[1]][s[0]];
         solution = sol;
         rows = r;
         cols = c;

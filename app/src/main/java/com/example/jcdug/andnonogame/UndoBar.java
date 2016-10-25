@@ -118,7 +118,7 @@ public class UndoBar extends Fragment implements View.OnClickListener{
 //                    view.refreshDrawableState();
                     //this.getActivity().recreate();
                     PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
-
+                    puzzleFragment.resetCurrentState();
                     getFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
                     Log.getStackTraceString(new Throwable());
                 } catch (IOException e) {

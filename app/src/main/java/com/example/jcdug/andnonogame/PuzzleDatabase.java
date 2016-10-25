@@ -79,10 +79,22 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         //String[] c3 = {"2","4","4","4","2"};
         int[][] c3 = {{2,4,4,4,2}};
         Puzzle third = new Puzzle(id3,s3,sol3,r3,c3,0);
+
+        int id4 = 4;
+        int[] s4 = {10,5};
+        int[][] sol4 = {{0,0,1,1,1,1,1,1,1,1},
+                        {1,1,1,1,1,1,1,1,1,1},
+                        {1,0,1,1,1,1,1,1,1,1},
+                        {0,1,1,1,1,1,1,1,1,0},
+                        {0,0,0,0,1,1,1,1,0,0}};
+        int[][] r4 = {{0,8},{0,10},{1,8},{0,8},{0,4}};
+        int[][] c4 = {{0,1,0,0,0,0,0,0,0,0}, {2,1,4,4,5,5,5,5,4,3}};
+        Puzzle fourth = new Puzzle(id4,s4,sol4,r4,c4,0);
         try{
             insertPuzzle(id, firstPuzzle, s, completed, db);
             insertPuzzle(id2, second, s2, 0, db);
             insertPuzzle(id3, third, s3, 0, db);
+            insertPuzzle(id4, fourth, s4, 0, db);
         }
         catch(IOException e){
             e.printStackTrace();
@@ -100,8 +112,8 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(colID, id);
         contentValues.put(puzzle, buf);
-        contentValues.put(row, s[0]);
-        contentValues.put(col, s[1]);
+        contentValues.put(col, s[0]);
+        contentValues.put(row, s[1]);
         contentValues.put(comp, completed);
         db.insert(puzzleTable, null, contentValues);
     }
@@ -112,15 +124,15 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         return curs;
     }
 
-    public Cursor getPuzzlesBySize(int r, int c) {
+    public Cursor getPuzzlesBySize(int c, int r) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + row + " = ? AND " + col + " = ?", new String[] {Integer.toString(r), Integer.toString(c)});
+        Cursor curs = db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[] {Integer.toString(c), Integer.toString(r)});
         return curs;
     }
 
     public Cursor getCountBySize() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + row + ", " + col + ", COUNT(*) AS numPuzzles FROM " + puzzleTable + " GROUP BY " + row + ", " + col, new String[] {});
+        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + puzzleTable + " GROUP BY " + col + ", " + row, new String[] {});
         return curs;
     }
 //    public int getCountBySize(int r, int c) {
@@ -148,7 +160,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
 
     public Cursor getCountCompletedBySize() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + row + ", " + col + ", COUNT(*) AS numComplete FROM " + puzzleTable + " WHERE " + comp + " = ? GROUP BY " + row + ", " + col, new String[] {Integer.toString(1)});
+        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + puzzleTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[] {Integer.toString(1)});
         return curs;
     }
 
@@ -189,7 +201,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         bis.close();
         in.close();
         int[] size = p.getSize();
-        int[][] currState = new int[size[0]][size[1]];
+        int[][] currState = new int[size[1]][size[0]];
         int completed = 0;
         p.setCurrentState(currState);
         p.setCompleted(completed);

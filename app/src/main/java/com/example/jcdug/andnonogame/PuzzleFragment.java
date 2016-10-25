@@ -56,6 +56,8 @@ public class PuzzleFragment extends Fragment{
     int id;
     int[][] currentState;
     int[][] solutionState;
+    int numRows;
+    int numCols;
     int complete;
     Drawable filled;
     Drawable empty;
@@ -165,8 +167,8 @@ public class PuzzleFragment extends Fragment{
             complete = p.isCompleted();
             int[] size = p.getSize();
             //Log.d("myTag",""+currentState[0][0]);
-            int numRows = size[0];
-            int numCols = size[1];
+            numCols = size[0];
+            numRows = size[1];
 
             int[][] rowVals = p.getRows();
             int[][] colVals = p.getCols();
@@ -194,12 +196,12 @@ public class PuzzleFragment extends Fragment{
 
                         if (buttonState.intValue() == 0) {
                             b.setTag(R.id.state, buttonState + 1);
-                            currentState[xLoc][yLoc] = 1;
+                            currentState[yLoc][xLoc] = 1;
                             //b.setBackgroundColor(Color.BLACK);
                             b.setBackground(filled);
                         } else if (buttonState.intValue() == 1) {
                             b.setTag(R.id.state, buttonState - 1);
-                            currentState[xLoc][yLoc]=0;
+                            currentState[yLoc][xLoc]=0;
                             b.setBackground(empty);
                             //b.setBackgroundColor(Color.WHITE);
                         }
@@ -272,12 +274,12 @@ public class PuzzleFragment extends Fragment{
                         TextView box = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
                         int boxID = Integer.parseInt(i + "" + j);
                         box.setId(boxID);
-                        int x_val = i-colVals.length;
-                        int y_val = j-rowVals[0].length;
+                        int x_val = j-rowVals[0].length;
+                        int y_val = i-colVals.length;
                         box.setTag(R.id.x_loc, new Integer(x_val));
                         box.setTag(R.id.y_loc, new Integer(y_val));
-                        box.setTag(R.id.state, new Integer(currentState[x_val][y_val]));
-                        if (currentState[x_val][y_val] == 1) {
+                        box.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
+                        if (currentState[y_val][x_val] == 1) {
                             box.setBackground(filled);
                         }
                         else {
@@ -349,6 +351,25 @@ public class PuzzleFragment extends Fragment{
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        PuzzleDatabase db = MainActivity.getDB();
+        try {
+            db.updatePuzzle(id,currentState,complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void resetCurrentState() {
+        currentState = new int[numRows][numCols];
+        complete = 0;
     }
 
 }

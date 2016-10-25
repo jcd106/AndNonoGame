@@ -16,10 +16,13 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         setContentView(R.layout.activity_size_select);
         Button fiveByFive = (Button) findViewById(R.id.fivebyfive);
         Button tenByTen = (Button) findViewById(R.id.tenbyten);
+        Button tenByFive = (Button) findViewById(R.id.tenbyfive);
         int num5 = 0;
         int num10 = 0;
+        int num105 = 0;
         int comp5 = 0;
         int comp10 = 0;
+        int comp105 = 0;
         PuzzleDatabase db = MainActivity.getDB();
         Cursor c1 = db.getCountBySize();
         c1.moveToFirst();
@@ -35,6 +38,10 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             if(c1.getInt(r1) == 10 && c1.getInt(col1) == 10) {
                 num10 = c1.getInt(i1);
             }
+            if(c1.getInt(r1) == 5 && c1.getInt(col1) == 10) {
+                num105 = c1.getInt(i1);
+            }
+
             c1.moveToNext();
         }
         int i2 = c2.getColumnIndex("numComplete");
@@ -47,12 +54,18 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             if(c2.getInt(r2) == 10 && c2.getInt(col2) == 10) {
                 comp10 = c2.getInt(i2);
             }
+            if(c2.getInt(r2) == 5 && c2.getInt(col2) == 10) {
+                comp105 = c2.getInt(i2);
+            }
             c2.moveToNext();
         }
         String fiveFiveText = "5x5 ("+comp5+"/"+num5+")";
         fiveByFive.setText(fiveFiveText);
         String tenTenText = "10x10 ("+comp10+"/"+num10+")";
         tenByTen.setText(tenTenText);
+        String tenFiveText = "10x5 ("+comp105+"/"+num105+")";
+        tenByFive.setText(tenFiveText);
+
 
     }
     public void onFragmentInteraction(Uri uri) {
@@ -68,6 +81,8 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             case R.id.tenbyten:
                 i.putExtra("size","10 10");
                 break;
+            case R.id.tenbyfive:
+                i.putExtra("size","10 5");
         }
         startActivity(i);
     }
@@ -78,10 +93,13 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         super.onResume();
         Button fiveByFive = (Button) findViewById(R.id.fivebyfive);
         Button tenByTen = (Button) findViewById(R.id.tenbyten);
+        Button tenByFive = (Button) findViewById(R.id.tenbyfive);
         int num5 = 0;
         int num10 = 0;
+        int num105 = 0;
         int comp5 = 0;
         int comp10 = 0;
+        int comp105 = 0;
         PuzzleDatabase db = MainActivity.getDB();
         Cursor c1 = db.getCountBySize();
         c1.moveToFirst();
@@ -97,6 +115,10 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             if(c1.getInt(r1) == 10 && c1.getInt(col1) == 10) {
                 num10 = c1.getInt(i1);
             }
+            if(c1.getInt(r1) == 5 && c1.getInt(col1) == 10) {
+                num105 = c1.getInt(i1);
+            }
+
             c1.moveToNext();
         }
         int i2 = c2.getColumnIndex("numComplete");
@@ -109,11 +131,16 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             if(c2.getInt(r2) == 10 && c2.getInt(col2) == 10) {
                 comp10 = c2.getInt(i2);
             }
+            if(c2.getInt(r2) == 5 && c2.getInt(col2) == 10) {
+                comp105 = c2.getInt(i2);
+            }
             c2.moveToNext();
         }
         String fiveFiveText = "5x5 ("+comp5+"/"+num5+")";
         fiveByFive.setText(fiveFiveText);
         String tenTenText = "10x10 ("+comp10+"/"+num10+")";
         tenByTen.setText(tenTenText);
+        String tenFiveText = "10x5 ("+comp105+"/"+num105+")";
+        tenByFive.setText(tenFiveText);
     }
 }
