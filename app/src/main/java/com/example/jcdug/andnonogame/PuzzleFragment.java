@@ -351,17 +351,4 @@ public class PuzzleFragment extends Fragment{
         }
     }
 
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        PuzzleDatabase db = MainActivity.getDB();
-        try {
-            db.updatePuzzle(id,currentState,complete);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 }
