@@ -3,14 +3,17 @@ package com.example.jcdug.andnonogame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,7 +57,9 @@ public class PuzzleFragment extends Fragment{
     int[][] currentState;
     int[][] solutionState;
     int complete;
-
+    Drawable filled;
+    Drawable empty;
+    public static final String COLOR_CHOICE = "ColorChoice";
     private OnFragmentInteractionListener mListener;
 
     public PuzzleFragment() {
@@ -98,6 +103,46 @@ public class PuzzleFragment extends Fragment{
 
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
+
+        SharedPreferences preferences = this.getActivity().getSharedPreferences(COLOR_CHOICE, Context.MODE_PRIVATE);
+        String emptyChoice = preferences.getString("empty", null);
+        String filledChoice = preferences.getString("filled", null);
+        if(emptyChoice == null)
+        {
+            emptyChoice = "WHITE";
+        }
+        if(filledChoice == null)
+        {
+            filledChoice = "BLACK";
+        }
+
+        int emptyColor, fillColor;
+        switch (emptyChoice){
+            case "WHITE":
+                emptyColor = Color.WHITE;
+                break;
+            case "BLUE":
+                emptyColor = Color.BLUE;
+                break;
+            default:
+                emptyColor = Color.WHITE;
+        }
+
+        switch (filledChoice){
+            case "BLACK":
+                fillColor = Color.BLACK;
+                break;
+            case "RED":
+                fillColor = Color.RED;
+                break;
+            default:
+                fillColor = Color.BLACK;
+        }
+
+        filled = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
+        filled.setColorFilter(fillColor, PorterDuff.Mode.MULTIPLY);
+        empty = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
+        empty.setColorFilter(emptyColor, PorterDuff.Mode.MULTIPLY);
         //int id = Integer.parseInt(args);
         //int id = 1;
         try {
@@ -147,15 +192,15 @@ public class PuzzleFragment extends Fragment{
                         //int[][] currentState = p.getCurrentState();
                         //int[][] solutionState = p.getSolution();
 
-
                         if (buttonState.intValue() == 0) {
                             b.setTag(R.id.state, buttonState + 1);
                             currentState[xLoc][yLoc] = 1;
-                            b.setBackgroundColor(Color.BLACK);
+                            //b.setBackgroundColor(Color.BLACK);
+                            b.setBackground(filled);
                         } else if (buttonState.intValue() == 1) {
                             b.setTag(R.id.state, buttonState - 1);
                             currentState[xLoc][yLoc]=0;
-                            b.setBackgroundResource(R.drawable.border_button);
+                            b.setBackground(empty);
                             //b.setBackgroundColor(Color.WHITE);
                         }
                         if (Arrays.deepEquals(currentState, solutionState))
@@ -197,12 +242,16 @@ public class PuzzleFragment extends Fragment{
                     if (i < colVals.length && j < rowVals[0].length)
                     {
                         TextView blank = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        blank.setBackground(empty);
+
                         //blank.setText("11");
                         tableRow.addView(blank);
                     }
                     else if (i < colVals.length && j >= rowVals[0].length)
                     {
                         TextView columnValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        columnValue.setBackground(empty);
+                        //columnValue.setTextColor(fillColor);
                         int val = colVals[i][j-rowVals[0].length];
                         if(val != 0)
                             columnValue.setText(Integer.toString(val));
@@ -211,6 +260,8 @@ public class PuzzleFragment extends Fragment{
                     else if (i >= colVals.length && j < rowVals[0].length)
                     {
                         TextView rowValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                        rowValue.setBackground(empty);
+                        //rowValue.setTextColor(fillColor);
                         int val = rowVals[i-colVals.length][j];
                         if(val != 0)
                             rowValue.setText(Integer.toString(val));
@@ -227,7 +278,10 @@ public class PuzzleFragment extends Fragment{
                         box.setTag(R.id.y_loc, new Integer(y_val));
                         box.setTag(R.id.state, new Integer(currentState[x_val][y_val]));
                         if (currentState[x_val][y_val] == 1) {
-                            box.setBackgroundColor(Color.BLACK);
+                            box.setBackground(filled);
+                        }
+                        else {
+                            box.setBackground(empty);
                         }
 
                         box.setOnClickListener(listener);
@@ -286,6 +340,7 @@ public class PuzzleFragment extends Fragment{
     @Override
     public void onDestroy()
     {
+        super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
             db.updatePuzzle(id,currentState,complete);
@@ -294,6 +349,19 @@ public class PuzzleFragment extends Fragment{
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        super.onDestroy();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        PuzzleDatabase db = MainActivity.getDB();
+        try {
+            db.updatePuzzle(id,currentState,complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

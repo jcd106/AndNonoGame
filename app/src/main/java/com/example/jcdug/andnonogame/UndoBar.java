@@ -111,12 +111,15 @@ public class UndoBar extends Fragment implements View.OnClickListener{
             case R.id.reset_puzzle_button:
                 try {
                     PuzzleDatabase db = MainActivity.getDB();
+                    Log.d("resetPuzzle",id+"");
                     db.resetPuzzle(id);
+                    Log.d("passed","reset");
 //                    View view = v.findViewById(R.id.fragment_puzzle);
 //                    view.refreshDrawableState();
                     //this.getActivity().recreate();
-                    PuzzleFragment puzzleFragment = (PuzzleFragment) this.getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                    PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
                     getFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
+                    Log.getStackTraceString(new Throwable());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {
