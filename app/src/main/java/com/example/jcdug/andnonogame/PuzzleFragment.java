@@ -40,52 +40,44 @@ import java.util.Arrays;
  * Activities that contain this fragment must implement the
  * {@link PuzzleFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PuzzleFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * <p>
+ * Class that handles puzzle display in the PuzzleActivity
+ *
+ * @author Josh Dughi, Peter Todorov
+ * @version 1.4.3
  */
-public class PuzzleFragment extends Fragment{
-    // TODO: Rename parameter arguments, choose names that match
+public class PuzzleFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // Auto-Generated
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    int id;
-    int[][] currentState;
-    int[][] solutionState;
-    int numRows;
-    int numCols;
-    int complete;
-    Drawable filled;
-    Drawable empty;
-    public static final String COLOR_CHOICE = "ColorChoice";
     private OnFragmentInteractionListener mListener;
 
+    int id;                 //ID of the puzzle being displayed
+    int[][] currentState;   //Current state of the puzzle being displayed
+    int[][] solutionState;  //Solution state of the puzzle being displayed
+    int numRows;            //Number of rows in the puzzle
+    int numCols;            //Number of columns in the puzzle
+    int complete;           //Store whether puzzle has been completed
+    Drawable filled;        //Color of filled puzzle boxes
+    Drawable empty;         //Color of empty puzzle boxes
+
+    public static final String COLOR_CHOICE = "ColorChoice";    //Used access saved preference color choice
+
+    /**
+     * Default constructor for fragment
+     */
     public PuzzleFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Handles operations on fragment creation
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PuzzleFragment.
+     * @param savedInstanceState
      */
-    // TODO: Rename and change types and number of parameters
-    public static PuzzleFragment newInstance(String param1, String param2) {
-        PuzzleFragment fragment = new PuzzleFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,29 +89,39 @@ public class PuzzleFragment extends Fragment{
 
     }
 
+    /**
+     * Handle drawing of puzzle as well as initialiation of puzzle boxes
+     *
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_puzzle, container, false);
 
+        //Retrieve ID of current puzzle from PuzzleActivity bundle
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
 
+        //Retrieve user color choice as string from shared preferences
         SharedPreferences preferences = this.getActivity().getSharedPreferences(COLOR_CHOICE, Context.MODE_PRIVATE);
         String emptyChoice = preferences.getString("empty", null);
         String filledChoice = preferences.getString("filled", null);
-        if(emptyChoice == null)
-        {
+        if (emptyChoice == null) {
             emptyChoice = "WHITE";
         }
-        if(filledChoice == null)
-        {
+        if (filledChoice == null) {
             filledChoice = "BLACK";
         }
 
+
+        //Convert color string to int color value
         int emptyColor, fillColor;
-        switch (emptyChoice){
+        switch (emptyChoice) {
             case "WHITE":
                 emptyColor = Color.WHITE;
                 break;
@@ -130,7 +132,7 @@ public class PuzzleFragment extends Fragment{
                 emptyColor = Color.WHITE;
         }
 
-        switch (filledChoice){
+        switch (filledChoice) {
             case "BLACK":
                 fillColor = Color.BLACK;
                 break;
@@ -141,151 +143,168 @@ public class PuzzleFragment extends Fragment{
                 fillColor = Color.BLACK;
         }
 
+        //Set drawable background for filled and empty boxes to retrieved color choice
         filled = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
         filled.setColorFilter(fillColor, PorterDuff.Mode.MULTIPLY);
         empty = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
         empty.setColorFilter(emptyColor, PorterDuff.Mode.MULTIPLY);
-        //int id = Integer.parseInt(args);
-        //int id = 1;
+
         try {
+            //Retrieve PuzzleDatabase from MainActivity
             PuzzleDatabase db = MainActivity.getDB();
+
+            //Get the correct serialized puzzle by its ID from the PuzzleDatabase
             Cursor c1 = db.getPuzzleByID(id);
             int p1 = c1.getColumnIndex("Puzzle");
-            int row1 = c1.getColumnIndex("Rows");
-            int col1 = c1.getColumnIndex("Cols");
             c1.moveToFirst();
-
             byte[] b = c1.getBlob(p1);
+
+            //Create a new input stream and deserialize the puzzle to be displayed
             ByteArrayInputStream bis = new ByteArrayInputStream(b);
             ObjectInput in = new ObjectInputStream(bis);
             final Puzzle p = (Puzzle) in.readObject();
             bis.close();
             in.close();
 
+            //Store all of the puzzle objects information in the PuzzleFragment
             currentState = p.getCurrentState();
             solutionState = p.getSolution();
             complete = p.isCompleted();
             int[] size = p.getSize();
-            //Log.d("myTag",""+currentState[0][0]);
             numCols = size[0];
             numRows = size[1];
-
             int[][] rowVals = p.getRows();
             int[][] colVals = p.getCols();
 
-
+            //Create TableLayout to organize puzzle boxes into a grid
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
 
-            //puzzleLayout.setRowCount(numRows);
-            //puzzleLayout.setColumnCount(numCols);
+            //Store the context of the PuzzleFragment and the PuzzleActivity
             final Context context = this.getActivity();
+
+            //Create an OnClickListener for each box in the puzzle
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
-                        //Button b = (Button) view.findViewById(view.getId());
-                        //PuzzleDatabase db = MainActivity.getDB();
+
+                        //Retrieve clicked puzzle box and its stored tag values
                         TextView b = (TextView) view.findViewById(view.getId());
-                        Integer buttonState = (Integer) b.getTag(R.id.state);
+                        Integer boxState = (Integer) b.getTag(R.id.state);
                         Integer x = (Integer) b.getTag(R.id.x_loc);
                         Integer y = (Integer) b.getTag(R.id.y_loc);
-                        int xLoc = x.intValue();
-                        int yLoc = y.intValue();
-                        //int[][] currentState = p.getCurrentState();
-                        //int[][] solutionState = p.getSolution();
+                        int xLoc = x;
+                        int yLoc = y;
 
-                        if (buttonState.intValue() == 0) {
-                            b.setTag(R.id.state, buttonState + 1);
+
+                        //Handles switching of box colors and updates puzzle's current state
+                        if (boxState == 0) {
+                            b.setTag(R.id.state, boxState + 1);
                             currentState[yLoc][xLoc] = 1;
-                            //b.setBackgroundColor(Color.BLACK);
                             b.setBackground(filled);
-                        } else if (buttonState.intValue() == 1) {
-                            b.setTag(R.id.state, buttonState - 1);
-                            currentState[yLoc][xLoc]=0;
+                        } else if (boxState == 1) {
+                            b.setTag(R.id.state, boxState - 1);
+                            currentState[yLoc][xLoc] = 0;
                             b.setBackground(empty);
-                            //b.setBackgroundColor(Color.WHITE);
                         }
-                        if (Arrays.deepEquals(currentState, solutionState))
-                        {
-                            //puzzle.setCompleted(1);
-                            //puzzle.setCurrentState(currentState);
+
+                        //Checks if currentState is equal to the solutionState after each move
+                        if (Arrays.deepEquals(currentState, solutionState)) {
+                            //Get the PuzzleDatabase and update the current state of the puzzle as complete
                             PuzzleDatabase db = MainActivity.getDB();
                             complete = 1;
-                            db.updatePuzzle(id,currentState,complete);
+                            db.updatePuzzle(id, currentState, complete);
+
+                            //Create a popup congratulatin the user on puzzle completion
                             AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                             alertDialog.setTitle("Congratulations!");
                             alertDialog.setMessage("You have completed the puzzle!");
-                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK",
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                     new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which){
+                                        public void onClick(DialogInterface dialog, int which) {
                                             dialog.dismiss();
                                         }
                                     });
                             alertDialog.show();
-                        }
-                        else{
+                        } else {
                             complete = 0;
                         }
-                    }
-                    catch(IOException e){
+                    } catch (IOException e) {
 
-                    }
-                    catch (ClassNotFoundException e){
+                    } catch (ClassNotFoundException e) {
 
                     }
                 }
             };
 
-            for(int i = 0; i < numRows + colVals.length; i++) {
+            //Dynamically add the constraint values and puzzle boxes to the TableLayout
+            for (int i = 0; i < numRows + colVals.length; i++) {
+
+                //Add new row to the table
                 TableRow tableRow = new TableRow(this.getActivity());
                 puzzleLayout.addView(tableRow);
+
                 for (int j = 0; j < numCols + rowVals[0].length; j++) {
+
                     //TableLayout.LayoutParams params = new TableLayout.LayoutParams();
-                    if (i < colVals.length && j < rowVals[0].length)
-                    {
+
+                    //Add blank spaces in top right of puzzle grid to leave room for constraint values
+                    if (i < colVals.length && j < rowVals[0].length) {
+                        //Create new TextView with empty box background color and add it to the table
                         TextView blank = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
                         blank.setBackground(empty);
-
-                        //blank.setText("11");
                         tableRow.addView(blank);
                     }
-                    else if (i < colVals.length && j >= rowVals[0].length)
-                    {
+
+                    //Add column constraint values to the puzzle grid
+                    else if (i < colVals.length && j >= rowVals[0].length) {
+                        //Create new TextView with empty box background color and add it to the table
                         TextView columnValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
                         columnValue.setBackground(empty);
-                        //columnValue.setTextColor(fillColor);
-                        int val = colVals[i][j-rowVals[0].length];
-                        if(val != 0)
+
+                        //Retrieve correct column constraint value and set TextView's text
+                        int val = colVals[i][j - rowVals[0].length];
+                        if (val != 0)
                             columnValue.setText(Integer.toString(val));
                         tableRow.addView(columnValue);
                     }
-                    else if (i >= colVals.length && j < rowVals[0].length)
-                    {
+
+                    //Add row constraint values to the puzzle gird
+                    else if (i >= colVals.length && j < rowVals[0].length) {
+                        //Create new TextView with empty box background color and add it to the table
                         TextView rowValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
                         rowValue.setBackground(empty);
-                        //rowValue.setTextColor(fillColor);
-                        int val = rowVals[i-colVals.length][j];
-                        if(val != 0)
+
+                        //Retrieve correct row constraint value and set TextView's text
+                        int val = rowVals[i - colVals.length][j];
+                        if (val != 0)
                             rowValue.setText(Integer.toString(val));
                         tableRow.addView(rowValue);
                     }
-                    else if (i >= colVals.length && j >= rowVals[0].length){
-                        //Button box = (Button) inflater.inflate(R.layout.my_button, tableRow, false);
+
+                    //Add clickable boxes to the puzzle grid
+                    else if (i >= colVals.length && j >= rowVals[0].length) {
+
+                        //Create new TextView with empty box background color and id as box position, add it to the table
                         TextView box = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
                         int boxID = Integer.parseInt(i + "" + j);
                         box.setId(boxID);
-                        int x_val = j-rowVals[0].length;
-                        int y_val = i-colVals.length;
+
+                        //Set x and y location and current state(filled/empty) of box in puzzle grid as a tag
+                        int x_val = j - rowVals[0].length;
+                        int y_val = i - colVals.length;
                         box.setTag(R.id.x_loc, new Integer(x_val));
                         box.setTag(R.id.y_loc, new Integer(y_val));
                         box.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
+
+                        //Display correct box state form current state
                         if (currentState[y_val][x_val] == 1) {
                             box.setBackground(filled);
-                        }
-                        else {
+                        } else {
                             box.setBackground(empty);
                         }
 
+                        //Add OnClickListener to each box
                         box.setOnClickListener(listener);
                         tableRow.addView(box);
                     }
@@ -294,19 +313,12 @@ public class PuzzleFragment extends Fragment{
 
 
         } catch (IOException e1) {
-        }
-        catch (ClassNotFoundException e2){
+        } catch (ClassNotFoundException e2) {
         }
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
+    // Auto-generated
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -318,6 +330,7 @@ public class PuzzleFragment extends Fragment{
         }
     }
 
+    // Auto-generated
     @Override
     public void onDetach() {
         super.onDetach();
@@ -339,13 +352,15 @@ public class PuzzleFragment extends Fragment{
         void onFragmentInteraction(Uri uri);
     }
 
+    /**
+     * Saves the puzzle's current state when the PuzzleFragment is destroyed
+     */
     @Override
-    public void onDestroy()
-    {
+    public void onDestroy() {
         super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(id,currentState,complete);
+            db.updatePuzzle(id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -353,13 +368,15 @@ public class PuzzleFragment extends Fragment{
         }
     }
 
+    /**
+     * Saves the puzzle's current state when the PuzzleFragment is paused
+     */
     @Override
-    public void onPause()
-    {
+    public void onPause() {
         super.onPause();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(id,currentState,complete);
+            db.updatePuzzle(id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -367,6 +384,9 @@ public class PuzzleFragment extends Fragment{
         }
     }
 
+    /**
+     * Resets the puzzle's current state in the fragment
+     */
     public void resetCurrentState() {
         currentState = new int[numRows][numCols];
         complete = 0;

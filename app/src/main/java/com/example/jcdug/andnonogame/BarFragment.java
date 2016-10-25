@@ -15,43 +15,26 @@ import android.widget.ImageButton;
  * Activities that contain this fragment must implement the
  * {@link BarFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link BarFragment#newInstance} factory method to
- * create an instance of this fragment.
+ *
+ * Handles the display and functionality of the action bar
+ *
+ * @author  Josh Dughi, Peter Todorov
+ * @version 1.4.3
  */
 public class BarFragment extends Fragment implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // Auto-Generated
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     public BarFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BarFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static BarFragment newInstance(String param1, String param2) {
-        BarFragment fragment = new BarFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    // Auto-Generated
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,11 +44,20 @@ public class BarFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    /**
+     * This methods inflates the layout for the fragment
+     * and sets the OnClickListener for the buttons in the fragment
+     * @param inflater  Used to add views to the activity view
+     * @param container
+     * @param savedInstanceState
+     * @return  The activity view
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_bar, container, false);
+        //
         ImageButton settingsButton = (ImageButton) view.findViewById(R.id.settings_button_bar);
         settingsButton.setOnClickListener(this);
         ImageButton backButton = (ImageButton) view.findViewById(R.id.back_button_bar);
@@ -73,13 +65,7 @@ public class BarFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
+    // Auto-Generated
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -91,12 +77,20 @@ public class BarFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    // Auto-Generated
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
 
+    /**
+     * Sets the functionality for when the buttons are clicked
+     * The settings button starts the SettingsActivity
+     * The back button finishes the currentActivity and resumes the previous activity
+     *
+     * @param v The view that was clicked
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -119,6 +113,7 @@ public class BarFragment extends Fragment implements View.OnClickListener {
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
+     * Auto-Generated
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name

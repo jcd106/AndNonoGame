@@ -41,7 +41,7 @@
         android:layout_marginTop="21dp"
         android:id="@+id/tutorial_button"
         style="?android:attr/borderlessButtonStyle"
-        android:onClick="onTutorialClicked"
+        android:onClick="onClicked"
         android:layout_below="@+id/play_button_main"
         android:layout_centerHorizontal="true" />
 
@@ -73,7 +73,7 @@
         android:src="@drawable/settings_main"
         android:id="@+id/settings_button_main"
         style="?android:attr/borderlessButtonStyle"
-        android:onClick="onSettingsClicked"
+        android:onClick="onClicked"
         android:elevation="0dp"
         android:layout_marginBottom="15dp"
         android:layout_alignParentBottom="true"
@@ -84,7 +84,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/play_button"
-        android:onClick="onPlayClicked"
+        android:onClick="onClicked"
         android:id="@+id/play_button_main"
         style="?android:attr/borderlessButtonStyle"
         android:layout_centerVertical="true"
