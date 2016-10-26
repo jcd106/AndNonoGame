@@ -121,10 +121,10 @@ public class UndoBar extends Fragment implements View.OnClickListener {
                 }
                 break;
 
-            //TODO Add proper undo functionality
             //Undo button was clicked
             case R.id.undo_button:
-                getActivity().onBackPressed();
+                PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                puzzleFragment.undoMostRecent();
                 break;
         }
     }

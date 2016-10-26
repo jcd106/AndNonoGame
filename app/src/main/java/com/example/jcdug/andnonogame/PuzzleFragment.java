@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
+import java.util.Queue;
+import java.util.Stack;
 
 
 /**
@@ -63,6 +65,8 @@ public class PuzzleFragment extends Fragment {
     int complete;           //Store whether puzzle has been completed
     Drawable filled;        //Color of filled puzzle boxes
     Drawable empty;         //Color of empty puzzle boxes
+
+    private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
 
     public static final String COLOR_CHOICE = "ColorChoice";    //Used access saved preference color choice
 
@@ -180,60 +184,40 @@ public class PuzzleFragment extends Fragment {
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
 
             //Store the context of the PuzzleFragment and the PuzzleActivity
-            final Context context = this.getActivity();
+            //final Context context = this.getActivity();
 
             //Create an OnClickListener for each box in the puzzle
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try {
-
-                        //Retrieve clicked puzzle box and its stored tag values
-                        TextView b = (TextView) view.findViewById(view.getId());
-                        Integer boxState = (Integer) b.getTag(R.id.state);
-                        Integer x = (Integer) b.getTag(R.id.x_loc);
-                        Integer y = (Integer) b.getTag(R.id.y_loc);
-                        int xLoc = x;
-                        int yLoc = y;
 
 
-                        //Handles switching of box colors and updates puzzle's current state
-                        if (boxState == 0) {
-                            b.setTag(R.id.state, boxState + 1);
-                            currentState[yLoc][xLoc] = 1;
-                            b.setBackground(filled);
-                        } else if (boxState == 1) {
-                            b.setTag(R.id.state, boxState - 1);
-                            currentState[yLoc][xLoc] = 0;
-                            b.setBackground(empty);
-                        }
+                    //Retrieve clicked puzzle box and its stored tag values
+                    TextView b = (TextView) view.findViewById(view.getId());
+                    Integer boxState = (Integer) b.getTag(R.id.state);
+                    Integer x = (Integer) b.getTag(R.id.x_loc);
+                    Integer y = (Integer) b.getTag(R.id.y_loc);
+                    int xLoc = x;
+                    int yLoc = y;
 
-                        //Checks if currentState is equal to the solutionState after each move
-                        if (Arrays.deepEquals(currentState, solutionState)) {
-                            //Get the PuzzleDatabase and update the current state of the puzzle as complete
-                            PuzzleDatabase db = MainActivity.getDB();
-                            complete = 1;
-                            db.updatePuzzle(id, currentState, complete);
+                    prevMoves.push(b);
 
-                            //Create a popup congratulatin the user on puzzle completion
-                            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-                            alertDialog.setTitle("Congratulations!");
-                            alertDialog.setMessage("You have completed the puzzle!");
-                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            alertDialog.show();
-                        } else {
-                            complete = 0;
-                        }
-                    } catch (IOException e) {
 
-                    } catch (ClassNotFoundException e) {
-
+                    //Handles switching of box colors and updates puzzle's current state
+                    if (boxState == 0) {
+                        b.setTag(R.id.state, boxState + 1);
+                        currentState[yLoc][xLoc] = 1;
+                        b.setBackground(filled);
+                    } else if (boxState == 1) {
+                        b.setTag(R.id.state, boxState - 1);
+                        currentState[yLoc][xLoc] = 0;
+                        b.setBackground(empty);
                     }
+
+                    //Checks if the puzzle is solved
+                    checkIfSolved();
+
+
                 }
             };
 
@@ -293,6 +277,7 @@ public class PuzzleFragment extends Fragment {
                         //Set x and y location and current state(filled/empty) of box in puzzle grid as a tag
                         int x_val = j - rowVals[0].length;
                         int y_val = i - colVals.length;
+
                         box.setTag(R.id.x_loc, new Integer(x_val));
                         box.setTag(R.id.y_loc, new Integer(y_val));
                         box.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
@@ -316,6 +301,64 @@ public class PuzzleFragment extends Fragment {
         } catch (ClassNotFoundException e2) {
         }
         return view;
+    }
+
+    /**
+     * Checks if the puzzle is solved
+     */
+    private void checkIfSolved() {
+        Context context = this.getActivity();
+
+        //Checks if currentState is equal to the solutionState after each move
+        if (Arrays.deepEquals(currentState, solutionState)) {
+            //Get the PuzzleDatabase and update the current state of the puzzle as complete
+            PuzzleDatabase db = MainActivity.getDB();
+            complete = 1;
+            try {
+                db.updatePuzzle(id, currentState, complete);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            //Create a popup congratulatin the user on puzzle completion
+            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Congratulations!");
+            alertDialog.setMessage("You have completed the puzzle!");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        } else {
+            complete = 0;
+        }
+    }
+
+    // Undoes the most recent move made by the user
+    public void undoMostRecent() {
+        if (!prevMoves.isEmpty()) {
+            TextView prev = prevMoves.pop();
+            Integer x_loc = (Integer) prev.getTag(R.id.x_loc);
+            Integer y_loc = (Integer) prev.getTag(R.id.y_loc);
+            Integer box_state = (Integer) prev.getTag(R.id.state);
+
+            if (box_state == 0) {
+                currentState[y_loc][x_loc] = 1;
+                prev.setTag(R.id.state, box_state + 1);
+                prev.setBackground(filled);
+            } else if (box_state == 1) {
+                currentState[y_loc][x_loc] = 0;
+                prev.setTag(R.id.state, box_state - 1);
+                prev.setBackground(empty);
+            }
+
+            // Checks if the puzzle is solved
+            checkIfSolved();
+        }
     }
 
     // Auto-generated
@@ -348,7 +391,6 @@ public class PuzzleFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 

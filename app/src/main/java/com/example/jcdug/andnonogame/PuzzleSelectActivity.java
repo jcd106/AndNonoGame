@@ -99,7 +99,7 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
             //Create a layout and set the margins for the puzzle select button
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(pixels,pixels);
             //        (RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(20, 20, 20, 20);
+            params.setMargins(75, 20, 75, 50);
 
             //Create a new button
             //Button b = new Button(this);
