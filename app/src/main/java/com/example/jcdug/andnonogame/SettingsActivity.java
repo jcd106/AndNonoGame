@@ -2,6 +2,7 @@ package com.example.jcdug.andnonogame;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -120,9 +121,10 @@ public class SettingsActivity extends AppCompatActivity {
                 alertDialog.show();
                 break;
 
-            //TODO Add instructions activity
             //if the instructions button, go to instructions activity
             case R.id.instructions_button:
+                Intent i = new Intent(this, TutorialActivity.class);
+                startActivity(i);
                 break;
         }
     }

@@ -1,10 +1,12 @@
 package com.example.jcdug.andnonogame;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,20 +107,41 @@ public class UndoBar extends Fragment implements View.OnClickListener {
 
             //Reset button was clicked
             case R.id.reset_puzzle_button:
-                try {
-                    //Reset the current puzzle in the PuzzleDatabase
-                    PuzzleDatabase db = MainActivity.getDB();
-                    db.resetPuzzle(id);
+                //Create a prompt asking the user if he/she is sure
+                AlertDialog alertDialog = new AlertDialog.Builder(this.getActivity()).create();
+                alertDialog.setTitle("Reset Puzzle!");
+                alertDialog.setMessage("Are you sure?");
 
-                    //Redraw the PuzzleFragment with the new reset state
-                    PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
-                    puzzleFragment.resetCurrentState();
-                    getFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                //If the user says no, do nothing
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+
+                //If the user says yes, reset all the puzzles
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    //Reset the current puzzle in the PuzzleDatabase
+                                    PuzzleDatabase db = MainActivity.getDB();
+                                    db.resetPuzzle(id);
+
+                                    //Redraw the PuzzleFragment with the new reset state
+                                    PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                                    puzzleFragment.resetCurrentState();
+                                    getFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                } catch (ClassNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
                 break;
 
             //Undo button was clicked

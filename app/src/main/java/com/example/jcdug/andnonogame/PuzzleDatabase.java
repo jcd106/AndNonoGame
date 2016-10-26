@@ -369,6 +369,32 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         int[][] c7 = {{2, 4, 4, 4, 2}};
         Puzzle seventh = new Puzzle(id7, s7, sol7, r7, c7, 0);
 
+        int id8 = 8;
+        int[] s8 = {5, 5};
+        int[][] sol8 = {{0, 1, 0, 1, 0},
+                {1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1},
+                {0, 1, 1, 1, 0},
+                {0, 0, 1, 0, 0}};
+        //String[] r3 = {"1 1","5","5","3","1"};
+        int[][] r8 = {{1, 1}, {0, 5}, {0, 5}, {0, 3}, {0, 1}};
+        //String[] c3 = {"2","4","4","4","2"};
+        int[][] c8 = {{2, 4, 4, 4, 2}};
+        Puzzle eighth= new Puzzle(id8, s8, sol8, r8, c8, 0);
+
+        int id9 = 9;
+        int[] s9 = {5, 5};
+        int[][] sol9 = {{0, 1, 0, 1, 0},
+                {1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1},
+                {0, 1, 1, 1, 0},
+                {0, 0, 1, 0, 0}};
+        //String[] r3 = {"1 1","5","5","3","1"};
+        int[][] r9 = {{1, 1}, {0, 5}, {0, 5}, {0, 3}, {0, 1}};
+        //String[] c3 = {"2","4","4","4","2"};
+        int[][] c9 = {{2, 4, 4, 4, 2}};
+        Puzzle ninth = new Puzzle(id9, s9, sol9, r9, c9, 0);
+
         try {
             insertPuzzle(id, firstPuzzle, s, completed, db);
             insertPuzzle(id2, second, s2, 0, db);
@@ -377,6 +403,8 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
             insertPuzzle(id5, fifth, s5, 0, db);
             insertPuzzle(id6, sixth, s6, 0, db);
             insertPuzzle(id7, seventh, s7, 0, db);
+            insertPuzzle(id8, eighth, s8, 0, db);
+            insertPuzzle(id9, ninth, s9, 0, db);
         } catch (IOException e) {
             e.printStackTrace();
         }

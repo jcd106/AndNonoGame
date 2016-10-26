@@ -138,7 +138,7 @@ public class PuzzleFragment extends Fragment {
 
         switch (filledChoice) {
             case "BLACK":
-                fillColor = Color.BLACK;
+                fillColor = Color.DKGRAY;
                 break;
             case "RED":
                 fillColor = Color.RED;
@@ -182,9 +182,6 @@ public class PuzzleFragment extends Fragment {
 
             //Create TableLayout to organize puzzle boxes into a grid
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
-
-            //Store the context of the PuzzleFragment and the PuzzleActivity
-            //final Context context = this.getActivity();
 
             //Create an OnClickListener for each box in the puzzle
             View.OnClickListener listener = new View.OnClickListener() {
@@ -232,66 +229,69 @@ public class PuzzleFragment extends Fragment {
 
                     //TableLayout.LayoutParams params = new TableLayout.LayoutParams();
 
+                    //Create a new blank box with a different size depending on puzzle size
+                    TextView newBox;
+                    if (numRows < 10 && numCols < 10) {
+                        newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
+                    } else {
+                        newBox = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
+                    }
                     //Add blank spaces in top right of puzzle grid to leave room for constraint values
                     if (i < colVals.length && j < rowVals[0].length) {
                         //Create new TextView with empty box background color and add it to the table
-                        TextView blank = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                        blank.setBackground(empty);
-                        tableRow.addView(blank);
+                        newBox.setBackground(empty);
+                        tableRow.addView(newBox);
                     }
 
                     //Add column constraint values to the puzzle grid
                     else if (i < colVals.length && j >= rowVals[0].length) {
-                        //Create new TextView with empty box background color and add it to the table
-                        TextView columnValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                        columnValue.setBackground(empty);
+                        //Make TextView with empty box background color and add it to the table
+                        newBox.setBackground(empty);
 
                         //Retrieve correct column constraint value and set TextView's text
                         int val = colVals[i][j - rowVals[0].length];
                         if (val != 0)
-                            columnValue.setText(Integer.toString(val));
-                        tableRow.addView(columnValue);
+                            newBox.setText(Integer.toString(val));
+                        tableRow.addView(newBox);
                     }
 
                     //Add row constraint values to the puzzle gird
                     else if (i >= colVals.length && j < rowVals[0].length) {
-                        //Create new TextView with empty box background color and add it to the table
-                        TextView rowValue = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                        rowValue.setBackground(empty);
+                        //Make TextView with empty box background color and add it to the table
+                        newBox.setBackground(empty);
 
                         //Retrieve correct row constraint value and set TextView's text
                         int val = rowVals[i - colVals.length][j];
                         if (val != 0)
-                            rowValue.setText(Integer.toString(val));
-                        tableRow.addView(rowValue);
+                            newBox.setText(Integer.toString(val));
+                        tableRow.addView(newBox);
                     }
 
                     //Add clickable boxes to the puzzle grid
                     else if (i >= colVals.length && j >= rowVals[0].length) {
 
                         //Create new TextView with empty box background color and id as box position, add it to the table
-                        TextView box = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
                         int boxID = Integer.parseInt(i + "" + j);
-                        box.setId(boxID);
+                        newBox.setId(boxID);
 
                         //Set x and y location and current state(filled/empty) of box in puzzle grid as a tag
                         int x_val = j - rowVals[0].length;
                         int y_val = i - colVals.length;
 
-                        box.setTag(R.id.x_loc, new Integer(x_val));
-                        box.setTag(R.id.y_loc, new Integer(y_val));
-                        box.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
+                        newBox.setTag(R.id.x_loc, new Integer(x_val));
+                        newBox.setTag(R.id.y_loc, new Integer(y_val));
+                        newBox.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
 
                         //Display correct box state form current state
                         if (currentState[y_val][x_val] == 1) {
-                            box.setBackground(filled);
+                            newBox.setBackground(filled);
                         } else {
-                            box.setBackground(empty);
+                            newBox.setBackground(empty);
                         }
 
                         //Add OnClickListener to each box
-                        box.setOnClickListener(listener);
-                        tableRow.addView(box);
+                        newBox.setOnClickListener(listener);
+                        tableRow.addView(newBox);
                     }
                 }
             }
@@ -322,7 +322,7 @@ public class PuzzleFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            //Create a popup congratulatin the user on puzzle completion
+            //Create a popup congratulating the user on puzzle completion
             AlertDialog alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setTitle("Congratulations!");
             alertDialog.setMessage("You have completed the puzzle!");
