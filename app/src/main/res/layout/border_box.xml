@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/newBox"
-    android:layout_width="24dp"
-    android:layout_height="24dp"
+    android:layout_width="23dp"
+    android:layout_height="23dp"
     android:background="@drawable/border_button"
     android:gravity="center"
     android:textColor="#000000"></TextView>
