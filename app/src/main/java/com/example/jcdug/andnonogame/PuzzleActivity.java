@@ -5,6 +5,10 @@ import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
@@ -32,8 +36,8 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         Intent i = getIntent();
         int id = Integer.parseInt(i.getStringExtra("puzzleID"));
 
-        //TextView puzzleID = (TextView) findViewById(R.id.puzzle_id);
-        //puzzleID.setText("Puzzle:  "+id);
+        TextView puzzleID = (TextView) findViewById(R.id.puzzle_id_activity);
+        puzzleID.setText("Puzzle: " + id);
 
         //Used to pass information to the new PuzzleFragment
         Bundle bundle = new Bundle();
@@ -47,10 +51,14 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         UndoBar undoBar = new UndoBar();
         undoBar.setArguments(bundle);
 
-        //Adds fragments to the activity
+        //Adds UndoBar to the activity
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.blank_fragment, puzzleFragment);
         ft.add(R.id.fragment_undo_bar_blank, undoBar).commit();
+
+        //Adds new PuzzleFragment to BlankFragment
+        BlankFragment bf = (BlankFragment) getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+        FragmentTransaction childFT = bf.getChildFragmentManager().beginTransaction();
+        childFT.add(R.id.blank_fragment, puzzleFragment, "PuzzleFragment").commit();
     }
 
     // Auto-generated
@@ -75,12 +83,14 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         Bundle bundle = new Bundle();
         bundle.putInt("puzzleID", id);
 
-        //Passes bundle to the PuzzleFragment
+        //Passes bundle to new PuzzleFragment
         PuzzleFragment puzzleFragment = new PuzzleFragment();
         puzzleFragment.setArguments(bundle);
 
-        //Adds fragment to the activity
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.blank_fragment, puzzleFragment).commit();
+        //Adds the new PuzzleFragment to the BlankFragment
+        BlankFragment bf = (BlankFragment) getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+        FragmentTransaction childFT = bf.getChildFragmentManager().beginTransaction();
+        PuzzleFragment pf = (PuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("PuzzleFragment");
+        childFT.detach(pf).attach(pf).remove(pf).add(R.id.blank_fragment, puzzleFragment, "PuzzleFragment").commit();
     }
 }

@@ -130,9 +130,11 @@ public class UndoBar extends Fragment implements View.OnClickListener {
                                     db.resetPuzzle(id);
 
                                     //Redraw the PuzzleFragment with the new reset state
-                                    PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                                    BlankFragment bf = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                                    PuzzleFragment puzzleFragment = (PuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("PuzzleFragment");
                                     puzzleFragment.resetCurrentState();
-                                    getFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
+                                    bf.getChildFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
+
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 } catch (ClassNotFoundException e) {
@@ -146,7 +148,8 @@ public class UndoBar extends Fragment implements View.OnClickListener {
 
             //Undo button was clicked
             case R.id.undo_button:
-                PuzzleFragment puzzleFragment = (PuzzleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                BlankFragment bf = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
+                PuzzleFragment puzzleFragment = (PuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("PuzzleFragment");
                 puzzleFragment.undoMostRecent();
                 break;
         }

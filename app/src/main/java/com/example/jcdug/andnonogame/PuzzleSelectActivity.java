@@ -49,6 +49,7 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
     private void setupScreen() {
         //Get the layout for the activity
         RelativeLayout puzzleSelectLayout = (RelativeLayout) findViewById(R.id.activity_puzzle_select);
+        removeButtons(puzzleSelectLayout);
 
         //Get the context of the activity
         final Context context = this;
@@ -138,6 +139,23 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
 
             //Set prevId to the current button's id
             prevId = id;
+        }
+    }
+
+    private void removeButtons(RelativeLayout rl) {
+        boolean doBreak = false;
+        while(!doBreak) {
+            int childCount = rl.getChildCount();
+            int i;
+            for(i = 0; i < childCount; i++) {
+                View current = rl.getChildAt(i);
+                if(current instanceof Button) {
+                    rl.removeView(current);
+                    break;
+                }
+            }
+            if (i == childCount)
+                doBreak = true;
         }
     }
 
