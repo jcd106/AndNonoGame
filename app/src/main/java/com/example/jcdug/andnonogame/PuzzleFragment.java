@@ -218,6 +218,7 @@ public class PuzzleFragment extends Fragment {
                 }
             };
 
+            int idCount = 1;
             //Dynamically add the constraint values and puzzle boxes to the TableLayout
             for (int i = 0; i < numRows + colVals.length; i++) {
 
@@ -271,8 +272,9 @@ public class PuzzleFragment extends Fragment {
                     else if (i >= colVals.length && j >= rowVals[0].length) {
 
                         //Create new TextView with empty box background color and id as box position, add it to the table
-                        int boxID = Integer.parseInt(i + "" + j);
-                        newBox.setId(boxID);
+                        //int boxID = Integer.parseInt(i + "" + j);
+                        newBox.setId(idCount);
+                        idCount++;
 
                         //Set x and y location and current state(filled/empty) of box in puzzle grid as a tag
                         int x_val = j - rowVals[0].length;

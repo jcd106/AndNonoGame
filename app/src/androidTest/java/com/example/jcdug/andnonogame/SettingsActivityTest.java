@@ -62,10 +62,12 @@ public class SettingsActivityTest {
         onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString(colorText3))));
 
         onView(withId(R.id.reset_all_button)).perform(click());
+        onView(withText("No")).check(matches(isDisplayed()));
         onView(withText("No")).perform(click());
         onView(withId(R.id.activity_settings)).check(matches(isDisplayed()));
 
         onView(withId(R.id.reset_all_button)).perform(click());
+        onView(withText("Yes")).check(matches(isDisplayed()));
         onView(withText("Yes")).perform(click());
         onView(withId(R.id.activity_settings)).check(matches(isDisplayed()));
     }
