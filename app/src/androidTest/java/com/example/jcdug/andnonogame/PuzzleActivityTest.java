@@ -90,24 +90,10 @@ public class PuzzleActivityTest {
     public void testCompletePuzzle() {
 
         // Perform the necessary box clicks to complete the puzzle
-        onView(withId(3)).perform(click());
-        onView(withId(7)).perform(click());
-        onView(withId(8)).perform(click());
-        onView(withId(9)).perform(click());
-        onView(withId(11)).perform(click());
-        onView(withId(12)).perform(click());
-        onView(withId(13)).perform(click());
-        onView(withId(14)).perform(click());
-        onView(withId(15)).perform(click());
-        onView(withId(16)).perform(click());
-        onView(withId(17)).perform(click());
-        onView(withId(19)).perform(click());
-        onView(withId(20)).perform(click());
-        onView(withId(21)).perform(click());
-        onView(withId(22)).perform(click());
-        onView(withId(23)).perform(click());
-        onView(withId(24)).perform(click());
-        onView(withId(25)).perform(click());
+        int[] moves = {3, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23,24,25};
+        for(int i = 0; i < moves.length; i++){
+            onView(withId(moves[i])).perform(click());
+        }
 
         // Check that the popup for the solved puzzle is displayed
         onView(withText("OK")).check(matches(isDisplayed()));

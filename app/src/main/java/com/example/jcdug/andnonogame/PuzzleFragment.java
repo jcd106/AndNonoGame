@@ -144,7 +144,7 @@ public class PuzzleFragment extends Fragment {
                 fillColor = Color.RED;
                 break;
             default:
-                fillColor = Color.BLACK;
+                fillColor = Color.DKGRAY;
         }
 
         //Set drawable background for filled and empty boxes to retrieved color choice
