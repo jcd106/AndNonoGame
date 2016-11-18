@@ -26,6 +26,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     static final String puzzle = "Puzzle";          //Puzzle attribute name in puzzle table
     static final String row = "Rows";               //Row size attribute name in puzzle table
     static final String col = "Cols";               //Column size attribute name in puzzle table
+    static final String color = "Color";            //Color attribute name in puzzle table
     static final String comp = "Complete";          //Complete attribute name in puzzle table
 
     /**
@@ -45,7 +46,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + puzzleTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
-                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
+                + row + " INTEGER , " + col + " INTEGER , " + color + " INTEGER , " + comp + " INTEGER)");
         addPuzzles(db);
     }
 
@@ -56,10 +57,11 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      * @param p         the puzzle to be put into the database
      * @param s         the size of the puzzle
      * @param completed the completed value of the puzzle (should be 0)
+     * @param isColor   0 if puzzle is a normal puzzle, 1 if it is a color puzzle
      * @param db        the database
      * @throws IOException Could be thrown using the output stream
      */
-    public void insertPuzzle(int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
+    public void insertPuzzle(int id, Puzzle p, int[] s, int completed, int isColor, SQLiteDatabase db) throws IOException {
         //Create an output stream to serialize the puzzle
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = new ObjectOutputStream(bos);
@@ -76,6 +78,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         contentValues.put(puzzle, buf);
         contentValues.put(col, s[0]);
         contentValues.put(row, s[1]);
+        contentValues.put(color, isColor);
         contentValues.put(comp, completed);
         db.insert(puzzleTable, null, contentValues);
     }
@@ -458,20 +461,20 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         Puzzle fourteenth = new Puzzle(id14, s14, sol14, r14, c14, 0);
 
         try {
-            insertPuzzle(id, firstPuzzle, s, completed, db);
-            insertPuzzle(id2, second, s2, 0, db);
-            insertPuzzle(id3, third, s3, 0, db);
-            insertPuzzle(id4, fourth, s4, 0, db);
-            insertPuzzle(id5, fifth, s5, 0, db);
-            insertPuzzle(id6, sixth, s6, 0, db);
-            insertPuzzle(id7, seventh, s7, 0, db);
-            insertPuzzle(id8, eighth, s8, 0, db);
-            insertPuzzle(id9, ninth, s9, 0, db);
-            insertPuzzle(id10, tenth, s10, 0, db);
-            insertPuzzle(id11, eleventh, s11, 0, db);
-            insertPuzzle(id12, twelfth, s12, 0, db);
-            insertPuzzle(id13, thirteenth, s13, 0, db);
-            insertPuzzle(id14, fourteenth, s14, 0, db);
+            insertPuzzle(id, firstPuzzle, s, completed, 0, db);
+            insertPuzzle(id2, second, s2, 0, 0,  db);
+            insertPuzzle(id3, third, s3, 0, 0, db);
+            insertPuzzle(id4, fourth, s4, 0, 0, db);
+            insertPuzzle(id5, fifth, s5, 0, 0, db);
+            insertPuzzle(id6, sixth, s6, 0, 0, db);
+            insertPuzzle(id7, seventh, s7, 0, 0, db);
+            insertPuzzle(id8, eighth, s8, 0, 0, db);
+            insertPuzzle(id9, ninth, s9, 0, 0, db);
+            insertPuzzle(id10, tenth, s10, 0, 0, db);
+            insertPuzzle(id11, eleventh, s11, 0, 0, db);
+            insertPuzzle(id12, twelfth, s12, 0, 0, db);
+            insertPuzzle(id13, thirteenth, s13, 0, 0, db);
+            insertPuzzle(id14, fourteenth, s14, 0, 0, db);
         } catch (IOException e) {
             e.printStackTrace();
         }
