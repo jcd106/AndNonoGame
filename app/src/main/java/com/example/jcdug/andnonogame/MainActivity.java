@@ -47,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
                 Intent i3 = new Intent(this, SettingsActivity.class);
                 startActivity(i3);
                 break;
+            case R.id.play_color:
+                Intent i4 = new Intent(this, ColorPuzzleActivity.class);
+                startActivity(i4);
+                break;
+            case R.id.create_own:
+//                Intent i5 = new Intent(this, CreateOwnMenuActivity.class);
+//                startActivity(i5);
+                break;
         }
     }
 
