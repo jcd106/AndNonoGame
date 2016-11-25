@@ -10,4 +10,59 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.jcdug.andnonogame.ColorPuzzleActivity">
 
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.example.jcdug.andnonogame.BarFragment"
+        android:id="@+id/fragment_bar_puzzle"
+        tools:layout="@layout/fragment_bar"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.example.jcdug.andnonogame.BlankFragment"
+        android:id="@+id/fragment_undo_bar_blank"
+        tools:layout="@layout/fragment_blank"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:name="com.example.jcdug.andnonogame.BlankFragment"
+        android:id="@+id/fragment_colors"
+        tools:layout="@layout/fragment_blank"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/fragment_undo_bar_blank"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <fragment
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_blank"
+        android:name="com.example.jcdug.andnonogame.BlankFragment"
+        android:id="@+id/blank_fragment"
+        android:layout_above="@+id/fragment_colors"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/fragment_bar_puzzle"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/puzzle_id_activity" />
+
 </RelativeLayout>

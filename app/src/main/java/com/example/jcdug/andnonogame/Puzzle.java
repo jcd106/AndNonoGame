@@ -19,6 +19,7 @@ public class Puzzle implements Serializable {
     private int[][] cols;           //The column constraint values
     private int completed;          //completed = 1 if puzzle is complete, 0 otherwise
 
+
     /**
      * Constructor for Puzzle object
      * Sets currentState to empty int[][] with the specified size

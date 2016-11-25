@@ -12,5 +12,6 @@
     <item name="x_loc" type="id" />
     <item name="y_loc" type="id" />
     <item name="state" type="id" />
+    <item name="color" type="id" />
 
 </resources>
