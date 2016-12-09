@@ -65,6 +65,7 @@ public class PuzzleFragment extends Fragment {
     int complete;           //Store whether puzzle has been completed
     Drawable filled;        //Color of filled puzzle boxes
     Drawable empty;         //Color of empty puzzle boxes
+    int isYourPuzzle;
 
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
 
@@ -110,6 +111,7 @@ public class PuzzleFragment extends Fragment {
         //Retrieve ID of current puzzle from PuzzleActivity bundle
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
+        isYourPuzzle = bundle.getInt("your");
 
         //Retrieve user color choice as string from shared preferences
         SharedPreferences preferences = this.getActivity().getSharedPreferences(COLOR_CHOICE, Context.MODE_PRIVATE);
@@ -158,7 +160,12 @@ public class PuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1 = db.getPuzzleByID(id);
+            Cursor c1;
+            if(isYourPuzzle == 1) {
+                c1 = db.getYourPuzzleByID(id);
+            } else {
+                c1 = db.getPuzzleByID(id);
+            }
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
             byte[] b = c1.getBlob(p1);
@@ -317,7 +324,11 @@ public class PuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
             try {
-                db.updatePuzzle(id, currentState, complete);
+                if(isYourPuzzle == 1) {
+                    db.updateYourPuzzle(id, currentState, complete);
+                } else {
+                    db.updatePuzzle(id, currentState, complete);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -382,19 +393,19 @@ public class PuzzleFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
+/**
+ * This interface must be implemented by activities that contain this
+ * fragment to allow an interaction in this fragment to be communicated
+ * to the activity and potentially other fragments contained in that
+ * activity.
+ * <p>
+ * See the Android Training lesson <a href=
+ * "http://developer.android.com/training/basics/fragments/communicating.html"
+ * >Communicating with Other Fragments</a> for more information.
+ */
+public interface OnFragmentInteractionListener {
+    void onFragmentInteraction(Uri uri);
+}
 
     /**
      * Saves the puzzle's current state when the PuzzleFragment is destroyed
@@ -404,7 +415,11 @@ public class PuzzleFragment extends Fragment {
         super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(id, currentState, complete);
+            if(isYourPuzzle == 1) {
+                db.updateYourPuzzle(id, currentState, complete);
+            } else {
+                db.updatePuzzle(id, currentState, complete);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -420,7 +435,11 @@ public class PuzzleFragment extends Fragment {
         super.onPause();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(id, currentState, complete);
+            if(isYourPuzzle == 1) {
+                db.updateYourPuzzle(id, currentState, complete);
+            } else {
+                db.updatePuzzle(id, currentState, complete);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i4);
                 break;
             case R.id.create_own:
-//                Intent i5 = new Intent(this, CreateOwnMenuActivity.class);
-//                startActivity(i5);
+                Intent i5 = new Intent(this, CreateOwnActivity.class);
+                startActivity(i5);
                 break;
         }
     }

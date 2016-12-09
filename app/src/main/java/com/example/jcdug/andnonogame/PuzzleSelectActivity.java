@@ -57,88 +57,171 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
         //Get the size chosen on the size select screen
         Intent i = getIntent();
         String size = i.getStringExtra("size");
-        String[] rxc = size.split(" ");
-        int[] s = {Integer.parseInt(rxc[0]), Integer.parseInt(rxc[1])};
+        if (size.equals("your")) {
 
-        //Create a text view with the text being the chosen size
-        TextView sizeText = (TextView) findViewById(R.id.puzzle_select_size);
-        sizeText.setText(s[0] + "x" + s[1]);
+            TextView sizeText = (TextView) findViewById(R.id.puzzle_select_size);
+            sizeText.setText("Your Puzzles");
 
-        //Get the puzzle database
-        PuzzleDatabase db = MainActivity.getDB();
+            //Get the puzzle database
+            PuzzleDatabase db = MainActivity.getDB();
 
-        //Query the database for all puzzles with the selected size
-        Cursor c1 = db.getPuzzlesBySize(s[0], s[1]);
+            //Query the database for all puzzles with the selected size
+            Cursor c1 = db.getAllYourPuzzles();
 
-        //Move the cursor to the first tuple
-        c1.moveToFirst();
+            //Move the cursor to the first tuple
+            c1.moveToFirst();
 
-        //Get the index of puzzle id attribute in the query
-        int i1 = c1.getColumnIndex("PuzzleID");
-        int complete = c1.getColumnIndex("Complete");
+            //Get the index of puzzle id attribute in the query
+            int i1 = c1.getColumnIndex("PuzzleID");
+            int complete = c1.getColumnIndex("Complete");
 
-        //Set prevId to the id of the text view
-        int prevId = R.id.puzzle_select_size;
-        int belowId = R.id.puzzle_select_size;
-        int count = 0;
+            //Set prevId to the id of the text view
+            int prevId = R.id.puzzle_select_size;
+            int belowId = R.id.puzzle_select_size;
+            int count = 0;
 
-        //Create a new OnClickListener for a puzzle being selected
-        View.OnClickListener listener = new View.OnClickListener() {
-            //When the button is clicked, PuzzleActivity is started with the id of the chosen puzzle
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(context, PuzzleActivity.class);
-                i.putExtra("puzzleID", Integer.toString(view.getId()));
-                startActivity(i);
+            //Create a new OnClickListener for a puzzle being selected
+            View.OnClickListener listener = new View.OnClickListener() {
+                //When the button is clicked, PuzzleActivity is started with the id of the chosen puzzle
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, PuzzleActivity.class);
+                    i.putExtra("puzzleID", Integer.toString(view.getId()));
+                    i.putExtra("your", "1");
+                    startActivity(i);
+                }
+            };
+            //While there are still tuples for the cursor to read
+            while (!c1.isAfterLast()) {
+                final float scale = this.getResources().getDisplayMetrics().density;
+                int pixels = (int) (125 * scale + 0.5f);
+
+                //Create a layout and set the margins for the puzzle select button
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(pixels, pixels);
+                //        (RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(40, 20, 40, 20);
+
+                //Create a new button
+                //Button b = new Button(this);
+                LayoutInflater li = LayoutInflater.from(this);
+                Button b = (Button) li.inflate(R.layout.puzzle_button, puzzleSelectLayout, false);
+
+                //Get the id from the cursor and set the button's id and text
+                int id = c1.getInt(i1);
+                int isComp = c1.getInt(complete);
+                b.setId(id);
+                if (isComp == 1)
+                    b.setText("Puzzle: " + id + " is complete");
+                else
+                    b.setText("Puzzle: " + id + " is incomplete");
+
+                //Set the button's background and OnClickListener
+                //b.setBackgroundResource(R.drawable.border_button);
+                b.setOnClickListener(listener);
+
+                //Make sure the next button is below prevId
+                if (count % 2 == 0) {
+                    params.addRule(RelativeLayout.BELOW, prevId);
+                    belowId = prevId;
+                } else {
+                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params.addRule(RelativeLayout.BELOW, belowId);
+                }
+
+                count++;
+
+                puzzleSelectLayout.addView(b, params);
+
+                //Move the cursor to the next tuple
+                c1.moveToNext();
+
+                //Set prevId to the current button's id
+                prevId = id;
             }
-        };
-        //While there are still tuples for the cursor to read
-        while (!c1.isAfterLast()) {
-            final float scale = this.getResources().getDisplayMetrics().density;
-            int pixels = (int) (125 * scale + 0.5f);
+        } else {
+            String[] rxc = size.split(" ");
+            int[] s = {Integer.parseInt(rxc[0]), Integer.parseInt(rxc[1])};
 
-            //Create a layout and set the margins for the puzzle select button
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(pixels,pixels);
-            //        (RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(40, 20, 40, 20);
+            //Create a text view with the text being the chosen size
+            TextView sizeText = (TextView) findViewById(R.id.puzzle_select_size);
+            sizeText.setText(s[0] + "x" + s[1]);
 
-            //Create a new button
-            //Button b = new Button(this);
-            LayoutInflater li = LayoutInflater.from(this);
-            Button b = (Button) li.inflate(R.layout.puzzle_button, puzzleSelectLayout, false);
+            //Get the puzzle database
+            PuzzleDatabase db = MainActivity.getDB();
 
-            //Get the id from the cursor and set the button's id and text
-            int id = c1.getInt(i1);
-            int isComp = c1.getInt(complete);
-            b.setId(id);
-            if(isComp == 1)
-                b.setText("Puzzle: " + id + " is complete");
-            else
-                b.setText("Puzzle: " + id + " is incomplete");
+            //Query the database for all puzzles with the selected size
+            Cursor c1 = db.getPuzzlesBySize(s[0], s[1]);
 
-            //Set the button's background and OnClickListener
-            //b.setBackgroundResource(R.drawable.border_button);
-            b.setOnClickListener(listener);
+            //Move the cursor to the first tuple
+            c1.moveToFirst();
 
-            //Make sure the next button is below prevId
-            if(count%2 == 0) {
-                params.addRule(RelativeLayout.BELOW, prevId);
-                belowId = prevId;
+            //Get the index of puzzle id attribute in the query
+            int i1 = c1.getColumnIndex("PuzzleID");
+            int complete = c1.getColumnIndex("Complete");
+
+            //Set prevId to the id of the text view
+            int prevId = R.id.puzzle_select_size;
+            int belowId = R.id.puzzle_select_size;
+            int count = 0;
+
+            //Create a new OnClickListener for a puzzle being selected
+            View.OnClickListener listener = new View.OnClickListener() {
+                //When the button is clicked, PuzzleActivity is started with the id of the chosen puzzle
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, PuzzleActivity.class);
+                    i.putExtra("puzzleID", Integer.toString(view.getId()));
+                    i.putExtra("your", "0");
+                    startActivity(i);
+                }
+            };
+            //While there are still tuples for the cursor to read
+            while (!c1.isAfterLast()) {
+                final float scale = this.getResources().getDisplayMetrics().density;
+                int pixels = (int) (125 * scale + 0.5f);
+
+                //Create a layout and set the margins for the puzzle select button
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(pixels, pixels);
+                //        (RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(40, 20, 40, 20);
+
+                //Create a new button
+                //Button b = new Button(this);
+                LayoutInflater li = LayoutInflater.from(this);
+                Button b = (Button) li.inflate(R.layout.puzzle_button, puzzleSelectLayout, false);
+
+                //Get the id from the cursor and set the button's id and text
+                int id = c1.getInt(i1);
+                int isComp = c1.getInt(complete);
+                b.setId(id);
+                if (isComp == 1)
+                    b.setText("Puzzle: " + id + " is complete");
+                else
+                    b.setText("Puzzle: " + id + " is incomplete");
+
+                //Set the button's background and OnClickListener
+                //b.setBackgroundResource(R.drawable.border_button);
+                b.setOnClickListener(listener);
+
+                //Make sure the next button is below prevId
+                if (count % 2 == 0) {
+                    params.addRule(RelativeLayout.BELOW, prevId);
+                    belowId = prevId;
+                } else {
+                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params.addRule(RelativeLayout.BELOW, belowId);
+                }
+
+                count++;
+
+                puzzleSelectLayout.addView(b, params);
+
+                //Move the cursor to the next tuple
+                c1.moveToNext();
+
+                //Set prevId to the current button's id
+                prevId = id;
             }
-            else {
-                params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                params.addRule(RelativeLayout.BELOW, belowId);
-            }
-
-            count++;
-
-            puzzleSelectLayout.addView(b, params);
-
-            //Move the cursor to the next tuple
-            c1.moveToNext();
-
-            //Set prevId to the current button's id
-            prevId = id;
         }
     }
 

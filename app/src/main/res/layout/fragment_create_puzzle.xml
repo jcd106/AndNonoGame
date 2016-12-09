@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.jcdug.andnonogame.PuzzleFragment"
-    android:id="@+id/fragment_puzzle"
+    tools:context="com.example.jcdug.andnonogame.CreatePuzzleFragment"
+    android:id="@+id/fragment_create_puzzle"
     android:layout_centerHorizontal="true"
     android:layout_centerVertical="true"
     android:layout_gravity="center_horizontal">

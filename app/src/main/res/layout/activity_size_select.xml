@@ -46,7 +46,8 @@
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/tenbyten"/>
+        android:layout_below="@+id/tenbyten"
+        android:layout_marginBottom="20dp" />
 
     <Button
         android:layout_width="match_parent"
@@ -57,6 +58,19 @@
         android:textSize="24sp"
         android:textColor="#000000"
         android:layout_below="@+id/fivebyfive"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="20dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/yourpuzzles"
+        android:onClick="onButtonClick"
+        android:background="@drawable/border_button"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        android:layout_below="@+id/tenbyfive"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="20dp" />

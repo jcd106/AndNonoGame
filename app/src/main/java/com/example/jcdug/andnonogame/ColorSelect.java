@@ -20,51 +20,38 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  * {@link ColorSelect.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ColorSelect#newInstance} factory method to
- * create an instance of this fragment.
+ *
+ * @author Josh Dughi, Peter Todorov
  */
 public class ColorSelect extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "colors";
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private int[] colors;
-    int selectedColor = 1;
+    private String mParam1;
+    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    int selectedColor = 1;
+    private int[] colors;
 
     public ColorSelect() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param colors Parameter 1.
-     * @return A new instance of fragment ColorSelect.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ColorSelect newInstance(int[] colors) {
-        ColorSelect fragment = new ColorSelect();
-        Bundle args = new Bundle();
-        args.putIntArray(ARG_PARAM1, colors);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            colors = getArguments().getIntArray(ARG_PARAM1);
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -92,13 +79,13 @@ public class ColorSelect extends Fragment {
             bis.close();
             in.close();
 
-            //Store all of the puzzle objects information in the PuzzleFragment
+            //Store the colors in the ColorSelect fragment
             colors = p.getColors();
 
+            //Create a new onClickListener for the TextViews in the fragment
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
 
                     //Retrieve clicked puzzle box and its stored tag values
                     TextView b = (TextView) view.findViewById(view.getId());
@@ -108,6 +95,7 @@ public class ColorSelect extends Fragment {
                     ColorPuzzleFragment puzzleFragment = (ColorPuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("ColorPuzzleFragment");
                     puzzleFragment.setSelectedColor(color);
 
+                    //Change which color is selected and refresh the fragment
                     BlankFragment bf2 = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_colors);
                     ColorSelect colorSelect = (ColorSelect) bf2.getChildFragmentManager().findFragmentByTag("ColorSelect");
                     colorSelect.selectedColor = color;
@@ -115,18 +103,32 @@ public class ColorSelect extends Fragment {
                 }
             };
 
+            //Create TableLayout to organize colors into a table
             TableLayout colorLayout = (TableLayout) view.findViewById(R.id.fragment_color_select);
+            //Create a TableRow to add the colors to
             TableRow tableRow = new TableRow(this.getActivity());
             colorLayout.addView(tableRow);
 
+            //For each non-empty color
             for (int i = 1; i < colors.length; i++) {
+                //Create a new TextView
                 TextView newBox;
+
+                //If the color is the selectedColor, inflate the TextView with the border_box_selected layout
                 if(i == selectedColor)
                     newBox = (TextView) inflater.inflate(R.layout.border_box_selected, tableRow, false);
+
+                //Otherwise, inflate the TextView with the border_box_large layout
                 else
                     newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
+
+                //Set the color tag of the TextView to i
                 newBox.setTag(R.id.color, i);
+
+                //Add the onClickListener
                 newBox.setOnClickListener(listener);
+
+                //Add the correct background to the TextView and and the TextView to the table row
                 Drawable filled = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
                 filled.setColorFilter(colors[i], PorterDuff.Mode.MULTIPLY);
                 newBox.setBackground(filled);
@@ -141,13 +143,7 @@ public class ColorSelect extends Fragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
+    // Auto-Generated
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -159,6 +155,7 @@ public class ColorSelect extends Fragment {
         }
     }
 
+    // Auto-Generated
     @Override
     public void onDetach() {
         super.onDetach();
@@ -176,7 +173,6 @@ public class ColorSelect extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }

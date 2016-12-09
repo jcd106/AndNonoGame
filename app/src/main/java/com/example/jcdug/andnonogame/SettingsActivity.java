@@ -104,11 +104,21 @@ public class SettingsActivity extends AppCompatActivity {
                                 //Get the puzzle database and get the ids of all puzzles
                                 PuzzleDatabase db = MainActivity.getDB();
                                 int[] ids = db.getAllPuzzleIDs();
+                                int[] colorids = db.getAllColorPuzzleIDs();
 
                                 //Loop through the ids and reset the puzzle corresponding to the id
                                 for (int i = 0; i < ids.length; i++) {
                                     try {
                                         db.resetPuzzle(ids[i]);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    } catch (ClassNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                for (int i = 0; i < colorids.length; i++) {
+                                    try {
+                                        db.resetColorPuzzle(colorids[i]);
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     } catch (ClassNotFoundException e) {

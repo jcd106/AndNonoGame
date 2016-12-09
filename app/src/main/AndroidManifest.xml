@@ -32,7 +32,9 @@
         <activity
             android:name=".TutorialActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ColorPuzzleActivity"></activity>
+        <activity android:name=".ColorPuzzleActivity" />
+        <activity android:name=".CreateOwnActivity" />
+        <activity android:name=".CreatePuzzleActivity"></activity>
     </application>
 
 </manifest>
