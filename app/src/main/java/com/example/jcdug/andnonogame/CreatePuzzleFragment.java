@@ -302,10 +302,10 @@ public class CreatePuzzleFragment extends Fragment {
             }
 
             int numRowCs = maxRowCs;
-            for(int i = 0; i < numRows; i++){
+            for(int j = 0; j < maxRowCs; j++){
                 boolean isEmpty = true;
-                for(int j = 0; j < maxRowCs; j++){
-                    if(rowConstraints[j][i] != 0){
+                for(int i = 0; i < numRows; i++) {
+                    if (rowConstraints[i][j] != 0) {
                         isEmpty = false;
                     }
                 }
