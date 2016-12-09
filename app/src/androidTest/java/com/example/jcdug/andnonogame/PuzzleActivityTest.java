@@ -39,6 +39,7 @@ public class PuzzleActivityTest {
 
         // Navigate to the first 5 by 5 puzzle and reset it before each test
         onView(withId(R.id.play_button_main)).perform(click());
+        onView(withId(R.id.normal_puzzles_button)).perform(click());
         onView(withId(R.id.fivebyfive)).perform(click());
         onView(withId(1)).perform(click());
         onView(withId(R.id.reset_puzzle_button)).perform(click());

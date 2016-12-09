@@ -91,6 +91,7 @@ public class SettingsActivityTest {
         pressBack();
 
         onView(withId(R.id.play_button_main)).perform(click());
+        onView(withId(R.id.normal_puzzles_button)).perform(click());
         onView(withId(R.id.fivebyfive)).perform(click());
         onView(withId(1)).perform(click());
         onView(withId(5)).perform(click());
@@ -127,6 +128,7 @@ public class SettingsActivityTest {
 
         pressBack();
         onView(withId(R.id.play_button_main)).perform(click());
+        onView(withId(R.id.normal_puzzles_button)).perform(click());
         onView(withId(R.id.fivebyfive)).perform(click());
         onView(withId(1)).perform(click());
 

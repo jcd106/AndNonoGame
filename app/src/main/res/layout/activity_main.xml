@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="#FFFFFF"
+    android:background="@drawable/background"
     tools:context="com.example.jcdug.andnonogame.MainActivity">
 
 
@@ -35,12 +35,12 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:text="Tutorial >"
+        android:text="Tutorial"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="50dp"
         android:id="@+id/tutorial_button"
-        style="?android:attr/borderlessButtonStyle"
+        android:background="@drawable/border_button"
         android:onClick="onClicked"
         android:layout_below="@+id/play_button_main"
         android:layout_centerHorizontal="true" />
@@ -89,23 +89,5 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
-
-    <Button
-        android:text="Color Puzzle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/play_color"
-        android:layout_below="@+id/tutorial_button"
-        android:layout_centerHorizontal="true"
-        android:onClick="onClicked" />
-
-    <Button
-        android:text="Create Your Own"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/settings_button_main"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/create_own"
-        android:onClick="onClicked" />
 
 </RelativeLayout>

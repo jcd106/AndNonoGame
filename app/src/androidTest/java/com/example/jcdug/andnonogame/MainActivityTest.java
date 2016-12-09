@@ -30,7 +30,7 @@ public class MainActivityTest {
     public void testOnClick() {
         //1. Test play button
         onView(withId(R.id.play_button_main)).perform(click());
-        onView(withId(R.id.activity_size_select)).check(matches(isDisplayed()));
+        onView(withId(R.id.activity_menu)).check(matches(isDisplayed()));
 
         //2. Test the hardware back button works properly
         pressBack();

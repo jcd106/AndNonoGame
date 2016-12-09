@@ -33,6 +33,7 @@ public class BarFragmentTest {
     @Before
     public void setup() {
         onView(withId(R.id.play_button_main)).perform(click());
+        onView(withId(R.id.normal_puzzles_button)).perform(click());
     }
 
     @Test
@@ -43,7 +44,7 @@ public class BarFragmentTest {
         pressBack();
 
         onView(allOf(withId(R.id.back_button_bar), withParent(withId(R.id.fragment_bar_size_select)))).perform(click());
-        onView(withId(R.id.activity_main)).check(matches(isDisplayed()));
+        onView(withId(R.id.activity_menu)).check(matches(isDisplayed()));
 
     }
 }

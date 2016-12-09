@@ -22,6 +22,7 @@ import android.widget.TextView;
  */
 public class PuzzleSelectActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener {
 
+    int isColor;
     /**
      * Handles the creation of the activity
      *
@@ -57,6 +58,7 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
         //Get the size chosen on the size select screen
         Intent i = getIntent();
         String size = i.getStringExtra("size");
+        isColor = Integer.parseInt(i.getStringExtra("color"));
         if (size.equals("your")) {
 
             TextView sizeText = (TextView) findViewById(R.id.puzzle_select_size);
@@ -149,8 +151,13 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
             //Get the puzzle database
             PuzzleDatabase db = MainActivity.getDB();
 
+            Cursor c1;
             //Query the database for all puzzles with the selected size
-            Cursor c1 = db.getPuzzlesBySize(s[0], s[1]);
+            if (isColor == 1) {
+                c1 = db.getColorPuzzlesBySize(s[0], s[1]);
+            } else {
+                c1 = db.getPuzzlesBySize(s[0], s[1]);
+            }
 
             //Move the cursor to the first tuple
             c1.moveToFirst();
@@ -169,7 +176,12 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 //When the button is clicked, PuzzleActivity is started with the id of the chosen puzzle
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(context, PuzzleActivity.class);
+                    Intent i;
+                    if (isColor == 1) {
+                        i = new Intent(context, ColorPuzzleActivity.class);
+                    } else {
+                        i = new Intent(context, PuzzleActivity.class);
+                    }
                     i.putExtra("puzzleID", Integer.toString(view.getId()));
                     i.putExtra("your", "0");
                     startActivity(i);

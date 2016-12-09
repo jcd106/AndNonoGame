@@ -33,6 +33,7 @@ public class PuzzleSelectActivityTest {
     @Before
     public void setup() {
         onView(withId(R.id.play_button_main)).perform(click());
+        onView(withId(R.id.normal_puzzles_button)).perform(click());
         onView(withId(R.id.fivebyfive)).perform(click());
     }
 

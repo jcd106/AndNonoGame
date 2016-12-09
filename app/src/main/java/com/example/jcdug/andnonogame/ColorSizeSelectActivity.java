@@ -8,23 +8,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-/**
- * The activity which is used to display the size select screen
- *
- * @author Josh Dughi, Peter Todorov
- * @version 1.4.3
- */
-public class SizeSelectActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener {
+public class ColorSizeSelectActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener{
 
-    /**
-     * Handles the creation of the view
-     *
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_size_select);
+        setContentView(R.layout.activity_color_size_select);
         this.setupScreen();
     }
 
@@ -36,7 +25,7 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
     public void onButtonClick(View view) {
         //Create a new intent to start PuzzleSelectActivity
         Intent i = new Intent(this, PuzzleSelectActivity.class);
-        i.putExtra("color", "0");
+        i.putExtra("color","1");
 
         //Set the extra for the intent based on the button clicked
         switch (view.getId()) {
@@ -48,9 +37,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
                 break;
             case R.id.tenbyfive:
                 i.putExtra("size", "10 5");
-                break;
-            case R.id.yourpuzzles:
-                i.putExtra("size", "your");
                 break;
         }
 
@@ -75,30 +61,26 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         Button fiveByFive = (Button) findViewById(R.id.fivebyfive);
         Button tenByTen = (Button) findViewById(R.id.tenbyten);
         Button tenByFive = (Button) findViewById(R.id.tenbyfive);
-        Button yourPuzzles = (Button) findViewById(R.id.yourpuzzles);
-        yourPuzzles.setTransformationMethod(null);
 
         //Set the number of puzzles for the sizes to 0
         int num5by5 = 0;
         int num10by10 = 0;
         int num10by5 = 0;
-        int numYours = 0;
 
         //Set the number of completed puzzles for the sizes to 0
         int comp5by5 = 0;
         int comp10by10 = 0;
         int comp10by5 = 0;
-        int compYours = 0;
 
         //Get the database
         PuzzleDatabase db = MainActivity.getDB();
 
         //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c1 = db.getCountBySize();
+        Cursor c1 = db.getColorCountBySize();
         c1.moveToFirst();
 
         //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c2 = db.getCountCompletedBySize();
+        Cursor c2 = db.getColorCountCompletedBySize();
         c2.moveToFirst();
 
         //Get the index of numPuzzles, Rows, and Cols in c1
@@ -153,24 +135,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             c2.moveToNext();
         }
 
-        //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c3 = db.getCountYour();
-        c3.moveToFirst();
-
-        //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c4 = db.getCountCompletedYour();
-        c4.moveToFirst();
-
-        //Get the index of numPuzzles, Rows, and Cols in c1
-        int i3 = c3.getColumnIndex("numPuzzles");
-
-        numYours = c3.getInt(i3);
-
-        //Get the index of numComplete, Rows, and Cols in c2
-        int i4 = c2.getColumnIndex("numComplete");
-
-        compYours = c4.getInt(i4);
-
         //Set the text for the buttons
         String fiveFiveText = "5x5 (" + comp5by5 + "/" + num5by5 + ")";
         fiveByFive.setText(fiveFiveText);
@@ -178,8 +142,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         tenByTen.setText(tenTenText);
         String tenFiveText = "10x5 (" + comp10by5 + "/" + num10by5 + ")";
         tenByFive.setText(tenFiveText);
-        String yourText = "Your Puzzles (" + compYours + "/" + numYours + ")";
-        yourPuzzles.setText(yourText);
     }
 
     //Auto-Generated

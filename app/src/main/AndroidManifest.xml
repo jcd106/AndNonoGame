@@ -34,7 +34,9 @@
             android:screenOrientation="portrait" />
         <activity android:name=".ColorPuzzleActivity" />
         <activity android:name=".CreateOwnActivity" />
-        <activity android:name=".CreatePuzzleActivity"></activity>
+        <activity android:name=".CreatePuzzleActivity" />
+        <activity android:name=".MenuActivity" />
+        <activity android:name=".ColorSizeSelectActivity"></activity>
     </application>
 
 </manifest>

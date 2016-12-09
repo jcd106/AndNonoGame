@@ -9,7 +9,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.jcdug.andnonogame.CreatePuzzleActivity">
+    tools:context="com.example.jcdug.andnonogame.CreatePuzzleActivity"
+    android:background="@drawable/background">
 
     <ImageButton
         android:layout_width="50dp"

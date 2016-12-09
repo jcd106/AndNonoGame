@@ -31,6 +31,7 @@ public class SizeSelectActivityTest {
     @Before
     public void setup() {
         onView(withId(R.id.play_button_main)).perform(click());
+        onView(withId(R.id.normal_puzzles_button)).perform(click());
     }
 
     @Test

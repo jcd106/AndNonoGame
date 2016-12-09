@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClicked(View view) {
         switch (view.getId()) {
             case R.id.play_button_main:
-                Intent i1 = new Intent(this, SizeSelectActivity.class);
+                Intent i1 = new Intent(this, MenuActivity.class);
                 startActivity(i1);
                 break;
             case R.id.tutorial_button:
@@ -46,14 +46,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.settings_button_main:
                 Intent i3 = new Intent(this, SettingsActivity.class);
                 startActivity(i3);
-                break;
-            case R.id.play_color:
-                Intent i4 = new Intent(this, ColorPuzzleActivity.class);
-                startActivity(i4);
-                break;
-            case R.id.create_own:
-                Intent i5 = new Intent(this, CreateOwnActivity.class);
-                startActivity(i5);
                 break;
         }
     }

@@ -59,6 +59,9 @@ public class CreateOwnActivity extends AppCompatActivity {
             case R.id.cancel_create:
                 onBackPressed();
                 break;
+            case R.id.back_button_create:
+                onBackPressed();
+                break;
         }
     }
 }
