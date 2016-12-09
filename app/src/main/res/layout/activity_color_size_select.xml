@@ -39,7 +39,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/tenbyfive"
+        android:id="@+id/fivebyten"
         android:onClick="onButtonClick"
         android:background="@drawable/border_button"
         android:textSize="24sp"

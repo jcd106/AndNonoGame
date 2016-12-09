@@ -35,8 +35,8 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
             case R.id.tenbyten:
                 i.putExtra("size", "10 10");
                 break;
-            case R.id.tenbyfive:
-                i.putExtra("size", "10 5");
+            case R.id.fivebyten:
+                i.putExtra("size", "5 10");
                 break;
         }
 
@@ -60,17 +60,17 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
         //Gets the buttons by id from the view
         Button fiveByFive = (Button) findViewById(R.id.fivebyfive);
         Button tenByTen = (Button) findViewById(R.id.tenbyten);
-        Button tenByFive = (Button) findViewById(R.id.tenbyfive);
+        Button tenByFive = (Button) findViewById(R.id.fivebyten);
 
         //Set the number of puzzles for the sizes to 0
         int num5by5 = 0;
         int num10by10 = 0;
-        int num10by5 = 0;
+        int num5by10 = 0;
 
         //Set the number of completed puzzles for the sizes to 0
         int comp5by5 = 0;
         int comp10by10 = 0;
-        int comp10by5 = 0;
+        int comp5by10 = 0;
 
         //Get the database
         PuzzleDatabase db = MainActivity.getDB();
@@ -100,9 +100,9 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
                 num10by10 = c1.getInt(i1);
             }
 
-            //if Rows in c1 = 5 and Cols in c1 = 10 in the tuple, set num10by5 to numPuzzles from c1
-            if (c1.getInt(r1) == 5 && c1.getInt(col1) == 10) {
-                num10by5 = c1.getInt(i1);
+            //if Rows in c1 = 5 and Cols in c1 = 10 in the tuple, set num5by10 to numPuzzles from c1
+            if (c1.getInt(r1) == 10 && c1.getInt(col1) == 5) {
+                num5by10 = c1.getInt(i1);
             }
 
             //Move to the next tuple
@@ -126,9 +126,9 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
                 comp10by10 = c2.getInt(i2);
             }
 
-            //if Rows in c2 = 5 and Cols in c2 = 10 in the tuple, set comp10by5 to numComplete from c2
-            if (c2.getInt(r2) == 5 && c2.getInt(col2) == 10) {
-                comp10by5 = c2.getInt(i2);
+            //if Rows in c2 = 5 and Cols in c2 = 10 in the tuple, set comp5by10 to numComplete from c2
+            if (c2.getInt(r2) == 10 && c2.getInt(col2) == 5) {
+                comp5by10 = c2.getInt(i2);
             }
 
             //Move to the next tuple
@@ -140,7 +140,7 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
         fiveByFive.setText(fiveFiveText);
         String tenTenText = "10x10 (" + comp10by10 + "/" + num10by10 + ")";
         tenByTen.setText(tenTenText);
-        String tenFiveText = "10x5 (" + comp10by5 + "/" + num10by5 + ")";
+        String tenFiveText = "5x10 (" + comp5by10 + "/" + num5by10 + ")";
         tenByFive.setText(tenFiveText);
     }
 

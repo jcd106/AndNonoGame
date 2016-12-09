@@ -140,6 +140,11 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         db.insert(yourTable, null, contentValues);
     }
 
+    public void deleteAllYourPuzzles() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + yourTable);
+    }
+
     /**
      * Queries the database for the puzzle with the specified id
      *
@@ -675,7 +680,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(puzzle, buf);
         contentValues.put(comp, completed);
-        db.update(puzzleTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+        db.update(yourTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
     }
 
     // Database is never upgraded
@@ -903,8 +908,54 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                          {{3,2},{0,0},{2,2},{1,2},{2,1},{1,1},{1,2},{3,2},{3,2},{0,0}},
                          {{2,1},{3,2},{2,1},{1,3},{1,2},{1,2},{1,3},{1,2},{1,1},{1,2}},
                          {{2,1},{4,1},{1,1},{3,1},{1,1},{1,1},{4,1},{3,1},{2,1},{3,1}}};
-        ColorPuzzle c1 = new ColorPuzzle(idC1, sC1, solC1, rC1, cC1, colorsC1, 0);
+        ColorPuzzle color1 = new ColorPuzzle(idC1, sC1, solC1, rC1, cC1, colorsC1, 0);
 
+        int idC2 = 2;
+        int[] sC2 = {5, 5};
+        int[] colorsC2 = {Color.WHITE, Color.BLUE, Color.GREEN, Color.DKGRAY};
+        int[][] solC2 = {{0,0,0,2,0},
+                         {2,0,0,2,2},
+                         {2,1,1,0,0},
+                         {3,1,1,0,0},
+                         {1,1,0,0,0}};
+        int[][][] rC2 = {{{0,0},{1,2}},
+                         {{1,2},{2,2}},
+                         {{1,2},{2,1}},
+                         {{1,3},{2,1}},
+                         {{0,0},{2,1}}};
+        int[][][] cC2 = {{{2,2},{0,0},{0,0},{0,0},{0,0}},
+                         {{1,3},{0,0},{0,0},{0,0},{0,0}},
+                         {{1,1},{3,1},{2,1},{2,2},{1,2}}};
+        ColorPuzzle color2 = new ColorPuzzle(idC2, sC2, solC2, rC2, cC2, colorsC2, 0);
+
+        int idC3 = 3;
+        int[] sC3 = {5, 10};
+        int[] colorsC3 = {Color.WHITE, Color.GREEN, Color.RED, Color.YELLOW};
+        int[][] solC3 = {{2, 2, 0, 2, 2},
+                         {2, 2, 2, 2, 2},
+                         {0, 2, 3, 2, 0},
+                         {2, 2, 2, 2, 2},
+                         {2, 2, 1, 2, 2},
+                         {0, 0, 1, 0, 0},
+                         {0, 0, 1, 0, 1},
+                         {1, 0, 1, 1, 1},
+                         {1, 1, 1, 1, 0},
+                         {0, 1, 1, 0, 0}};
+        int[][][] rC3 = {{{0,0}, {2,2}, {2,2}},
+                         {{0,0}, {0,0}, {5,2}},
+                         {{1,2}, {1,3}, {1,2}},
+                         {{0,0}, {0,0}, {5,2}},
+                         {{2,2}, {1,1}, {2,2}},
+                         {{0,0}, {0,0}, {1,1}},
+                         {{0,0}, {1,1}, {1,1}},
+                         {{0,0}, {1,1}, {3,1}},
+                         {{0,0}, {0,0}, {4,1}},
+                         {{0,0}, {0,0}, {2,1}}};
+        int[][][] cC3 = {{{0,0}, {0,0}, {1,2}, {0,0}, {0,0}},
+                         {{2,2}, {0,0}, {1,3}, {0,0}, {2,2}},
+                         {{2,2}, {5,2}, {1,2}, {5,2}, {2,2}},
+                         {{2,1}, {2,1}, {6,1}, {2,1}, {2,1}}};
+        ColorPuzzle color3 = new ColorPuzzle(idC3, sC3, solC3, rC3, cC3, colorsC3, 0);
 
         try {
             insertPuzzle(id, firstPuzzle, s, completed, db);
@@ -921,7 +972,9 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
             insertPuzzle(id12, twelfth, s12, 0, db);
             insertPuzzle(id13, thirteenth, s13, 0, db);
             insertPuzzle(id14, fourteenth, s14, 0, db);
-            insertPuzzle(idC1, c1, sC1, 0, db);
+            insertPuzzle(idC1, color1, sC1, 0, db);
+            insertPuzzle(idC2, color2, sC2, 0, db);
+            insertPuzzle(idC3, color3, sC3, 0, db);
         } catch (IOException e) {
             e.printStackTrace();
         }
