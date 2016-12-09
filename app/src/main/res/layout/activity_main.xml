@@ -35,10 +35,11 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:text="Tutorial"
+        android:text="Instructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:padding="5dp"
         android:id="@+id/tutorial_button"
         android:background="@drawable/border_button"
         android:onClick="onClicked"
