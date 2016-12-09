@@ -124,6 +124,7 @@ public class ColorSelect extends Fragment {
 
                 //Set the color tag of the TextView to i
                 newBox.setTag(R.id.color, i);
+                newBox.setId(-1*colors[i]);
 
                 //Add the onClickListener
                 newBox.setOnClickListener(listener);

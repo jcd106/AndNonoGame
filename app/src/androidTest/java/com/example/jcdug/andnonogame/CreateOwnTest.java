@@ -38,8 +38,6 @@ public class CreateOwnTest {
 
     @Before
     public void setup() {
-
-        // Navigate to the first 5 by 5 puzzle and reset it before each test
         onView(withId(R.id.play_button_main)).perform(click());
     }
 
