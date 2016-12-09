@@ -282,11 +282,52 @@ public class CreatePuzzleFragment extends Fragment {
                 }
             }
 
+            int numColCs = maxColCs;
+            for(int i = 0; i < maxColCs; i++){
+                boolean isEmpty = true;
+                for(int j = 0; j < numCols; j++){
+                    if(colConstraints[i][j] != 0){
+                        isEmpty = false;
+                    }
+                }
+                if(isEmpty)
+                    numColCs--;
+                else
+                    break;
+            }
+            int[][] newColConstraints = new int[numColCs][numCols];
+            int colDiff = maxColCs - numColCs;
+            for(int i = 0; i < numColCs; i++) {
+                newColConstraints[i] = colConstraints[i+colDiff];
+            }
+
+            int numRowCs = maxRowCs;
+            for(int i = 0; i < numRows; i++){
+                boolean isEmpty = true;
+                for(int j = 0; j < maxRowCs; j++){
+                    if(rowConstraints[j][i] != 0){
+                        isEmpty = false;
+                    }
+                }
+                if(isEmpty)
+                    numRowCs--;
+                else
+                    break;
+            }
+            int[][] newRowConstraints = new int[numRows][numRowCs];
+            int rowDiff = maxRowCs - numRowCs;
+            for(int i = 0; i < numRows; i++) {
+                for(int j = 0; j < numRowCs; j++) {
+                    newRowConstraints[i][j] = rowConstraints[i][j+rowDiff];
+                }
+            }
+
+
             //Get the PuzzleDatabase and update the current state of the puzzle as complete
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            Puzzle newPuzzle = new Puzzle(id, size, currentState, rowConstraints, colConstraints, complete);
+            Puzzle newPuzzle = new Puzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
             try {
                 db.insertYourPuzzle(id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {
