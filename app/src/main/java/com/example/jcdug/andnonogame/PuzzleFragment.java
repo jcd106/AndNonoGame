@@ -65,6 +65,7 @@ public class PuzzleFragment extends Fragment {
     int complete;           //Store whether puzzle has been completed
     Drawable filled;        //Color of filled puzzle boxes
     Drawable empty;         //Color of empty puzzle boxes
+    Drawable markedBlank;   //Color of boxes marked Blank
     int isYourPuzzle;
 
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
@@ -154,6 +155,8 @@ public class PuzzleFragment extends Fragment {
         filled.setColorFilter(fillColor, PorterDuff.Mode.MULTIPLY);
         empty = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
         empty.setColorFilter(emptyColor, PorterDuff.Mode.MULTIPLY);
+        markedBlank = ContextCompat.getDrawable(this.getActivity(), R.drawable.blank_button);
+        markedBlank.setColorFilter(emptyColor, PorterDuff.Mode.MULTIPLY);
 
         try {
             //Retrieve PuzzleDatabase from MainActivity
@@ -209,11 +212,15 @@ public class PuzzleFragment extends Fragment {
 
                     //Handles switching of box colors and updates puzzle's current state
                     if (boxState == 0) {
-                        b.setTag(R.id.state, boxState + 1);
+                        b.setTag(R.id.state, 1);
                         currentState[yLoc][xLoc] = 1;
                         b.setBackground(filled);
                     } else if (boxState == 1) {
-                        b.setTag(R.id.state, boxState - 1);
+                        b.setTag(R.id.state, -1);
+                        currentState[yLoc][xLoc] = -1;
+                        b.setBackground(markedBlank);
+                    } else if (boxState == -1) {
+                        b.setTag(R.id.state, 0);
                         currentState[yLoc][xLoc] = 0;
                         b.setBackground(empty);
                     }
@@ -294,6 +301,8 @@ public class PuzzleFragment extends Fragment {
                         //Display correct box state form current state
                         if (currentState[y_val][x_val] == 1) {
                             newBox.setBackground(filled);
+                        } else if (currentState[y_val][x_val] == -1){
+                            newBox.setBackground(markedBlank);
                         } else {
                             newBox.setBackground(empty);
                         }
@@ -360,13 +369,17 @@ public class PuzzleFragment extends Fragment {
             Integer box_state = (Integer) prev.getTag(R.id.state);
 
             if (box_state == 0) {
-                currentState[y_loc][x_loc] = 1;
-                prev.setTag(R.id.state, box_state + 1);
-                prev.setBackground(filled);
+                currentState[y_loc][x_loc] = -1;
+                prev.setTag(R.id.state, -1);
+                prev.setBackground(markedBlank);
             } else if (box_state == 1) {
                 currentState[y_loc][x_loc] = 0;
-                prev.setTag(R.id.state, box_state - 1);
+                prev.setTag(R.id.state, 0);
                 prev.setBackground(empty);
+            } else if (box_state == -1) {
+                currentState[y_loc][x_loc] = 1;
+                prev.setTag(R.id.state, 1);
+                prev.setBackground(filled);
             }
 
             // Checks if the puzzle is solved
