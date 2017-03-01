@@ -330,8 +330,6 @@ public class PuzzleFragment extends Fragment {
     private void checkIfSolved() {
         Context context = this.getActivity();
 
-        Log.d("Row Solved", "" + validSolutionFound());
-
         //Checks if currentState is equal to the solutionState after each move
         if (validSolutionFound()) {
             //Get the PuzzleDatabase and update the current state of the puzzle as complete

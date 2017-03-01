@@ -43,8 +43,9 @@ public class ColorPuzzleFragment extends Fragment {
     int numCols;            //Number of columns in the puzzle
     int complete;           //Store whether puzzle has been completed
     int[] colors;           //Store the colors of the puzzle
-    Drawable filled[];        //Color of filled puzzle boxes
+    Drawable filled[];      //Color of filled puzzle boxes
     Drawable empty;         //Color of empty puzzle boxes
+    Drawable markedBlank;   //Color of boxes marked Blank
     int selectedColor;
 
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
@@ -131,6 +132,9 @@ public class ColorPuzzleFragment extends Fragment {
             }
             empty.setColorFilter(colors[0], PorterDuff.Mode.MULTIPLY);
 
+            markedBlank = ContextCompat.getDrawable(this.getActivity(), R.drawable.blank_button);
+            markedBlank.setColorFilter(colors[0], PorterDuff.Mode.MULTIPLY);
+
             //Create TableLayout to organize puzzle boxes into a grid
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_color_puzzle);
 
@@ -150,21 +154,30 @@ public class ColorPuzzleFragment extends Fragment {
 
                     prevMoves.push(b);
                     Drawable back = b.getBackground();
-                    for (int i = 0; i < colors.length; i++) {
-                        if(back.equals(filled[i]))
-                            prevColors.push(i);
+                    if (back.equals(markedBlank))
+                        prevColors.push(-1);
+                    else {
+                        for (int i = 0; i < colors.length; i++) {
+                            if(back.equals(filled[i]))
+                                prevColors.push(i);
+                        }
                     }
 
 
                     //Handles switching of box colors and updates puzzle's current state
-                    if (boxState != selectedColor) {
+                    if (boxState == -1) {
+                        b.setTag(R.id.state, 0);
+                        currentState[yLoc][xLoc] = 0;
+                        b.setBackground(filled[0]);
+                    }
+                    else if (boxState != selectedColor) {
                         b.setTag(R.id.state, selectedColor);
                         currentState[yLoc][xLoc] = selectedColor;
                         b.setBackground(filled[selectedColor]);
                     } else {
-                        b.setTag(R.id.state, 0);
-                        currentState[yLoc][xLoc] = 0;
-                        b.setBackground(filled[0]);
+                        b.setTag(R.id.state, -1);
+                        currentState[yLoc][xLoc] = -1;
+                        b.setBackground(markedBlank);
                     }
 
                     //Checks if the puzzle is solved
@@ -307,7 +320,11 @@ public class ColorPuzzleFragment extends Fragment {
 
             currentState[y_loc][x_loc] = prevColor;
             prev.setTag(R.id.state, prevColor);
-            prev.setBackground(filled[prevColor]);
+            if (prevColor == -1) {
+                prev.setBackground(markedBlank);
+            }
+            else
+                prev.setBackground(filled[prevColor]);
 
             // Checks if the puzzle is solved
             checkIfSolved();
