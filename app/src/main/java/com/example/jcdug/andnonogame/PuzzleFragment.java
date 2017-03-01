@@ -67,6 +67,9 @@ public class PuzzleFragment extends Fragment {
     Drawable empty;         //Color of empty puzzle boxes
     int isYourPuzzle;
 
+    int[][] rowVals;
+    int[][] colVals;
+
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
 
     public static final String COLOR_CHOICE = "ColorChoice";    //Used access saved preference color choice
@@ -184,8 +187,8 @@ public class PuzzleFragment extends Fragment {
             int[] size = p.getSize();
             numCols = size[0];
             numRows = size[1];
-            int[][] rowVals = p.getRows();
-            int[][] colVals = p.getCols();
+            rowVals = p.getRows();
+            colVals = p.getCols();
 
             //Create TableLayout to organize puzzle boxes into a grid
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
@@ -318,8 +321,10 @@ public class PuzzleFragment extends Fragment {
     private void checkIfSolved() {
         Context context = this.getActivity();
 
+        Log.d("Row Solved", "" + validSolutionFound());
+
         //Checks if currentState is equal to the solutionState after each move
-        if (Arrays.deepEquals(currentState, solutionState)) {
+        if (validSolutionFound()) {
             //Get the PuzzleDatabase and update the current state of the puzzle as complete
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
@@ -349,6 +354,101 @@ public class PuzzleFragment extends Fragment {
         } else {
             complete = 0;
         }
+    }
+
+    private boolean validSolutionFound() {
+
+        //Check the row constraints
+        for(int i = 0; i < rowVals.length; i++) {
+            int rowIndex = rowVals[0].length - 1;
+            int currentRun = 0;
+
+            for (int j = numCols-1; j >= 0; j--) {
+                //End of current row but another run is expected
+                if (j == 0 && rowIndex > 0 && rowVals[i][rowIndex-1] != 0)
+                    return false;
+                //New run found or continued run
+                if (currentState[i][j] == 1) {
+                    currentRun++;
+                    //No more constraints but another run was found
+                    if (rowIndex < 0)
+                        return false;
+                    //Continued run longer than expected constraint
+                    if (currentRun > rowVals[i][rowIndex])
+                        return false;
+                    //End of current row but run found did not match expected constraint
+                    if (j == 0 && currentRun != rowVals[i][rowIndex])
+                        return false;
+                }
+                //No run found yet or current run has ended
+                else {
+                    //There are still constraints left to check
+                    if(rowIndex >= 0) {
+                        //End of current row but run found did not match expected constraint
+                        if (j == 0 && rowVals[i][rowIndex] != currentRun)
+                            return false;
+                        //Another run was found
+                        else if (currentRun != 0){
+                            //Run matches expected constraint, move to next constraint and reset current run
+                            if (currentRun == rowVals[i][rowIndex]) {
+                                rowIndex--;
+                                currentRun = 0;
+                            }
+                            //Run does not match expected constraint
+                            else if (currentRun != rowVals[i][rowIndex])
+                                return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Check the column constraints
+        for(int i = 0; i < colVals[0].length; i++) {
+            int colIndex = colVals.length-1;
+            int currentRun = 0;
+
+            for (int j = numRows-1; j >= 0; j--) {
+                //End of current column but another run is expected
+                if (j == 0 && colIndex > 0 && colVals[colIndex - 1][i] != 0)
+                    return false;
+                //New run found or continued run
+                if (currentState[j][i] == 1) {
+                    currentRun++;
+                    //No more constraints but another run was found
+                    if (colIndex < 0)
+                        return false;
+                    //Continued run longer than expected constraint
+                    if (currentRun > colVals[colIndex][i])
+                        return false;
+                    //End of current column but run found did not match expected constraint
+                    if (j == 0 && currentRun != colVals[colIndex][i])
+                        return false;
+                }
+                //No run found yet or current run has ended
+                else {
+                    //There are still constraints left to check
+                    if (colIndex >= 0) {
+                        //End of current column but run found did not match expected constraint
+                        if (j == 0 && colVals[colIndex][i] != currentRun)
+                            return false;
+                        //Another run was found
+                        else if (currentRun != 0) {
+                            //Run matches expected constraint, move to next constraint and reset current run
+                            if (currentRun == colVals[colIndex][i]) {
+                                colIndex--;
+                                currentRun = 0;
+                            }
+                            //Run does not match expected constraint
+                            else if (currentRun != colVals[colIndex][i])
+                                return false;
+                        }
+                    }
+                }
+            }
+        }
+        //Current state fits given constraint values
+        return true;
     }
 
     // Undoes the most recent move made by the user
