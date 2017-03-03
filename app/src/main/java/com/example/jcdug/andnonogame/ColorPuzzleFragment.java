@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,9 @@ public class ColorPuzzleFragment extends Fragment {
     Drawable empty;         //Color of empty puzzle boxes
     Drawable markedBlank;   //Color of boxes marked Blank
     int selectedColor;
+
+    int[][][] rowVals;
+    int[][][] colVals;
 
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
     private Stack<Integer> prevColors = new Stack<Integer>();
@@ -121,8 +125,8 @@ public class ColorPuzzleFragment extends Fragment {
             int[] size = p.getSize();
             numCols = size[0];
             numRows = size[1];
-            int[][][] rowVals = p.getRows();
-            int[][][] colVals = p.getCols();
+            rowVals = p.getRows();
+            colVals = p.getCols();
             colors = p.getColors();
             //Set drawable background for filled and empty boxes to retrieved color choice
             filled = new Drawable[colors.length];
@@ -281,7 +285,7 @@ public class ColorPuzzleFragment extends Fragment {
         Context context = this.getActivity();
 
         //Checks if currentState is equal to the solutionState after each move
-        if (Arrays.deepEquals(currentState, solutionState)) {
+        if (validSolutionFound()) {
             //Get the PuzzleDatabase and update the current state of the puzzle as complete
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
@@ -308,6 +312,135 @@ public class ColorPuzzleFragment extends Fragment {
             complete = 0;
         }
     }
+
+
+    private boolean validSolutionFound() {
+
+        //Check the row constraints
+        for (int i = 0; i < rowVals.length; i++) {
+            int rowIndex = rowVals[0].length - 1;
+            int currentRun = 0;
+            int currentRunColor = 0;
+            for (int j = numCols - 1; j >= 0; j--) {
+                //There is currently no run
+                if (currentRunColor <= 0) {
+                    //If the current box is filled, update the current run values
+                    if (currentState[i][j] > 0) {
+                        currentRun = 1;
+                        currentRunColor = currentState[i][j];
+                    }
+                }
+                //Otherwise there is currently a run
+                else {
+                    //The run is continuing
+                    if (currentRunColor == currentState[i][j])
+                        currentRun++;
+                    //The current run is over
+                    else {
+                        //Check if the current run is longer than the current row constraint
+                        if (currentRun > rowVals[i][rowIndex][0])
+                            return false;
+                        //Check if the current run is correct and update row index and the current run values
+                        if (currentRun == rowVals[i][rowIndex][0] && currentRunColor == rowVals[i][rowIndex][1]) {
+                            rowIndex--;
+                            if (currentState[i][j] > 0) {
+                                currentRun = 1;
+                                currentRunColor = currentState[i][j];
+                            } else {
+                                currentRun = 0;
+                                currentRunColor = 0;
+                            }
+                        }
+                    }
+                }
+
+                //At the end of current row
+                if (j == 0) {
+                    //Check if there should be another run
+                    if (rowIndex >= 0 && rowVals[i][rowIndex][0] != 0) {
+                        //Check if the current run matches the current row constraint
+                        if (currentRun == rowVals[i][rowIndex][0] && currentRunColor == rowVals[i][rowIndex][1]) {
+                            rowIndex--;
+                            //If there should be another run, then there are too few runs for the row
+                            if (rowIndex >= 0 && rowVals[i][rowIndex][0] != 0)
+                                return false;
+                        }
+                        //The current run does not match the current row constraint
+                        else
+                            return false;
+                    } else {
+                        //Check if the current run is too long
+                        if (rowIndex >= 0 && currentRun > rowVals[i][rowIndex][0])
+                            return false;
+                    }
+                }
+            }
+        }
+
+        //Check the column constraints
+        for (int i = 0; i < colVals[0].length; i++) {
+            int colIndex = colVals.length - 1;
+            int currentRun = 0;
+            int currentRunColor = 0;
+            for (int j = numRows - 1; j >= 0; j--) {
+                //There is currently no run
+                if (currentRunColor <= 0) {
+                    //If the current box is filled, update the current run values
+                    if (currentState[j][i] > 0) {
+                        currentRun = 1;
+                        currentRunColor = currentState[j][i];
+                    }
+                }
+                //Otherwise there is currently a run
+                else {
+                    //The run is continuing
+                    if (currentRunColor == currentState[j][i])
+                        currentRun++;
+                    //The current run is over
+                    else {
+                        //Check if the current run is longer than the current column constraint
+                        if (currentRun > colVals[colIndex][i][0])
+                            return false;
+                        //Check if the current run is correct and update column index and the current run values
+                        if (currentRun == colVals[colIndex][i][0] && currentRunColor == colVals[colIndex][i][1]) {
+                            colIndex--;
+                            if (currentState[j][i] > 0) {
+                                currentRun = 1;
+                                currentRunColor = currentState[j][i];
+                            } else {
+                                currentRun = 0;
+                                currentRunColor = 0;
+                            }
+                        }
+                    }
+                }
+
+                //At the end of current column
+                if (j == 0) {
+                    //Check if there should be another run
+                    if (colIndex >= 0 && colVals[colIndex][i][0] != 0) {
+                        //Check if the current run matches the current column constraint
+                        if (currentRun == colVals[colIndex][i][0] && currentRunColor == colVals[colIndex][i][1]) {
+                            colIndex--;
+                            //If there should be another run, then there are too few runs for the column
+                            if (colIndex >= 0 && colVals[colIndex][i][0] != 0)
+                                return false;
+                        }
+                        //The current run does not match the current column constraint
+                        else
+                            return false;
+                    } else {
+                        //Check if the current run is too long
+                        if (colIndex >= 0 && currentRun > colVals[colIndex][i][0])
+                            return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
 
     // Undoes the most recent move made by the user
     public void undoMostRecent() {
