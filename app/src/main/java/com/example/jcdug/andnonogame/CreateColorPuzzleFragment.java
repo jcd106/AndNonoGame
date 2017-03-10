@@ -45,7 +45,7 @@ public class CreateColorPuzzleFragment extends Fragment {
     private CreateColorPuzzleFragment.OnFragmentInteractionListener mListener;
 
     int id;                 //ID of the puzzle being displayed
-    int[][][] currentState;   //Current state of the puzzle being displayed
+    int[][] currentState;   //Current state of the puzzle being displayed
     int numRows;            //Number of rows in the puzzle
     int numCols;            //Number of columns in the puzzle
     Drawable filled[];      //Color of filled puzzle boxes
@@ -108,7 +108,7 @@ public class CreateColorPuzzleFragment extends Fragment {
         //Store all of the puzzle objects information in the PuzzleFragment
         numCols = size[0];
         numRows = size[1];
-        currentState = new int[numRows][numCols][2];
+        currentState = new int[numRows][numCols];
 
 
         filled = new Drawable[colors.length];
@@ -144,13 +144,11 @@ public class CreateColorPuzzleFragment extends Fragment {
                 //Handles switching of box colors and updates puzzle's current state
                 if (boxState != selectedColor) {
                     b.setTag(R.id.state, selectedColor);
-                    currentState[yLoc][xLoc][0] = 0;
-                    currentState[yLoc][xLoc][1] = selectedColor;
+                    currentState[yLoc][xLoc] = selectedColor;
                     b.setBackground(filled[selectedColor]);
                 } else {
                     b.setTag(R.id.state, 0);
-                    currentState[yLoc][xLoc][0] = 0;
-                    currentState[yLoc][xLoc][1] = 0;
+                    currentState[yLoc][xLoc] = 0;
                     b.setBackground(empty);
                 }
             }
@@ -187,7 +185,7 @@ public class CreateColorPuzzleFragment extends Fragment {
 
                 newBox.setTag(R.id.x_loc, new Integer(x_val));
                 newBox.setTag(R.id.y_loc, new Integer(y_val));
-                newBox.setTag(R.id.state, new Integer(currentState[y_val][x_val][0]));
+                newBox.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
 
                 //Display the empty boxes
                 newBox.setBackground(empty);
@@ -206,7 +204,7 @@ public class CreateColorPuzzleFragment extends Fragment {
         Context context = this.getActivity();
 
         //Checks if currentState is equal to the solutionState after each move
-        if (Arrays.deepEquals(currentState, new int[numRows][numCols][2])) {
+        if (Arrays.deepEquals(currentState, new int[numRows][numCols])) {
             //Create a popup congratulating the user on puzzle completion
             AlertDialog alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setTitle("Nothing to Save");
@@ -228,7 +226,7 @@ public class CreateColorPuzzleFragment extends Fragment {
                 int currentRun = 0;
                 int currentConstraintIndex = maxRowCs - 1;
                 for(int j = numCols - 1; j >= 0; j--){
-                    if(currentState[i][j][0] == 1) {
+                    if(currentState[i][j] == 1) {
                         currentRun++;
                     } else if(currentRun > 0){
                         rowConstraints[i][currentConstraintIndex] = currentRun;
@@ -245,7 +243,7 @@ public class CreateColorPuzzleFragment extends Fragment {
                 int currentRun = 0;
                 int currentConstraintIndex = maxColCs - 1;
                 for(int i = numRows - 1; i >= 0; i--){
-                    if(currentState[i][j][0] == 1) {
+                    if(currentState[i][j] == 1) {
                         currentRun++;
                     } else if(currentRun > 0){
                         colConstraints[currentConstraintIndex][j] = currentRun;
@@ -303,9 +301,9 @@ public class CreateColorPuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            /*Puzzle newPuzzle = new Puzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
+            /*ColorPuzzle newPuzzle = new ColorPuzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
             try {
-                db.insertYourPuzzle(id,newPuzzle,size,complete,db.getWritableDatabase());
+                db.insertYourPuzzle(getString(R.string.yourColorTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {
                 e.printStackTrace();
             }*/

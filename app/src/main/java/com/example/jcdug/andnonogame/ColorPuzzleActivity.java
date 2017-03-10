@@ -25,6 +25,7 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
         //Stores the current puzzle ID
         Intent i = getIntent();
         int id = Integer.parseInt(i.getStringExtra("puzzleID"));
+        String table = i.getStringExtra("table");
 
         TextView puzzleID = (TextView) findViewById(R.id.puzzle_id_activity);
         puzzleID.setText("Puzzle: " + id);
@@ -32,6 +33,7 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
         //Used to pass information to the new PuzzleFragment
         Bundle bundle = new Bundle();
         bundle.putInt("puzzleID", id);
+        bundle.putString("table", table);
 
         //Passes bundle to the PuzzleFragment
         ColorPuzzleFragment puzzleFragment = new ColorPuzzleFragment();
@@ -75,10 +77,12 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
         //Stores the current puzzle ID
         Intent i = getIntent();
         int id = Integer.parseInt(i.getStringExtra("puzzleID"));
+        String table = i.getStringExtra("table");
 
         //Used to pass information to the new PuzzleFragment
         Bundle bundle = new Bundle();
         bundle.putInt("puzzleID", id);
+        bundle.putString("table", table);
 
         //Passes bundle to new PuzzleFragment
         ColorPuzzleFragment puzzleFragment = new ColorPuzzleFragment();

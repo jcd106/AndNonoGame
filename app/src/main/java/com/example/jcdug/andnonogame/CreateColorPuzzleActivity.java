@@ -28,7 +28,7 @@ public class CreateColorPuzzleActivity extends AppCompatActivity implements Blan
         PuzzleDatabase db = MainActivity.getDB();
 
         //Make a new ID
-        int[] yourIDs = db.getAllYourPuzzleIDs();
+        int[] yourIDs = db.getAllPuzzleIDs(getString(R.string.yourColorTable));
         int id = yourIDs.length+1;
 
         Intent i = getIntent();

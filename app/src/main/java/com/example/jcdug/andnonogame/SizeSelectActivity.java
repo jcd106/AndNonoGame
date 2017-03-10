@@ -94,11 +94,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         PuzzleDatabase db = MainActivity.getDB();
 
         //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c1 = db.getCountBySize();
+        Cursor c1 = db.getCountBySize(getString(R.string.puzzleTable));
         c1.moveToFirst();
 
         //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c2 = db.getCountCompletedBySize();
+        Cursor c2 = db.getCountCompletedBySize(getString(R.string.puzzleTable));
         c2.moveToFirst();
 
         //Get the index of numPuzzles, Rows, and Cols in c1
@@ -154,11 +154,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         }
 
         //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c3 = db.getCountYour();
+        Cursor c3 = db.getCountYour(getString(R.string.yourTable));
         c3.moveToFirst();
 
         //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c4 = db.getCountCompletedYour();
+        Cursor c4 = db.getCountCompletedYour(getString(R.string.yourTable));
         c4.moveToFirst();
 
         //Get the index of numPuzzles, Rows, and Cols in c1

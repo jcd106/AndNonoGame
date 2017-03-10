@@ -48,6 +48,7 @@ public class ColorPuzzleFragment extends Fragment {
     Drawable empty;         //Color of empty puzzle boxes
     Drawable markedBlank;   //Color of boxes marked Blank
     int selectedColor;
+    String table;
 
     int[][][] rowVals;
     int[][][] colVals;
@@ -96,6 +97,7 @@ public class ColorPuzzleFragment extends Fragment {
         //Retrieve ID of current puzzle from PuzzleActivity bundle
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
+        table = bundle.getString("table");
 
         //filled.setColorFilter(fillColor, PorterDuff.Mode.MULTIPLY);
         empty = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
@@ -106,7 +108,7 @@ public class ColorPuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1 = db.getColorPuzzleByID(id);
+            Cursor c1 = db.getPuzzleByID(table,id);
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
             byte[] b = c1.getBlob(p1);
@@ -293,7 +295,7 @@ public class ColorPuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
             try {
-                db.updateColorPuzzle(id, currentState, complete);
+                db.updatePuzzle(table, id, currentState, complete);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -508,7 +510,7 @@ public class ColorPuzzleFragment extends Fragment {
         super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updateColorPuzzle(id, currentState, complete);
+            db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -524,7 +526,7 @@ public class ColorPuzzleFragment extends Fragment {
         super.onPause();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updateColorPuzzle(id, currentState, complete);
+            db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

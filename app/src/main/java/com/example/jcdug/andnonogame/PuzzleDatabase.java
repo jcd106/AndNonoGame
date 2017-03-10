@@ -26,6 +26,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     static final String puzzleTable = "Puzzles";    //Name of puzzle table in database
     static final String colorTable = "ColorPuzzles";//Name of color puzzle table in database
     static final String yourTable = "YourPuzzles";  //Name of puzzle table in database for Create Your Own Puzzles
+    static final String yourColorTable = "YourColorPuzzles";//Name of puzzle table in database for Create Your Own Color Puzzles
     static final String colID = "PuzzleID";         //ID attribute name in puzzle table
     static final String puzzle = "Puzzle";          //Puzzle attribute name in puzzle table
     static final String row = "Rows";               //Row size attribute name in puzzle table
@@ -68,7 +69,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      * @param db        the database
      * @throws IOException Could be thrown using the output stream
      */
-    public void insertPuzzle(int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
+    public void insertPuzzle(String table, int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
         //Create an output stream to serialize the puzzle
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = new ObjectOutputStream(bos);
@@ -86,10 +87,14 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         contentValues.put(col, s[0]);
         contentValues.put(row, s[1]);
         contentValues.put(comp, completed);
-        db.insert(puzzleTable, null, contentValues);
+        if (table.equals(puzzleTable)) {
+            db.insert(puzzleTable, null, contentValues);
+        } else if (table.equals(yourTable)) {
+            db.insert(yourTable, null, contentValues);
+        }
     }
 
-    public void insertPuzzle(int id, ColorPuzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
+    public void insertPuzzle(String table, int id, ColorPuzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
         //Create an output stream to serialize the puzzle
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = new ObjectOutputStream(bos);
@@ -107,38 +112,11 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         contentValues.put(col, s[0]);
         contentValues.put(row, s[1]);
         contentValues.put(comp, completed);
-        db.insert(colorTable, null, contentValues);
-    }
-
-    /**
-     * Inserts a puzzle to the database
-     *
-     * @param id        the id of the puzzle
-     * @param p         the puzzle to be put into the database
-     * @param s         the size of the puzzle
-     * @param completed the completed value of the puzzle (should be 0)
-     * @param db        the database
-     * @throws IOException Could be thrown using the output stream
-     */
-    public void insertYourPuzzle(int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
-        //Create an output stream to serialize the puzzle
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = new ObjectOutputStream(bos);
-
-        //Serialize the puzzle into a byte array
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
-
-        //Put the values of the puzzle into the database
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(colID, id);
-        contentValues.put(puzzle, buf);
-        contentValues.put(col, s[0]);
-        contentValues.put(row, s[1]);
-        contentValues.put(comp, completed);
-        db.insert(yourTable, null, contentValues);
+        if (table.equals(colorTable)) {
+            db.insert(colorTable, null, contentValues);
+        } else if (table.equals(yourColorTable)) {
+            db.insert(yourColorTable, null, contentValues);
+        }
     }
 
     public void deleteAllYourPuzzles() {
@@ -152,34 +130,20 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      * @param id the puzzle id
      * @return a cursor with the tuple
      */
-    public Cursor getPuzzleByID(int id) {
+    public Cursor getPuzzleByID(String table, int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
-        return curs;
-    }
-
-    /**
-     * Queries the database for the color puzzle with the specified id
-     *
-     * @param id the color puzzle id
-     * @return a cursor with the tuple
-     */
-    public Cursor getColorPuzzleByID(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + colorTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
-        return curs;
-    }
-
-    /**
-     * Queries the database for the puzzle with the specified id
-     *
-     * @param id the puzzle id
-     * @return a cursor with the tuple
-     */
-    public Cursor getYourPuzzleByID(int id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + yourTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
-        return curs;
+        switch (table) {
+            case puzzleTable:
+                return db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
+            case yourTable:
+                return db.rawQuery("SELECT * FROM " + yourTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
+            case colorTable:
+                return db.rawQuery("SELECT * FROM " + colorTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
+            case yourColorTable:
+                return db.rawQuery("SELECT * FROM " + yourColorTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
+            default:
+                return null;
+        }
     }
 
     /**
@@ -189,23 +153,20 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      * @param r the row size
      * @return a cursor with the tuples
      */
-    public Cursor getPuzzlesBySize(int c, int r) {
+    public Cursor getPuzzlesBySize(String table, int c, int r) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
-        return curs;
-    }
-
-    /**
-     * Queries the database for puzzles with the specified column and row sizes
-     *
-     * @param c the column size
-     * @param r the row size
-     * @return a cursor with the tuples
-     */
-    public Cursor getColorPuzzlesBySize(int c, int r) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + colorTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
-        return curs;
+        switch (table) {
+            case puzzleTable:
+                return db.rawQuery("SELECT * FROM " + puzzleTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
+            case colorTable:
+                return db.rawQuery("SELECT * FROM " + colorTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
+            case yourTable:
+                return db.rawQuery("SELECT * FROM " + yourTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
+            case yourColorTable:
+                return db.rawQuery("SELECT * FROM " + yourColorTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
+            default:
+                return null;
+        }
     }
 
     /**
@@ -213,10 +174,16 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      *
      * @return a cursor with the tuples
      */
-    public Cursor getAllYourPuzzles() {
+    public Cursor getAllYourPuzzles(String table) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT * FROM " + yourTable, new String[]{});
-        return curs;
+        switch (table) {
+            case yourTable:
+                return db.rawQuery("SELECT * FROM " + yourTable, new String[]{});
+            case yourColorTable:
+                return db.rawQuery("SELECT * FROM " + yourColorTable, new String[]{});
+            default:
+                return null;
+        }
     }
 
     /**
@@ -224,10 +191,20 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      *
      * @return a cursor with the tuples
      */
-    public Cursor getCountBySize() {
+    public Cursor getCountBySize(String table) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + puzzleTable + " GROUP BY " + col + ", " + row, new String[]{});
-        return curs;
+        switch (table) {
+            case puzzleTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + puzzleTable + " GROUP BY " + col + ", " + row, new String[]{});
+            case colorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + colorTable + " GROUP BY " + col + ", " + row, new String[]{});
+            case yourTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourTable + " GROUP BY " + col + ", " + row, new String[]{});
+            case yourColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourColorTable + " GROUP BY " + col + ", " + row, new String[]{});
+            default:
+                return null;
+        }
     }
 
     /**
@@ -235,32 +212,20 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      *
      * @return a cursor with the tuples
      */
-    public Cursor getCountCompletedBySize() {
+    public Cursor getCountCompletedBySize(String table) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + puzzleTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
-        return curs;
-    }
-
-    /**
-     * Queries the database for the count of the puzzles grouped by the size
-     *
-     * @return a cursor with the tuples
-     */
-    public Cursor getColorCountBySize() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + colorTable + " GROUP BY " + col + ", " + row, new String[]{});
-        return curs;
-    }
-
-    /**
-     * Queries the database for the count completed grouped by the size
-     *
-     * @return a cursor with the tuples
-     */
-    public Cursor getColorCountCompletedBySize() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + colorTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
-        return curs;
+        switch (table) {
+            case puzzleTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + puzzleTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
+            case colorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + colorTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
+            case yourTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
+            case yourColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourColorTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
+            default:
+                return null;
+        }
     }
 
     /**
@@ -268,10 +233,16 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      *
      * @return a cursor with the tuples
      */
-    public Cursor getCountYour() {
+    public Cursor getCountYour(String table) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourTable, new String[]{});
-        return curs;
+        switch (table) {
+            case yourTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourTable, new String[]{});
+            case yourColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourColorTable, new String[]{});
+            default:
+                return null;
+        }
     }
 
     /**
@@ -279,30 +250,16 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      *
      * @return a cursor with the tuples
      */
-    public Cursor getCountCompletedYour() {
+    public Cursor getCountCompletedYour(String table) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
-        return curs;
-    }
-
-    /**
-     * Queries the database for the ids of all puzzles
-     *
-     * @return an array with all of the puzzle ids
-     */
-    public int[] getAllPuzzleIDs() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + colID + " FROM " + puzzleTable, new String[]{});
-        curs.moveToFirst();
-        int[] puzzleIDs = new int[curs.getCount()];
-        int i = curs.getColumnIndex(colID);
-        int count = 0;
-        while (!curs.isAfterLast()) {
-            puzzleIDs[count] = curs.getInt(i);
-            count++;
-            curs.moveToNext();
+        switch (table) {
+            case yourTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
+            case yourColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourColorTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
+            default:
+                return null;
         }
-        return puzzleIDs;
     }
 
     /**
@@ -310,29 +267,25 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      *
      * @return an array with all of the puzzle ids
      */
-    public int[] getAllColorPuzzleIDs() {
+    public int[] getAllPuzzleIDs(String table) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + colID + " FROM " + colorTable, new String[]{});
-        curs.moveToFirst();
-        int[] puzzleIDs = new int[curs.getCount()];
-        int i = curs.getColumnIndex(colID);
-        int count = 0;
-        while (!curs.isAfterLast()) {
-            puzzleIDs[count] = curs.getInt(i);
-            count++;
-            curs.moveToNext();
+        Cursor curs;
+        switch (table) {
+            case puzzleTable:
+                curs = db.rawQuery("SELECT " + colID + " FROM " + puzzleTable, new String[]{});
+                break;
+            case colorTable:
+                curs = db.rawQuery("SELECT " + colID + " FROM " + colorTable, new String[]{});
+                break;
+            case yourTable:
+                curs = db.rawQuery("SELECT " + colID + " FROM " + yourTable, new String[]{});
+                break;
+            case yourColorTable:
+                curs = db.rawQuery("SELECT " + colID + " FROM " + yourColorTable, new String[]{});
+                break;
+            default:
+                return null;
         }
-        return puzzleIDs;
-    }
-
-    /**
-     * Queries the database for the ids of all puzzles
-     *
-     * @return an array with all of the puzzle ids
-     */
-    public int[] getAllYourPuzzleIDs() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor curs = db.rawQuery("SELECT " + colID + " FROM " + yourTable, new String[]{});
         curs.moveToFirst();
         int[] puzzleIDs = new int[curs.getCount()];
         int i = curs.getColumnIndex(colID);
@@ -354,9 +307,9 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      * @throws IOException            Can be thrown by the input stream
      * @throws ClassNotFoundException Can be thrown by the input stream
      */
-    public void updatePuzzle(Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException {
+    public void updatePuzzle(String table, Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException {
         //Query the database for the puzzle with the specified id
-        Cursor curs = getPuzzleByID(id);
+        Cursor curs = getPuzzleByID(table, id);
 
         //Get the index of puzzle attribute in the query
         int index = curs.getColumnIndex(puzzle);
@@ -397,117 +350,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(puzzle, buf);
         contentValues.put(comp, completed);
-        db.update(puzzleTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
-    }
-
-    /**
-     * Updates a puzzle in the database
-     *
-     * @param id        the puzzle id to be changed
-     * @param currState the new state
-     * @param completed the new completed value
-     * @throws IOException            Can be thrown by the input stream
-     * @throws ClassNotFoundException Can be thrown by the input stream
-     */
-    public void updateColorPuzzle(Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException {
-        //Query the database for the puzzle with the specified id
-        Cursor curs = getColorPuzzleByID(id);
-
-        //Get the index of puzzle attribute in the query
-        int index = curs.getColumnIndex(puzzle);
-
-        //Move the cursor to the first tuple
-        curs.moveToFirst();
-
-        //Get the serialized puzzle
-        byte[] b = curs.getBlob(index);
-
-        //Create input streams to deserialize the puzzle object
-        ByteArrayInputStream bis = new ByteArrayInputStream(b);
-        ObjectInputStream in = new ObjectInputStream(bis);
-
-        //Deserialize the puzzle object and close the input streams
-        ColorPuzzle p = (ColorPuzzle) in.readObject();
-        bis.close();
-        in.close();
-
-        //Set the puzzle object's current state and complete value
-        p.setCurrentState(currState);
-        p.setCompleted(completed);
-
-        //Create output streams to serialize the puzzle object
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
-
-        //Serialize the puzzle object and close the output streams
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
-
-        //Get the database
-        SQLiteDatabase db = getWritableDatabase();
-
-        //Update the puzzle values in the database
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(puzzle, buf);
-        contentValues.put(comp, completed);
-        db.update(colorTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
-    }
-
-    /**
-     * Updates a puzzle in the database
-     *
-     * @param id        the puzzle id to be changed
-     * @param currState the new state
-     * @param completed the new completed value
-     * @throws IOException            Can be thrown by the input stream
-     * @throws ClassNotFoundException Can be thrown by the input stream
-     */
-    public void updateYourPuzzle(Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException {
-        //Query the database for the puzzle with the specified id
-        Cursor curs = getYourPuzzleByID(id);
-
-        //Get the index of puzzle attribute in the query
-        int index = curs.getColumnIndex(puzzle);
-
-        //Move the cursor to the first tuple
-        curs.moveToFirst();
-
-        //Get the serialized puzzle
-        byte[] b = curs.getBlob(index);
-
-        //Create input streams to deserialize the puzzle object
-        ByteArrayInputStream bis = new ByteArrayInputStream(b);
-        ObjectInputStream in = new ObjectInputStream(bis);
-
-        //Deserialize the puzzle object and close the input streams
-        Puzzle p = (Puzzle) in.readObject();
-        bis.close();
-        in.close();
-
-        //Set the puzzle object's current state and complete value
-        p.setCurrentState(currState);
-        p.setCompleted(completed);
-
-        //Create output streams to serialize the puzzle object
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
-
-        //Serialize the puzzle object and close the output streams
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
-
-        //Get the database
-        SQLiteDatabase db = getWritableDatabase();
-
-        //Update the puzzle values in the database
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(puzzle, buf);
-        contentValues.put(comp, completed);
-        db.update(yourTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+        db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
     }
 
     /**
@@ -517,9 +360,9 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
      * @throws IOException            can be thrown by the input stream
      * @throws ClassNotFoundException can be thrown by the input stream
      */
-    public void resetPuzzle(int id) throws IOException, ClassNotFoundException {
+    public void resetPuzzle(String table, int id) throws IOException, ClassNotFoundException {
         //Queries the database for the puzzle with the specified id
-        Cursor curs = getPuzzleByID(id);
+        Cursor curs = getPuzzleByID(table, id);
 
         //Gets the index of puzzle attribute in the query
         int index = curs.getColumnIndex(puzzle);
@@ -535,153 +378,71 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ObjectInputStream in = new ObjectInputStream(bis);
 
         //Deserializes the puzzle object and closes the input stream
-        Puzzle p = (Puzzle) in.readObject();
-        bis.close();
-        in.close();
+        if (table.equals(puzzleTable) || table.equals(yourTable)) {
+            Puzzle p = (Puzzle) in.readObject();
+            bis.close();
+            in.close();
 
-        //Gets the size of the puzzle
-        int[] size = p.getSize();
+            //Gets the size of the puzzle
+            int[] size = p.getSize();
 
-        //Creates a new empty state with the size and sets complete to 0
-        int[][] currState = new int[size[1]][size[0]];
-        int completed = 0;
+            //Creates a new empty state with the size and sets complete to 0
+            int[][] currState = new int[size[1]][size[0]];
+            int completed = 0;
 
-        //Sets the current state to the new empty state and complete to 0
-        p.setCurrentState(currState);
-        p.setCompleted(completed);
+            //Sets the current state to the new empty state and complete to 0
+            p.setCurrentState(currState);
+            p.setCompleted(completed);
 
-        //Creates output streams to serialize the puzzle object
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
+            //Creates output streams to serialize the puzzle object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
 
-        //Serialize the puzzle object and close the output streams
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
+            //Serialize the puzzle object and close the output streams
+            out.writeObject(p);
+            byte[] buf = bos.toByteArray();
+            out.close();
+            bos.close();
 
-        //Get the database and update the puzzle in the it
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(puzzle, buf);
-        contentValues.put(comp, completed);
-        db.update(puzzleTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
-    }
+            //Get the database and update the puzzle in the it
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(puzzle, buf);
+            contentValues.put(comp, completed);
+            db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+        } else if (table.equals(colorTable) || table.equals(yourColorTable)) {
+            ColorPuzzle p = (ColorPuzzle) in.readObject();
+            bis.close();
+            in.close();
 
-    /**
-     * Resets the puzzle with the specified id in the database
-     *
-     * @param id the id of the puzzle to be reset
-     * @throws IOException            can be thrown by the input stream
-     * @throws ClassNotFoundException can be thrown by the input stream
-     */
-    public void resetColorPuzzle(int id) throws IOException, ClassNotFoundException {
-        //Queries the database for the puzzle with the specified id
-        Cursor curs = getColorPuzzleByID(id);
+            //Gets the size of the puzzle
+            int[] size = p.getSize();
 
-        //Gets the index of puzzle attribute in the query
-        int index = curs.getColumnIndex(puzzle);
+            //Creates a new empty state with the size and sets complete to 0
+            int[][] currState = new int[size[1]][size[0]];
+            int completed = 0;
 
-        //Moves the cursor to the first tuple
-        curs.moveToFirst();
+            //Sets the current state to the new empty state and complete to 0
+            p.setCurrentState(currState);
+            p.setCompleted(completed);
 
-        //Gets the serialized puzzle object
-        byte[] b = curs.getBlob(index);
+            //Creates output streams to serialize the puzzle object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
 
-        //Creates input streams to deserialize the puzzle object
-        ByteArrayInputStream bis = new ByteArrayInputStream(b);
-        ObjectInputStream in = new ObjectInputStream(bis);
+            //Serialize the puzzle object and close the output streams
+            out.writeObject(p);
+            byte[] buf = bos.toByteArray();
+            out.close();
+            bos.close();
 
-        //Deserializes the puzzle object and closes the input stream
-        ColorPuzzle p = (ColorPuzzle) in.readObject();
-        bis.close();
-        in.close();
-
-        //Gets the size of the puzzle
-        int[] size = p.getSize();
-
-        //Creates a new empty state with the size and sets complete to 0
-        int[][] currState = new int[size[1]][size[0]];
-        int completed = 0;
-
-        //Sets the current state to the new empty state and complete to 0
-        p.setCurrentState(currState);
-        p.setCompleted(completed);
-
-        //Creates output streams to serialize the puzzle object
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
-
-        //Serialize the puzzle object and close the output streams
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
-
-        //Get the database and update the puzzle in the it
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(puzzle, buf);
-        contentValues.put(comp, completed);
-        db.update(colorTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
-    }
-
-    /**
-     * Resets the puzzle with the specified id in the database
-     *
-     * @param id the id of the puzzle to be reset
-     * @throws IOException            can be thrown by the input stream
-     * @throws ClassNotFoundException can be thrown by the input stream
-     */
-    public void resetYourPuzzle(int id) throws IOException, ClassNotFoundException {
-        //Queries the database for the puzzle with the specified id
-        Cursor curs = getYourPuzzleByID(id);
-
-        //Gets the index of puzzle attribute in the query
-        int index = curs.getColumnIndex(puzzle);
-
-        //Moves the cursor to the first tuple
-        curs.moveToFirst();
-
-        //Gets the serialized puzzle object
-        byte[] b = curs.getBlob(index);
-
-        //Creates input streams to deserialize the puzzle object
-        ByteArrayInputStream bis = new ByteArrayInputStream(b);
-        ObjectInputStream in = new ObjectInputStream(bis);
-
-        //Deserializes the puzzle object and closes the input stream
-        Puzzle p = (Puzzle) in.readObject();
-        bis.close();
-        in.close();
-
-        //Gets the size of the puzzle
-        int[] size = p.getSize();
-
-        //Creates a new empty state with the size and sets complete to 0
-        int[][] currState = new int[size[1]][size[0]];
-        int completed = 0;
-
-        //Sets the current state to the new empty state and complete to 0
-        p.setCurrentState(currState);
-        p.setCompleted(completed);
-
-        //Creates output streams to serialize the puzzle object
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
-
-        //Serialize the puzzle object and close the output streams
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
-
-        //Get the database and update the puzzle in the it
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(puzzle, buf);
-        contentValues.put(comp, completed);
-        db.update(yourTable, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+            //Get the database and update the puzzle in the it
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(puzzle, buf);
+            contentValues.put(comp, completed);
+            db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+        }
     }
 
     // Database is never upgraded
@@ -959,23 +720,23 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ColorPuzzle color3 = new ColorPuzzle(idC3, sC3, solC3, rC3, cC3, colorsC3, 0);
 
         try {
-            insertPuzzle(id, firstPuzzle, s, completed, db);
-            insertPuzzle(id2, second, s2, 0, db);
-            insertPuzzle(id3, third, s3, 0, db);
-            insertPuzzle(id4, fourth, s4, 0, db);
-            insertPuzzle(id5, fifth, s5, 0, db);
-            insertPuzzle(id6, sixth, s6, 0, db);
-            insertPuzzle(id7, seventh, s7, 0, db);
-            insertPuzzle(id8, eighth, s8, 0, db);
-            insertPuzzle(id9, ninth, s9, 0, db);
-            insertPuzzle(id10, tenth, s10, 0, db);
-            insertPuzzle(id11, eleventh, s11, 0, db);
-            insertPuzzle(id12, twelfth, s12, 0, db);
-            insertPuzzle(id13, thirteenth, s13, 0, db);
-            insertPuzzle(id14, fourteenth, s14, 0, db);
-            insertPuzzle(idC1, color1, sC1, 0, db);
-            insertPuzzle(idC2, color2, sC2, 0, db);
-            insertPuzzle(idC3, color3, sC3, 0, db);
+            insertPuzzle(puzzleTable, id, firstPuzzle, s, completed, db);
+            insertPuzzle(puzzleTable, id2, second, s2, 0, db);
+            insertPuzzle(puzzleTable, id3, third, s3, 0, db);
+            insertPuzzle(puzzleTable, id4, fourth, s4, 0, db);
+            insertPuzzle(puzzleTable, id5, fifth, s5, 0, db);
+            insertPuzzle(puzzleTable, id6, sixth, s6, 0, db);
+            insertPuzzle(puzzleTable, id7, seventh, s7, 0, db);
+            insertPuzzle(puzzleTable, id8, eighth, s8, 0, db);
+            insertPuzzle(puzzleTable, id9, ninth, s9, 0, db);
+            insertPuzzle(puzzleTable, id10, tenth, s10, 0, db);
+            insertPuzzle(puzzleTable, id11, eleventh, s11, 0, db);
+            insertPuzzle(puzzleTable, id12, twelfth, s12, 0, db);
+            insertPuzzle(puzzleTable, id13, thirteenth, s13, 0, db);
+            insertPuzzle(puzzleTable, id14, fourteenth, s14, 0, db);
+            insertPuzzle(colorTable, idC1, color1, sC1, 0, db);
+            insertPuzzle(colorTable, idC2, color2, sC2, 0, db);
+            insertPuzzle(colorTable, idC3, color3, sC3, 0, db);
         } catch (IOException e) {
             e.printStackTrace();
         }

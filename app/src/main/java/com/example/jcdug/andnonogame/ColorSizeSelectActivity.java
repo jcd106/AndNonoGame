@@ -38,6 +38,10 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
             case R.id.fivebyten:
                 i.putExtra("size", "5 10");
                 break;
+            //TODO add case for your color puzzle
+            //case R.id.yourcolorpuzzles:
+                //i.putExtra("size", "your");
+                //break;
         }
 
         //Start the intent
@@ -76,11 +80,11 @@ public class ColorSizeSelectActivity extends AppCompatActivity implements BarFra
         PuzzleDatabase db = MainActivity.getDB();
 
         //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c1 = db.getColorCountBySize();
+        Cursor c1 = db.getCountBySize(getString(R.string.colorTable));
         c1.moveToFirst();
 
         //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c2 = db.getColorCountCompletedBySize();
+        Cursor c2 = db.getCountCompletedBySize(getString(R.string.colorTable));
         c2.moveToFirst();
 
         //Get the index of numPuzzles, Rows, and Cols in c1

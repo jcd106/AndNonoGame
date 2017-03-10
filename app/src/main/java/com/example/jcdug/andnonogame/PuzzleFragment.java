@@ -66,7 +66,7 @@ public class PuzzleFragment extends Fragment {
     Drawable filled;        //Color of filled puzzle boxes
     Drawable empty;         //Color of empty puzzle boxes
     Drawable markedBlank;   //Color of boxes marked Blank
-    int isYourPuzzle;
+    String table;
 
     int[][] rowVals;
     int[][] colVals;
@@ -115,7 +115,7 @@ public class PuzzleFragment extends Fragment {
         //Retrieve ID of current puzzle from PuzzleActivity bundle
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
-        isYourPuzzle = bundle.getInt("your");
+        table = bundle.getString("table");
 
         //Retrieve user color choice as string from shared preferences
         SharedPreferences preferences = this.getActivity().getSharedPreferences(COLOR_CHOICE, Context.MODE_PRIVATE);
@@ -166,12 +166,7 @@ public class PuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1;
-            if(isYourPuzzle == 1) {
-                c1 = db.getYourPuzzleByID(id);
-            } else {
-                c1 = db.getPuzzleByID(id);
-            }
+            Cursor c1 = db.getPuzzleByID(table, id);
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
             byte[] b = c1.getBlob(p1);
@@ -336,11 +331,7 @@ public class PuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
             try {
-                if(isYourPuzzle == 1) {
-                    db.updateYourPuzzle(id, currentState, complete);
-                } else {
-                    db.updatePuzzle(id, currentState, complete);
-                }
+                db.updatePuzzle(table, id, currentState, complete);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -526,11 +517,7 @@ public interface OnFragmentInteractionListener {
         super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            if(isYourPuzzle == 1) {
-                db.updateYourPuzzle(id, currentState, complete);
-            } else {
-                db.updatePuzzle(id, currentState, complete);
-            }
+            db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -546,11 +533,7 @@ public interface OnFragmentInteractionListener {
         super.onPause();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            if(isYourPuzzle == 1) {
-                db.updateYourPuzzle(id, currentState, complete);
-            } else {
-                db.updatePuzzle(id, currentState, complete);
-            }
+            db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -565,5 +548,4 @@ public interface OnFragmentInteractionListener {
         currentState = new int[numRows][numCols];
         complete = 0;
     }
-
 }

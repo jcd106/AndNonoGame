@@ -26,7 +26,7 @@ public class CreatePuzzleActivity extends AppCompatActivity implements BlankFrag
         PuzzleDatabase db = MainActivity.getDB();
 
         //Make a new ID
-        int[] yourIDs = db.getAllYourPuzzleIDs();
+        int[] yourIDs = db.getAllPuzzleIDs(getString(R.string.yourTable));
         int id = yourIDs.length+1;
 
         Intent i = getIntent();

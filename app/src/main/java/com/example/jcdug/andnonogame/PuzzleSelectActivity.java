@@ -68,7 +68,7 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
             PuzzleDatabase db = MainActivity.getDB();
 
             //Query the database for all puzzles with the selected size
-            Cursor c1 = db.getAllYourPuzzles();
+            Cursor c1 = db.getAllYourPuzzles(getString(R.string.yourTable));
 
             //Move the cursor to the first tuple
             c1.moveToFirst();
@@ -89,7 +89,7 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 public void onClick(View view) {
                     Intent i = new Intent(context, PuzzleActivity.class);
                     i.putExtra("puzzleID", Integer.toString(view.getId()));
-                    i.putExtra("your", "1");
+                    i.putExtra("table", getString(R.string.yourTable));
                     startActivity(i);
                 }
             };
@@ -154,9 +154,9 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
             Cursor c1;
             //Query the database for all puzzles with the selected size
             if (isColor == 1) {
-                c1 = db.getColorPuzzlesBySize(s[0], s[1]);
+                c1 = db.getPuzzlesBySize(getString(R.string.colorTable), s[0], s[1]);
             } else {
-                c1 = db.getPuzzlesBySize(s[0], s[1]);
+                c1 = db.getPuzzlesBySize(getString(R.string.puzzleTable), s[0], s[1]);
             }
 
             //Move the cursor to the first tuple
@@ -179,11 +179,12 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                     Intent i;
                     if (isColor == 1) {
                         i = new Intent(context, ColorPuzzleActivity.class);
+                        i.putExtra("table", getString(R.string.colorTable));
                     } else {
                         i = new Intent(context, PuzzleActivity.class);
+                        i.putExtra("table", getString(R.string.puzzleTable));
                     }
                     i.putExtra("puzzleID", Integer.toString(view.getId()));
-                    i.putExtra("your", "0");
                     startActivity(i);
                 }
             };

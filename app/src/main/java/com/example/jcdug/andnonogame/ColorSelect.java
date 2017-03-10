@@ -61,12 +61,13 @@ public class ColorSelect extends Fragment {
 
         Bundle bundle = this.getArguments();
         int id = bundle.getInt("puzzleID");
+        String table = bundle.getString("table");
         try {
             //Retrieve PuzzleDatabase from MainActivity
             PuzzleDatabase db = MainActivity.getDB();
 
             //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1 = db.getColorPuzzleByID(id);
+            Cursor c1 = db.getPuzzleByID(table, id);
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
             byte[] b = c1.getBlob(p1);

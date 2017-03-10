@@ -329,7 +329,7 @@ public class CreatePuzzleFragment extends Fragment {
             int complete = 0;
             Puzzle newPuzzle = new Puzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
             try {
-                db.insertYourPuzzle(id,newPuzzle,size,complete,db.getWritableDatabase());
+                db.insertPuzzle(getString(R.string.yourTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {
                 e.printStackTrace();
             }

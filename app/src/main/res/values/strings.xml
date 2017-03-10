@@ -10,10 +10,10 @@
     </string-array>
   -->
 
-    <string name="puzzleTable">puzzleTable</string>
-    <string name="yourTable">yourTable</string>
-    <string name="colorTable">colorTable</string>
-    <string name="yourColorTable">yourColorTable</string>
+    <string name="puzzleTable">Puzzles</string>
+    <string name="yourTable">YourPuzzles</string>
+    <string name="colorTable">ColorPuzzles</string>
+    <string name="yourColorTable">YourColorPuzzles</string>
 
     <item name="x_loc" type="id" />
     <item name="y_loc" type="id" />

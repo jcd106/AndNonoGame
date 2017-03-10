@@ -127,7 +127,7 @@ public class ColorUndoBar extends Fragment implements View.OnClickListener {
                                 try {
                                     //Reset the current puzzle in the PuzzleDatabase
                                     PuzzleDatabase db = MainActivity.getDB();
-                                    db.resetColorPuzzle(id);
+                                    db.resetPuzzle(getString(R.string.colorTable), id);
 
                                     //Redraw the PuzzleFragment with the new reset state
                                     BlankFragment bf = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);

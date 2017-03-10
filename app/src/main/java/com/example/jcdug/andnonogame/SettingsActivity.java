@@ -103,37 +103,20 @@ public class SettingsActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 //Get the puzzle database and get the ids of all puzzles
                                 PuzzleDatabase db = MainActivity.getDB();
-                                int[] ids = db.getAllPuzzleIDs();
-                                int[] colorids = db.getAllColorPuzzleIDs();
-                                int[] yourids = db.getAllYourPuzzleIDs();
-
-                                //Loop through the ids and reset the puzzle corresponding to the id
-                                for (int i = 0; i < ids.length; i++) {
-                                    try {
-                                        db.resetPuzzle(ids[i]);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    } catch (ClassNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                for (int i = 0; i < colorids.length; i++) {
-                                    try {
-                                        db.resetColorPuzzle(colorids[i]);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    } catch (ClassNotFoundException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                                //Loop through the ids and reset the puzzle corresponding to the id
-                                for (int i = 0; i < yourids.length; i++) {
-                                    try {
-                                        db.resetYourPuzzle(yourids[i]);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    } catch (ClassNotFoundException e) {
-                                        e.printStackTrace();
+                                String[] tables = {getString(R.string.puzzleTable),
+                                        getString(R.string.colorTable),
+                                        getString(R.string.yourTable)};
+                                for (int i = 0; i < tables.length; i++) {
+                                    int[] ids = db.getAllPuzzleIDs(tables[i]);
+                                    //Loop through the ids and reset the puzzle corresponding to the id
+                                    for (int j = 0; j < ids.length; j++) {
+                                        try {
+                                            db.resetPuzzle(tables[i], ids[j]);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        } catch (ClassNotFoundException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                                 dialog.dismiss();
