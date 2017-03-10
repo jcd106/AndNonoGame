@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -23,12 +24,12 @@ import java.io.ObjectInputStream;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ColorSelect.OnFragmentInteractionListener} interface
+ * {@link CreateColorSelect.OnFragmentInteractionListener} interface
  * to handle interaction events.
  *
  * @author Josh Dughi, Peter Todorov
  */
-public class ColorSelect extends Fragment {
+public class CreateColorSelect extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -41,7 +42,7 @@ public class ColorSelect extends Fragment {
     int selectedColor = 1;
     private int[] colors;
 
-    public ColorSelect() {
+    public CreateColorSelect() {
         // Required empty public constructor
     }
 
@@ -57,29 +58,13 @@ public class ColorSelect extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_color_select, container, false);
+        View view = inflater.inflate(R.layout.fragment_create_color_select, container, false);
 
         Bundle bundle = this.getArguments();
         int id = bundle.getInt("puzzleID");
-        try {
-            //Retrieve PuzzleDatabase from MainActivity
-            PuzzleDatabase db = MainActivity.getDB();
+        colors = bundle.getIntArray("colors");
 
-            //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1 = db.getColorPuzzleByID(id);
-            int p1 = c1.getColumnIndex("Puzzle");
-            c1.moveToFirst();
-            byte[] b = c1.getBlob(p1);
 
-            //Create a new input stream and deserialize the puzzle to be displayed
-            ByteArrayInputStream bis = new ByteArrayInputStream(b);
-            ObjectInput in = new ObjectInputStream(bis);
-            final ColorPuzzle p = (ColorPuzzle) in.readObject();
-            bis.close();
-            in.close();
-
-            //Store the colors in the ColorSelect fragment
-            colors = p.getColors();
 
             //Create a new onClickListener for the TextViews in the fragment
             View.OnClickListener listener = new View.OnClickListener() {
@@ -91,19 +76,19 @@ public class ColorSelect extends Fragment {
                     Integer color = (Integer) b.getTag(R.id.color);
 
                     BlankFragment bf = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
-                    ColorPuzzleFragment puzzleFragment = (ColorPuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("ColorPuzzleFragment");
+                    CreateColorPuzzleFragment puzzleFragment = (CreateColorPuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("CreateColorPuzzleFragment");
                     puzzleFragment.setSelectedColor(color);
 
                     //Change which color is selected and refresh the fragment
-                    BlankFragment bf2 = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_colors);
-                    ColorSelect colorSelect = (ColorSelect) bf2.getChildFragmentManager().findFragmentByTag("ColorSelect");
+                    BlankFragment bf2 = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.fragment_create_colors);
+                    CreateColorSelect colorSelect = (CreateColorSelect) bf2.getChildFragmentManager().findFragmentByTag("CreateColorSelect");
                     colorSelect.selectedColor = color;
                     bf2.getChildFragmentManager().beginTransaction().detach(colorSelect).attach(colorSelect).commit();
                 }
             };
 
             //Create TableLayout to organize colors into a table
-            TableLayout colorLayout = (TableLayout) view.findViewById(R.id.fragment_color_select);
+            TableLayout colorLayout = (TableLayout) view.findViewById(R.id.fragment_create_color_select);
             //Create a TableRow to add the colors to
             TableRow tableRow = new TableRow(this.getActivity());
             colorLayout.addView(tableRow);
@@ -114,12 +99,14 @@ public class ColorSelect extends Fragment {
                 TextView newBox;
 
                 //If the color is the selectedColor, inflate the TextView with the border_box_selected layout
-                if(i == selectedColor)
+                if(i == selectedColor) {
                     newBox = (TextView) inflater.inflate(R.layout.border_box_selected, tableRow, false);
+                }
 
-                //Otherwise, inflate the TextView with the border_box_large layout
-                else
+                    //Otherwise, inflate the TextView with the border_box_large layout
+                else {
                     newBox = (TextView) inflater.inflate(R.layout.border_box_unselected, tableRow, false);
+                }
 
                 //Set the color tag of the TextView to i
                 newBox.setTag(R.id.color, i);
@@ -134,12 +121,6 @@ public class ColorSelect extends Fragment {
                 newBox.setBackground(filled);
                 tableRow.addView(newBox);
             }
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return view;
     }
 

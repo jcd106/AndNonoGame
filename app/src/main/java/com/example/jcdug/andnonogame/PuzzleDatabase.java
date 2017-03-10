@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

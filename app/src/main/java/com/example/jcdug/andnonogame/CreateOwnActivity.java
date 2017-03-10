@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 
 public class CreateOwnActivity extends AppCompatActivity {
@@ -52,9 +53,17 @@ public class CreateOwnActivity extends AppCompatActivity {
     public void onClicked(View view) {
         switch (view.getId()) {
             case R.id.goto_create:
-                Intent i1 = new Intent(this, CreatePuzzleActivity.class);
-                i1.putExtra("size", size);
-                startActivity(i1);
+                CheckBox isColor = (CheckBox) findViewById(R.id.isColorCheckBox);
+                if(!isColor.isChecked()) {
+                    Intent i1 = new Intent(this, CreatePuzzleActivity.class);
+                    i1.putExtra("size", size);
+                    startActivity(i1);
+                }
+                else{
+                    Intent i2 = new Intent(this, ColorSelectActivity.class);
+                    i2.putExtra("size", size);
+                    startActivity(i2);
+                }
                 break;
             case R.id.cancel_create:
                 onBackPressed();

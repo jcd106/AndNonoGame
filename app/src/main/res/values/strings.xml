@@ -9,6 +9,12 @@
         <item>Red and Blue</item>
     </string-array>
   -->
+
+    <string name="puzzleTable">puzzleTable</string>
+    <string name="yourTable">yourTable</string>
+    <string name="colorTable">colorTable</string>
+    <string name="yourColorTable">yourColorTable</string>
+
     <item name="x_loc" type="id" />
     <item name="y_loc" type="id" />
     <item name="state" type="id" />

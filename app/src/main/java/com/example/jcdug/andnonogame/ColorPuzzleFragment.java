@@ -133,6 +133,7 @@ public class ColorPuzzleFragment extends Fragment {
             for(int i = 0; i < colors.length; i++) {
                 filled[i] = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
                 filled[i].setColorFilter(colors[i], PorterDuff.Mode.MULTIPLY);
+                //filled[i].setColorFilter(ContextCompat.getColor(this.getContext(), R.color.red), PorterDuff.Mode.MULTIPLY);
             }
             empty.setColorFilter(colors[0], PorterDuff.Mode.MULTIPLY);
 
@@ -172,7 +173,7 @@ public class ColorPuzzleFragment extends Fragment {
                     if (boxState == -1) {
                         b.setTag(R.id.state, 0);
                         currentState[yLoc][xLoc] = 0;
-                        b.setBackground(filled[0]);
+                        b.setBackground(empty);
                     }
                     else if (boxState != selectedColor) {
                         b.setTag(R.id.state, selectedColor);
@@ -258,8 +259,10 @@ public class ColorPuzzleFragment extends Fragment {
                         newBox.setTag(R.id.state, new Integer(currentState[y_val][x_val]));
 
                         //Display correct box state form current state
-                        if (currentState[y_val][x_val] != 0) {
+                        if (currentState[y_val][x_val] > 0) {
                             newBox.setBackground(filled[currentState[y_val][x_val]]);
+                        } else if (currentState[y_val][x_val] == -1){
+                            newBox.setBackground(markedBlank);
                         } else {
                             newBox.setBackground(filled[0]);
                         }
