@@ -56,6 +56,8 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
         db.execSQL("CREATE TABLE " + yourTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
                 + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
+        db.execSQL("CREATE TABLE " + yourColorTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
+                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
         addPuzzles(db);
     }
 
@@ -324,33 +326,63 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ByteArrayInputStream bis = new ByteArrayInputStream(b);
         ObjectInputStream in = new ObjectInputStream(bis);
 
-        //Deserialize the puzzle object and close the input streams
-        Puzzle p = (Puzzle) in.readObject();
-        bis.close();
-        in.close();
+        if (table.equals(puzzleTable) || table.equals(yourTable)) {
+            //Deserialize the puzzle object and close the input streams
+            Puzzle p = (Puzzle) in.readObject();
+            bis.close();
+            in.close();
 
-        //Set the puzzle object's current state and complete value
-        p.setCurrentState(currState);
-        p.setCompleted(completed);
+            //Set the puzzle object's current state and complete value
+            p.setCurrentState(currState);
+            p.setCompleted(completed);
 
-        //Create output streams to serialize the puzzle object
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream out = new ObjectOutputStream(bos);
+            //Create output streams to serialize the puzzle object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
 
-        //Serialize the puzzle object and close the output streams
-        out.writeObject(p);
-        byte[] buf = bos.toByteArray();
-        out.close();
-        bos.close();
+            //Serialize the puzzle object and close the output streams
+            out.writeObject(p);
+            byte[] buf = bos.toByteArray();
+            out.close();
+            bos.close();
 
-        //Get the database
-        SQLiteDatabase db = getWritableDatabase();
+            //Get the database
+            SQLiteDatabase db = getWritableDatabase();
 
-        //Update the puzzle values in the database
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(puzzle, buf);
-        contentValues.put(comp, completed);
-        db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+            //Update the puzzle values in the database
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(puzzle, buf);
+            contentValues.put(comp, completed);
+            db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+        } else {
+            //Deserialize the puzzle object and close the input streams
+            ColorPuzzle p = (ColorPuzzle) in.readObject();
+            bis.close();
+            in.close();
+
+            //Set the puzzle object's current state and complete value
+            p.setCurrentState(currState);
+            p.setCompleted(completed);
+
+            //Create output streams to serialize the puzzle object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+
+            //Serialize the puzzle object and close the output streams
+            out.writeObject(p);
+            byte[] buf = bos.toByteArray();
+            out.close();
+            bos.close();
+
+            //Get the database
+            SQLiteDatabase db = getWritableDatabase();
+
+            //Update the puzzle values in the database
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(puzzle, buf);
+            contentValues.put(comp, completed);
+            db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
+        }
     }
 
     /**

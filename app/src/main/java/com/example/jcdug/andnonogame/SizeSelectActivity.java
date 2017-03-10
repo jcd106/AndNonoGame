@@ -16,6 +16,8 @@ import android.widget.Button;
  */
 public class SizeSelectActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener {
 
+    boolean isColor;
+
     /**
      * Handles the creation of the view
      *
@@ -36,7 +38,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
     public void onButtonClick(View view) {
         //Create a new intent to start PuzzleSelectActivity
         Intent i = new Intent(this, PuzzleSelectActivity.class);
-        i.putExtra("color", "0");
+        if (isColor) {
+            i.putExtra("color", true);
+        } else {
+            i.putExtra("color", false);
+        }
 
         //Set the extra for the intent based on the button clicked
         switch (view.getId()) {
@@ -71,6 +77,17 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
      * Sets up the buttons for the layout with the correct information
      */
     private void setupScreen() {
+        Intent i = this.getIntent();
+        isColor = i.getBooleanExtra("color", false);
+
+        String table, yourTable;
+        if (isColor) {
+            table = getString(R.string.colorTable);
+            yourTable = getString(R.string.yourColorTable);
+        } else {
+            table = getString(R.string.puzzleTable);
+            yourTable = getString(R.string.yourTable);
+        }
         //Gets the buttons by id from the view
         Button fiveByFive = (Button) findViewById(R.id.fivebyfive);
         Button tenByTen = (Button) findViewById(R.id.tenbyten);
@@ -94,11 +111,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         PuzzleDatabase db = MainActivity.getDB();
 
         //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c1 = db.getCountBySize(getString(R.string.puzzleTable));
+        Cursor c1 = db.getCountBySize(table);
         c1.moveToFirst();
 
         //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c2 = db.getCountCompletedBySize(getString(R.string.puzzleTable));
+        Cursor c2 = db.getCountCompletedBySize(table);
         c2.moveToFirst();
 
         //Get the index of numPuzzles, Rows, and Cols in c1
@@ -154,11 +171,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         }
 
         //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
-        Cursor c3 = db.getCountYour(getString(R.string.yourTable));
+        Cursor c3 = db.getCountYour(yourTable);
         c3.moveToFirst();
 
         //Query the database for the count completed grouped by size and move the cursor to the first tuple
-        Cursor c4 = db.getCountCompletedYour(getString(R.string.yourTable));
+        Cursor c4 = db.getCountCompletedYour(yourTable);
         c4.moveToFirst();
 
         //Get the index of numPuzzles, Rows, and Cols in c1

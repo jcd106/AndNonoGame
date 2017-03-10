@@ -23,10 +23,12 @@ public class MenuActivity extends AppCompatActivity implements BarFragment.OnFra
         switch (view.getId()) {
             case R.id.normal_puzzles_button:
                 Intent i1 = new Intent(this, SizeSelectActivity.class);
+                i1.putExtra("color", false);
                 startActivity(i1);
                 break;
             case R.id.color_puzzles_button:
-                Intent i2 = new Intent(this, ColorSizeSelectActivity.class);
+                Intent i2 = new Intent(this, SizeSelectActivity.class);
+                i2.putExtra("color", true);
                 startActivity(i2);
                 break;
             case R.id.create_own_button:

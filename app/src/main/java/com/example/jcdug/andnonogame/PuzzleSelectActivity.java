@@ -22,7 +22,8 @@ import android.widget.TextView;
  */
 public class PuzzleSelectActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener {
 
-    int isColor;
+    boolean isColor;
+    String table;
     /**
      * Handles the creation of the activity
      *
@@ -58,17 +59,23 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
         //Get the size chosen on the size select screen
         Intent i = getIntent();
         String size = i.getStringExtra("size");
-        isColor = Integer.parseInt(i.getStringExtra("color"));
+        isColor = i.getBooleanExtra("color", false);
         if (size.equals("your")) {
 
             TextView sizeText = (TextView) findViewById(R.id.puzzle_select_size);
             sizeText.setText("Your Puzzles");
 
+            if (isColor) {
+                table = getString(R.string.yourColorTable);
+            } else {
+                table = getString(R.string.yourTable);
+            }
+
             //Get the puzzle database
             PuzzleDatabase db = MainActivity.getDB();
 
             //Query the database for all puzzles with the selected size
-            Cursor c1 = db.getAllYourPuzzles(getString(R.string.yourTable));
+            Cursor c1 = db.getAllYourPuzzles(table);
 
             //Move the cursor to the first tuple
             c1.moveToFirst();
@@ -87,9 +94,14 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 //When the button is clicked, PuzzleActivity is started with the id of the chosen puzzle
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(context, PuzzleActivity.class);
+                    Intent i;
+                    if (isColor) {
+                        i = new Intent(context, ColorPuzzleActivity.class);
+                    } else {
+                        i = new Intent(context, PuzzleActivity.class);
+                    }
+                    i.putExtra("table", table);
                     i.putExtra("puzzleID", Integer.toString(view.getId()));
-                    i.putExtra("table", getString(R.string.yourTable));
                     startActivity(i);
                 }
             };
@@ -151,13 +163,13 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
             //Get the puzzle database
             PuzzleDatabase db = MainActivity.getDB();
 
-            Cursor c1;
             //Query the database for all puzzles with the selected size
-            if (isColor == 1) {
-                c1 = db.getPuzzlesBySize(getString(R.string.colorTable), s[0], s[1]);
+            if (isColor) {
+                table = getString(R.string.colorTable);
             } else {
-                c1 = db.getPuzzlesBySize(getString(R.string.puzzleTable), s[0], s[1]);
+                table = getString(R.string.puzzleTable);
             }
+            Cursor c1 = db.getPuzzlesBySize(table, s[0], s[1]);
 
             //Move the cursor to the first tuple
             c1.moveToFirst();
@@ -177,13 +189,12 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 @Override
                 public void onClick(View view) {
                     Intent i;
-                    if (isColor == 1) {
+                    if (isColor) {
                         i = new Intent(context, ColorPuzzleActivity.class);
-                        i.putExtra("table", getString(R.string.colorTable));
                     } else {
                         i = new Intent(context, PuzzleActivity.class);
-                        i.putExtra("table", getString(R.string.puzzleTable));
                     }
+                    i.putExtra("table", table);
                     i.putExtra("puzzleID", Integer.toString(view.getId()));
                     startActivity(i);
                 }

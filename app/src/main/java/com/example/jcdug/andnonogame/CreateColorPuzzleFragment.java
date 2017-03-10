@@ -218,41 +218,67 @@ public class CreateColorPuzzleFragment extends Fragment {
             alertDialog.show();
             return false;
         } else {
-            int maxRowCs = (numCols+1)/2;
-            int maxColCs = (numRows+1)/2;
-            int[][] rowConstraints = new int[numRows][maxRowCs];
-            int[][] colConstraints = new int[maxColCs][numCols];
+            int maxRowCs = numCols;
+            int maxColCs = numRows;
+            int[][][] rowConstraints = new int[numRows][maxRowCs][2];
+            int[][][] colConstraints = new int[maxColCs][numCols][2];
             for(int i = 0; i < numRows; i++){
                 int currentRun = 0;
+                int currentColor = 0;
                 int currentConstraintIndex = maxRowCs - 1;
                 for(int j = numCols - 1; j >= 0; j--){
-                    if(currentState[i][j] == 1) {
+                    if(currentState[i][j] > 0 && currentRun == 0) {
                         currentRun++;
-                    } else if(currentRun > 0){
-                        rowConstraints[i][currentConstraintIndex] = currentRun;
+                        currentColor = currentState[i][j];
+                    } else if(currentState[i][j] > 0 && currentState[i][j] == currentColor) {
+                        currentRun++;
+                    } else if(currentRun > 0 && currentState[i][j] == 0) {
+                        rowConstraints[i][currentConstraintIndex][0] = currentRun;
+                        rowConstraints[i][currentConstraintIndex][1] = currentColor;
                         currentRun = 0;
+                        currentColor = 0;
+                        currentConstraintIndex--;
+                    } else if(currentRun > 0 && currentState[i][j] > 0) {
+                        rowConstraints[i][currentConstraintIndex][0] = currentRun;
+                        rowConstraints[i][currentConstraintIndex][1] = currentColor;
+                        currentRun = 1;
+                        currentColor = currentState[i][j];
                         currentConstraintIndex--;
                     }
                 }
                 if(currentRun > 0) {
-                    rowConstraints[i][currentConstraintIndex] = currentRun;
+                    rowConstraints[i][currentConstraintIndex][0] = currentRun;
+                    rowConstraints[i][currentConstraintIndex][1] = currentColor;
                 }
             }
 
             for(int j = 0; j < numCols; j++){
                 int currentRun = 0;
+                int currentColor = 0;
                 int currentConstraintIndex = maxColCs - 1;
                 for(int i = numRows - 1; i >= 0; i--){
-                    if(currentState[i][j] == 1) {
+                    if(currentState[i][j] > 0 && currentRun == 0) {
                         currentRun++;
-                    } else if(currentRun > 0){
-                        colConstraints[currentConstraintIndex][j] = currentRun;
+                        currentColor = currentState[i][j];
+                    } else if(currentState[i][j] > 0 && currentState[i][j] == currentColor) {
+                        currentRun++;
+                    } else if(currentRun > 0 && currentState[i][j] == 0) {
+                        colConstraints[currentConstraintIndex][j][0] = currentRun;
+                        colConstraints[currentConstraintIndex][j][1] = currentColor;
                         currentRun = 0;
+                        currentColor = 0;
+                        currentConstraintIndex--;
+                    } else if(currentRun > 0 && currentState[i][j] > 0) {
+                        colConstraints[currentConstraintIndex][j][0] = currentRun;
+                        colConstraints[currentConstraintIndex][j][1] = currentColor;
+                        currentRun = 1;
+                        currentColor = currentState[i][j];
                         currentConstraintIndex--;
                     }
                 }
                 if(currentRun > 0) {
-                    colConstraints[currentConstraintIndex][j] = currentRun;
+                    colConstraints[currentConstraintIndex][j][0] = currentRun;
+                    colConstraints[currentConstraintIndex][j][1] = currentColor;
                 }
             }
 
@@ -260,7 +286,7 @@ public class CreateColorPuzzleFragment extends Fragment {
             for(int i = 0; i < maxColCs; i++){
                 boolean isEmpty = true;
                 for(int j = 0; j < numCols; j++){
-                    if(colConstraints[i][j] != 0){
+                    if(colConstraints[i][j][0] != 0){
                         isEmpty = false;
                     }
                 }
@@ -269,7 +295,7 @@ public class CreateColorPuzzleFragment extends Fragment {
                 else
                     break;
             }
-            int[][] newColConstraints = new int[numColCs][numCols];
+            int[][][] newColConstraints = new int[numColCs][numCols][2];
             int colDiff = maxColCs - numColCs;
             for(int i = 0; i < numColCs; i++) {
                 newColConstraints[i] = colConstraints[i+colDiff];
@@ -279,7 +305,7 @@ public class CreateColorPuzzleFragment extends Fragment {
             for(int j = 0; j < maxRowCs; j++){
                 boolean isEmpty = true;
                 for(int i = 0; i < numRows; i++) {
-                    if (rowConstraints[i][j] != 0) {
+                    if (rowConstraints[i][j][0] != 0) {
                         isEmpty = false;
                     }
                 }
@@ -288,7 +314,7 @@ public class CreateColorPuzzleFragment extends Fragment {
                 else
                     break;
             }
-            int[][] newRowConstraints = new int[numRows][numRowCs];
+            int[][][] newRowConstraints = new int[numRows][numRowCs][2];
             int rowDiff = maxRowCs - numRowCs;
             for(int i = 0; i < numRows; i++) {
                 for(int j = 0; j < numRowCs; j++) {
@@ -301,12 +327,12 @@ public class CreateColorPuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            /*ColorPuzzle newPuzzle = new ColorPuzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
+            ColorPuzzle newPuzzle = new ColorPuzzle(id, size, currentState, newRowConstraints, newColConstraints, colors, complete);
             try {
-                db.insertYourPuzzle(getString(R.string.yourColorTable),id,newPuzzle,size,complete,db.getWritableDatabase());
+                db.insertPuzzle(getString(R.string.yourColorTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {
                 e.printStackTrace();
-            }*/
+            }
             return true;
         }
     }
