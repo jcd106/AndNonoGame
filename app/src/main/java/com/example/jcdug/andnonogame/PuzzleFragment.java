@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,11 +19,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
@@ -48,7 +52,7 @@ import java.util.Stack;
  * @author Josh Dughi, Peter Todorov
  * @version 1.4.3
  */
-public class PuzzleFragment extends Fragment {
+public class PuzzleFragment extends Fragment implements View.OnTouchListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     // Auto-Generated
     private static final String ARG_PARAM1 = "param1";
@@ -75,6 +79,16 @@ public class PuzzleFragment extends Fragment {
 
     public static final String COLOR_CHOICE = "ColorChoice";    //Used access saved preference color choice
 
+    private static final String TAG = "Touch";
+
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
     /**
      * Default constructor for fragment
      */
@@ -94,8 +108,6 @@ public class PuzzleFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     /**
@@ -111,6 +123,7 @@ public class PuzzleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_puzzle, container, false);
+        getActivity().findViewById(R.id.blank_fragment).setOnTouchListener(this);
 
         //Retrieve ID of current puzzle from PuzzleActivity bundle
         Bundle bundle = this.getArguments();
@@ -190,6 +203,7 @@ public class PuzzleFragment extends Fragment {
 
             //Create TableLayout to organize puzzle boxes into a grid
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
+            //puzzleLayout.setOnTouchListener(this);
 
             //Create an OnClickListener for each box in the puzzle
             View.OnClickListener listener = new View.OnClickListener() {
@@ -474,6 +488,81 @@ public class PuzzleFragment extends Fragment {
             // Checks if the puzzle is solved
             checkIfSolved();
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        View view = v;
+        Log.d("view", v.toString());
+
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                start.set(event.getX(), event.getY());
+                Log.d(TAG, "mode=DRAG");
+                mode = DRAG;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                oldDist = fingerSpacing(event);
+                Log.d(TAG, "oldDist=" + oldDist);
+                if (oldDist > 10f) {
+                    midPoint(mid, event);
+                    mode = ZOOM;
+                    Log.d(TAG, "mode=ZOOM");
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+                mode = NONE;
+                Log.d(TAG, "mode=NONE");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mode == DRAG) {
+                    view.setX(view.getX() + event.getX() - start.x);
+                    view.setY(view.getY() + event.getY() - start.y);
+                }
+                else if (mode == ZOOM) {
+                    float newDist = fingerSpacing(event);
+                    Log.d(TAG, "newDist=" + newDist);
+                    if (newDist > 10f) {
+
+                        float scale = newDist / oldDist;
+                        view.setPivotX(mid.x);
+                        view.setPivotY(mid.y);
+                        view.setScaleX(scale);
+                        view.setScaleY(scale);
+                    }
+                }
+                break;
+        }
+
+        return true;
+
+    }
+
+    private float fingerSpacing(MotionEvent event) {
+
+        float x0 = event.getXPrecision()*event.getX(0);
+        float x1 = event.getXPrecision()*event.getX(1);
+        float x = x0 - x1;
+        Log.d("X0",""+x0);
+        Log.d("X1",""+x1);
+
+        float y0 = event.getYPrecision()*event.getY(0);
+        float y1 = event.getYPrecision()*event.getY(1);
+        float y = y0 - y1;
+        Log.d("Y0",""+y0);
+        Log.d("Y1",""+y1);
+        float dist = (float) (Math.sqrt(x*x + y*y));
+        Log.d("spacing",""+dist);
+        return (float) (Math.sqrt(x * x + y * y));
+    }
+
+    private void midPoint(PointF point, MotionEvent event) {
+
+        float x = event.getXPrecision()*event.getX(0) + event.getXPrecision()*event.getX(1);
+        float y = event.getYPrecision()*event.getY(0) + event.getYPrecision()*event.getY(1);
+        point.set(x / 2, y / 2);
+
     }
 
     // Auto-generated

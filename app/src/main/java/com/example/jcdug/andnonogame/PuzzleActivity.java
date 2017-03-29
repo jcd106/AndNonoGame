@@ -1,14 +1,20 @@
 package com.example.jcdug.andnonogame;
 
 import android.content.Intent;
+import android.graphics.Matrix;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 /**
@@ -18,7 +24,6 @@ import android.widget.TextView;
  * @version 1.4.3
  */
 public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragmentInteractionListener, BarFragment.OnFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener, PuzzleFragment.OnFragmentInteractionListener {
-
 
     /**
      * Creates the view for the activity and

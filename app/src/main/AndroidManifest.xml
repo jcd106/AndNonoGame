@@ -37,7 +37,7 @@
         <activity android:name=".CreatePuzzleActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".ColorSelectActivity" />
-        <activity android:name=".CreateColorPuzzleActivity"></activity>
+        <activity android:name=".CreateColorPuzzleActivity" />
     </application>
 
 </manifest>
