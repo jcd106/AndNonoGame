@@ -34,18 +34,6 @@
         android:layout_below="@+id/by_text"
         android:layout_centerHorizontal="true" />
 
-    <Button
-        android:text="Instructions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:padding="5dp"
-        android:id="@+id/tutorial_button"
-        android:background="@drawable/border_button"
-        android:onClick="onClicked"
-        android:layout_below="@+id/play_button_main"
-        android:layout_centerHorizontal="true" />
-
     <TextView
         android:text="Nonograms"
         android:textSize="45sp"
@@ -74,7 +62,7 @@
         android:src="@drawable/settings_main"
         android:id="@+id/settings_button_main"
         style="?android:attr/borderlessButtonStyle"
-        android:onClick="onClicked"
+        android:onClick="onClick"
         android:elevation="0dp"
         android:layout_marginBottom="15dp"
         android:layout_alignParentBottom="true"
@@ -85,10 +73,45 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/play_button"
-        android:onClick="onClicked"
+        android:onClick="onClick"
         android:id="@+id/play_button_main"
         style="?android:attr/borderlessButtonStyle"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        android:id="@+id/tutorial_button"
+        android:background="@drawable/border_button"
+        android:onClick="onClick"
+        android:layout_below="@+id/play_button_main"
+        android:layout_alignEnd="@+id/sign_in_button" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:clickable="true"
+        android:layout_below="@+id/tutorial_button"
+        android:onClick="onClick"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp">
+
+    </com.google.android.gms.common.SignInButton>
+
+    <Button
+        android:id="@+id/sign_out_button"
+        android:layout_width="106dp"
+        android:layout_height="wrap_content"
+        android:text="Sign Out"
+        android:background="@drawable/border_button"
+        android:onClick="onClick"
+        android:layout_alignTop="@+id/sign_in_button"
+        android:layout_alignEnd="@+id/sign_in_button" />
 
 </RelativeLayout>
