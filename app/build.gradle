@@ -39,4 +39,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
     compile 'com.google.android.gms:play-services:9.0.0'
+    compile 'com.amazonaws:aws-android-sdk-core:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb:2.2.+'
+    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.2.+'
 }

@@ -494,18 +494,20 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         View view = v;
         Log.d("view", v.toString());
+        Log.d("RawX", ""+event.getRawX());
+        Log.d("RawY", ""+event.getRawY());
 
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
-                start.set(event.getX(), event.getY());
+                start.set(event.getRawX(), event.getRawY());
                 Log.d(TAG, "mode=DRAG");
                 mode = DRAG;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                oldDist = fingerSpacing(event);
+                oldDist = fingerSpacing(v, event);
                 Log.d(TAG, "oldDist=" + oldDist);
-                if (oldDist > 10f) {
-                    midPoint(mid, event);
+                if (oldDist > 200f) {
+                    midPoint(v, mid, event);
                     mode = ZOOM;
                     Log.d(TAG, "mode=ZOOM");
                 }
@@ -517,15 +519,25 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mode == DRAG) {
-                    view.setX(view.getX() + event.getX() - start.x);
-                    view.setY(view.getY() + event.getY() - start.y);
+                    int loc[] = {0, 0};
+                    view.getLocationOnScreen(loc);
+                    view.setX(view.getX() + event.getRawX() - start.x);
+                    view.setY(view.getY() + event.getRawY() - start.y);
+                    start.set(event.getRawX(), event.getRawY());
+                    Log.d("StartX", ""+start.x);
+                    Log.d("StartY", ""+start.y);
+                    Log.d("ViewX", ""+view.getX());
+                    Log.d("ViewY", ""+view.getY());
                 }
                 else if (mode == ZOOM) {
-                    float newDist = fingerSpacing(event);
+                    float newDist = fingerSpacing(v, event);
                     Log.d(TAG, "newDist=" + newDist);
-                    if (newDist > 10f) {
+                    if (newDist > 200f) {
 
                         float scale = newDist / oldDist;
+
+                        Log.d("Mid x", ""+mid.x);
+                        Log.d("Mid y", ""+mid.y);
                         view.setPivotX(mid.x);
                         view.setPivotY(mid.y);
                         view.setScaleX(scale);
@@ -539,16 +551,21 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
 
     }
 
-    private float fingerSpacing(MotionEvent event) {
+    private float fingerSpacing(View v, MotionEvent event) {
 
-        float x0 = event.getXPrecision()*event.getX(0);
-        float x1 = event.getXPrecision()*event.getX(1);
+        int loc[] = {0, 0};
+
+        if(v.equals(this.getActivity().findViewById(R.id.fragment_puzzle)))
+            v.getLocationOnScreen(loc);
+
+        float x0 = /*event.getXPrecision()*/event.getRawX();
+        float x1 = /*event.getXPrecision()*/event.getX(1) + loc[0];
         float x = x0 - x1;
         Log.d("X0",""+x0);
         Log.d("X1",""+x1);
 
-        float y0 = event.getYPrecision()*event.getY(0);
-        float y1 = event.getYPrecision()*event.getY(1);
+        float y0 = /*event.getYPrecision()*/event.getRawY();
+        float y1 = /*event.getYPrecision()*/event.getY(1) + loc[1];
         float y = y0 - y1;
         Log.d("Y0",""+y0);
         Log.d("Y1",""+y1);
@@ -557,10 +574,15 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
         return (float) (Math.sqrt(x * x + y * y));
     }
 
-    private void midPoint(PointF point, MotionEvent event) {
+    private void midPoint(View v, PointF point, MotionEvent event) {
 
-        float x = event.getXPrecision()*event.getX(0) + event.getXPrecision()*event.getX(1);
-        float y = event.getYPrecision()*event.getY(0) + event.getYPrecision()*event.getY(1);
+        int loc[] = {0, 0};
+
+        if(v.equals(this.getActivity().findViewById(R.id.fragment_puzzle)))
+            v.getLocationOnScreen(loc);
+
+        float x = /*event.getXPrecision()*/event.getRawX() + /*event.getXPrecision()*/event.getX(1) + loc[0];
+        float y = /*event.getYPrecision()*/event.getRawY() + /*event.getYPrecision()*/event.getY(1) + loc[1];
         point.set(x / 2, y / 2);
 
     }
