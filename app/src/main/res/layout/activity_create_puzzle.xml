@@ -43,16 +43,16 @@
         android:text="Save Puzzle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/save_upload_puzzle_button"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/border_button"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginBottom="22dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="10dp"
         android:id="@+id/save_puzzle_button"
         android:textAllCaps="false"
         android:onClick="onClicked" />
-
+<!--
     <Button
         android:text="Save and Upload Puzzle"
         android:layout_width="match_parent"
@@ -66,5 +66,16 @@
         android:id="@+id/save_upload_puzzle_button"
         android:textAllCaps="false"
         android:onClick="onClicked" />
+!-->
+    <CheckBox
+        android:text="Upload"
+        android:background="@drawable/border_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingRight="8dp"
+        android:layout_marginBottom="17dp"
+        android:checked="false"
+        android:id="@+id/upload_check" />
 
 </RelativeLayout>
