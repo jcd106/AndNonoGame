@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     CognitoCachingCredentialsProvider credentialsProvider;
     AmazonDynamoDBClient ddbClient;
-    DynamoDBMapper mapper;
+    private static DynamoDBMapper mapper;
     Map<String, String> logins = new HashMap<String, String>();
 
     /**
@@ -295,4 +295,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public static PuzzleDatabase getDB() {
         return db;
     }
+
+    /**
+     * Returns the mapper
+     * @return the mapper
+     */
+    public static DynamoDBMapper getMapper() { return mapper; }
 }
