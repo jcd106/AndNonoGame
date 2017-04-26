@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private static DynamoDBMapper mapper;
     Map<String, String> logins = new HashMap<String, String>();
 
+    private static boolean isSignedIn = false;
+
     /**
      * Creates the view for the activity
      * and initializes the PuzzleDatabase
@@ -160,10 +162,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 }
             }).start();
 
+            isSignedIn = true;
             //Possiblly set textview with acct.getDisplayName();
-            updateUI(true);
+            updateUI(isSignedIn);
         } else {
-            updateUI(false);
+            isSignedIn = false;
+            updateUI(isSignedIn);
         }
     }
 
@@ -171,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN_MAIN);
 
-        updateUI(true);
+        //updateUI(true);
     }
 
     private void signOut() {
@@ -179,9 +183,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-                        updateUI(false);
-                        logins.clear();
-                        credentialsProvider.setLogins(logins);
+                        isSignedIn = false;
+                        updateUI(isSignedIn);
+                        //logins.clear();
+                        //credentialsProvider.setLogins(logins);
                         credentialsProvider.clearCredentials();
                         new Thread(new Runnable() {
                             public void run() {
@@ -197,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
-                        updateUI(false);
+                        updateUI(isSignedIn);
                     }
                 });
     }
@@ -212,9 +217,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         if (signedIn) {
             findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
             findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.button_upload).setEnabled(true);
         } else {
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.button_upload).setEnabled(false);
         }
     }
 
@@ -301,4 +308,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @return the mapper
      */
     public static DynamoDBMapper getMapper() { return mapper; }
+
+    /**
+     * Returns sign in status
+     * @return the status
+     */
+    public static boolean getSignInStatus() { return isSignedIn; }
 }
