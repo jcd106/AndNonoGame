@@ -299,7 +299,7 @@ public class CreateColorPuzzleFragment extends Fragment {
                 else
                     break;
             }
-            int[][][] newColConstraints = new int[numColCs][numCols][2];
+            newColConstraints = new int[numColCs][numCols][2];
             int colDiff = maxColCs - numColCs;
             for(int i = 0; i < numColCs; i++) {
                 newColConstraints[i] = colConstraints[i+colDiff];
@@ -318,7 +318,7 @@ public class CreateColorPuzzleFragment extends Fragment {
                 else
                     break;
             }
-            int[][][] newRowConstraints = new int[numRows][numRowCs][2];
+            newRowConstraints = new int[numRows][numRowCs][2];
             int rowDiff = maxRowCs - numRowCs;
             for(int i = 0; i < numRows; i++) {
                 for(int j = 0; j < numRowCs; j++) {
@@ -397,7 +397,7 @@ public class CreateColorPuzzleFragment extends Fragment {
             ArrayList<List<Integer>> line = new ArrayList<List<Integer>>();
             for(int j = 0; j < arr[i].length; j++) {
                 ArrayList<Integer> inner = new ArrayList<Integer>();
-                for (int k = 0; j < arr[i][j].length; i++) {
+                for (int k = 0; k < arr[i][j].length; k++) {
                     inner.add(arr[i][j][k]);
                 }
                 line.add(inner);
