@@ -4,6 +4,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribut
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBIndexHashKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBIndexRangeKey;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBRangeKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 
 import java.io.Serializable;
@@ -20,10 +21,12 @@ import java.util.List;
  * @author Josh Dughi, Peter Todorov
  * @version 1.4.3
  */
-@DynamoDBTable(tableName = "ColorPuzzle")
+@DynamoDBTable(tableName = "ColorPuzzles")
 public class ColorPuzzleUpload implements Serializable {
     private int ID;                 //The unique ID of the puzzle
     private int completed;          //completed = 1 if puzzle is complete, 0 otherwise
+
+    private String userID;
 
     private List<Integer> size;             //The size of the puzzle in the form {numColumns, numRows}
     private List<List<Integer>> solution;       //The solution state
@@ -41,8 +44,9 @@ public class ColorPuzzleUpload implements Serializable {
      * @param colors The colors for the puzzle
      * @param comp   The value for complete
      */
-    public ColorPuzzleUpload(int id, List<Integer> s, List<List<Integer>> sol, List<List<List<Integer>>> r, List<List<List<Integer>>> c, List<Integer> colors, int comp) {
+    public ColorPuzzleUpload(int id, String user, List<Integer> s, List<List<Integer>> sol, List<List<List<Integer>>> r, List<List<List<Integer>>> c, List<Integer> colors, int comp) {
         ID = id;
+        userID = user;
         size = s;
         solution = sol;
         rows = r;
@@ -56,10 +60,18 @@ public class ColorPuzzleUpload implements Serializable {
      *
      * @return Puzzle ID
      */
-    @DynamoDBHashKey(attributeName = "PuzzleID")
+    @DynamoDBRangeKey(attributeName = "PuzzleID")
     public int getID() {
         return ID;
     }
+
+    /**
+     * Getter method for userID
+     *
+     * @return UserID
+     */
+    @DynamoDBHashKey(attributeName = "UserID")
+    public String getUserID() { return userID; }
 
     /**
      * Getter method for size

@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     CognitoCachingCredentialsProvider credentialsProvider;
     AmazonDynamoDBClient ddbClient;
+    private static GoogleSignInAccount acct;
     private static DynamoDBMapper mapper;
     Map<String, String> logins = new HashMap<String, String>();
 
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
+            acct = result.getSignInAccount();
             String authCode = acct.getServerAuthCode();
             String token = acct.getIdToken();
 
@@ -315,4 +316,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @return the status
      */
     public static boolean getSignInStatus() { return isSignedIn; }
+
+    /**
+     * Returns the account
+     * @return the account
+     */
+    public static GoogleSignInAccount getAccount() { return acct; }
 }

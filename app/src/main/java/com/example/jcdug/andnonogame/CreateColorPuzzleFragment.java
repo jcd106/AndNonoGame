@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -352,7 +353,9 @@ public class CreateColorPuzzleFragment extends Fragment {
         ArrayList<Integer> newColors = convertArray(colors);
 
         int completed = 0;
-        final ColorPuzzleUpload pu = new ColorPuzzleUpload(id, newSize, newCurrState, newRowConst, newColConst, newColors, completed);
+        String user = MainActivity.getAccount().getId();
+        Log.d("UserID", user);
+        final ColorPuzzleUpload pu = new ColorPuzzleUpload(id, user, newSize, newCurrState, newRowConst, newColConst, newColors, completed);
         final DynamoDBMapper mapper = MainActivity.getMapper();
         new Thread(new Runnable() {
             public void run() {

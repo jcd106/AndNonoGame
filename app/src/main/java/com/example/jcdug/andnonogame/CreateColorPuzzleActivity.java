@@ -65,6 +65,9 @@ public class CreateColorPuzzleActivity extends AppCompatActivity implements Blan
         BlankFragment bf2 = (BlankFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_create_colors);
         FragmentTransaction childFT2 = bf2.getChildFragmentManager().beginTransaction();
         childFT2.add(R.id.fragment_create_colors, colorBar, "CreateColorSelect").commit();
+
+        boolean isSignedIn = MainActivity.getSignInStatus();
+        findViewById(R.id.upload_check).setEnabled(isSignedIn);
     }
 
     /**
