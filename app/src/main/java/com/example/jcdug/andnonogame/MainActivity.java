@@ -182,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         updateUI(false);
                         logins.clear();
                         credentialsProvider.setLogins(logins);
+                        credentialsProvider.clearCredentials();
                         new Thread(new Runnable() {
                             public void run() {
                                 credentialsProvider.refresh();
