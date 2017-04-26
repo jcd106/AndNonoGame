@@ -19,11 +19,15 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Stack;
 
 
@@ -226,6 +230,8 @@ public class CreatePuzzleFragment extends Fragment {
         return view;
     }
 
+    int[][] newRowConstraints, newColConstraints;
+
     public boolean savePuzzle() {
         Context context = this.getActivity();
 
@@ -295,7 +301,7 @@ public class CreatePuzzleFragment extends Fragment {
                 else
                     break;
             }
-            int[][] newColConstraints = new int[numColCs][numCols];
+            newColConstraints = new int[numColCs][numCols];
             int colDiff = maxColCs - numColCs;
             for(int i = 0; i < numColCs; i++) {
                 newColConstraints[i] = colConstraints[i+colDiff];
@@ -314,7 +320,7 @@ public class CreatePuzzleFragment extends Fragment {
                 else
                     break;
             }
-            int[][] newRowConstraints = new int[numRows][numRowCs];
+            newRowConstraints = new int[numRows][numRowCs];
             int rowDiff = maxRowCs - numRowCs;
             for(int i = 0; i < numRows; i++) {
                 for(int j = 0; j < numRowCs; j++) {
@@ -335,6 +341,44 @@ public class CreatePuzzleFragment extends Fragment {
             }
             return true;
         }
+    }
+
+    public boolean saveUploadPuzzle() {
+        boolean saved = savePuzzle();
+        ArrayList<Integer> newSize = convertSize(size);
+        ArrayList<List<Integer>> newCurrState = convert2d(currentState);
+        ArrayList<List<Integer>> newRowConst = convert2d(newRowConstraints);
+        ArrayList<List<Integer>> newColConst = convert2d(newColConstraints);
+
+        int completed = 0;
+        final PuzzleUpload pu = new PuzzleUpload(id, newSize, newCurrState, newRowConst, newColConst, completed);
+        final DynamoDBMapper mapper = MainActivity.getMapper();
+        new Thread(new Runnable() {
+            public void run() {
+                //ddbClient.listTables();
+                mapper.save(pu);
+            }
+        }).start();
+        return saved;
+
+    }
+
+    private ArrayList<Integer> convertSize(int[] s) {
+        ArrayList<Integer> arrayList = new ArrayList<Integer>();
+        arrayList.add(s[0]);
+        arrayList.add(s[1]);
+        return arrayList;
+    }
+    private ArrayList<List<Integer>> convert2d (int[][] arr) {
+        ArrayList<List<Integer>> arrayList = new ArrayList<List<Integer>>();
+        for(int i = 0; i < arr.length; i++) {
+            ArrayList<Integer> line = new ArrayList<Integer>();
+            for(int j = 0; j < arr[i].length; j++) {
+                line.add(arr[i][j]);
+            }
+            arrayList.add(line);
+        }
+        return arrayList;
     }
 
     // Auto-generated

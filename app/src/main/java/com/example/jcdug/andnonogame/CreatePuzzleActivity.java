@@ -12,6 +12,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CreatePuzzleActivity extends AppCompatActivity implements BlankFragment.OnFragmentInteractionListener, CreatePuzzleFragment.OnFragmentInteractionListener{
 
@@ -66,6 +69,11 @@ public class CreatePuzzleActivity extends AppCompatActivity implements BlankFrag
                     onBackPressed();
                 }
                 break;
+            case R.id.save_upload_puzzle_button:
+                boolean isSavedU = createPuzzleFragment.saveUploadPuzzle();
+                if(isSavedU) {
+                    onBackPressed();
+                }
         }
     }
 
