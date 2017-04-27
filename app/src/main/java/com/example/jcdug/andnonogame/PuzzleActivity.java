@@ -123,6 +123,7 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         switch (view.getId()) {
             case R.id.upload_puzzle_button:
                 puzzleFragment.uploadPuzzle();
+                break;
         }
     }
 }
