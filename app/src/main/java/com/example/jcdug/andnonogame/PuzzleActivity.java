@@ -25,6 +25,8 @@ import android.widget.TextView;
  */
 public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragmentInteractionListener, BarFragment.OnFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener, PuzzleFragment.OnFragmentInteractionListener {
 
+    private PuzzleFragment puzzleFragment;
+
     /**
      * Creates the view for the activity and
      * handles the creation of a new PuzzleFragment
@@ -50,8 +52,15 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         bundle.putInt("puzzleID", id);
         bundle.putString("table", table);
 
+        Button uploadButton = (Button) findViewById(R.id.upload_puzzle_button);
+        boolean isYour = getString(R.string.yourTable).equals(table);
+        if (!isYour)
+            uploadButton.setVisibility(View.INVISIBLE);
+        else
+            uploadButton.setVisibility(View.VISIBLE);
+
         //Passes bundle to the PuzzleFragment
-        PuzzleFragment puzzleFragment = new PuzzleFragment();
+        puzzleFragment = new PuzzleFragment();
         puzzleFragment.setArguments(bundle);
 
         //Passes bundle to the undoBar
@@ -92,8 +101,15 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         bundle.putInt("puzzleID", id);
         bundle.putString("table", table);
 
+        Button uploadButton = (Button) findViewById(R.id.upload_puzzle_button);
+        boolean isYour = getString(R.string.yourTable).equals(table);
+        if (!isYour)
+            uploadButton.setVisibility(View.INVISIBLE);
+        else
+            uploadButton.setVisibility(View.VISIBLE);
+
         //Passes bundle to new PuzzleFragment
-        PuzzleFragment puzzleFragment = new PuzzleFragment();
+        puzzleFragment = new PuzzleFragment();
         puzzleFragment.setArguments(bundle);
 
         //Adds the new PuzzleFragment to the BlankFragment
@@ -101,5 +117,12 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         FragmentTransaction childFT = bf.getChildFragmentManager().beginTransaction();
         PuzzleFragment pf = (PuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("PuzzleFragment");
         childFT.detach(pf).attach(pf).remove(pf).add(R.id.blank_fragment, puzzleFragment, "PuzzleFragment").commit();
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.upload_puzzle_button:
+                puzzleFragment.uploadPuzzle();
+        }
     }
 }

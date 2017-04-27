@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     CognitoCachingCredentialsProvider credentialsProvider;
     AmazonDynamoDBClient ddbClient;
+    private static GoogleSignInAccount acct;
     private static DynamoDBMapper mapper;
     Map<String, String> logins = new HashMap<String, String>();
 
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
+            acct = result.getSignInAccount();
             String authCode = acct.getServerAuthCode();
             String token = acct.getIdToken();
 
@@ -188,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         //logins.clear();
                         //credentialsProvider.setLogins(logins);
                         credentialsProvider.clearCredentials();
+
                         new Thread(new Runnable() {
                             public void run() {
                                 credentialsProvider.refresh();
@@ -283,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 cols.add(new ArrayList<Integer>(Arrays.asList(3, 4, 1, 4, 3)));
 
                 int completed = 0;
-                final PuzzleUpload pu = new PuzzleUpload(id, size, solution, rows, cols, completed);
+                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), size, solution, rows, cols, completed);
                 new Thread(new Runnable() {
                     public void run() {
                         //ddbClient.listTables();
@@ -314,4 +316,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @return the status
      */
     public static boolean getSignInStatus() { return isSignedIn; }
+
+    /**
+     * Returns the account
+     * @return the account
+     */
+    public static GoogleSignInAccount getAccount() { return acct; }
 }

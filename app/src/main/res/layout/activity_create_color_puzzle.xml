@@ -47,12 +47,23 @@
         android:background="@drawable/border_button"
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
-        android:layout_marginBottom="22dp"
+        android:layout_marginBottom="10dp"
         android:id="@+id/save_color_puzzle_button"
         android:textAllCaps="false"
         android:onClick="onClicked"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <CheckBox
+        android:text="Upload"
+        android:background="@drawable/border_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingRight="8dp"
+        android:layout_marginBottom="17dp"
+        android:checked="false"
+        android:id="@+id/upload_check" />
 
     <ImageButton
         android:layout_width="50dp"

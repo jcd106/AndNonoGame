@@ -231,6 +231,7 @@ public class CreatePuzzleFragment extends Fragment {
     }
 
     int[][] newRowConstraints, newColConstraints;
+    Puzzle newPuzzle;
 
     public boolean savePuzzle() {
         Context context = this.getActivity();
@@ -333,7 +334,7 @@ public class CreatePuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            Puzzle newPuzzle = new Puzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
+            newPuzzle = new Puzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
             try {
                 db.insertPuzzle(getString(R.string.yourTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {
@@ -345,13 +346,8 @@ public class CreatePuzzleFragment extends Fragment {
 
     public boolean saveUploadPuzzle() {
         boolean saved = savePuzzle();
-        ArrayList<Integer> newSize = convertSize(size);
-        ArrayList<List<Integer>> newCurrState = convert2d(currentState);
-        ArrayList<List<Integer>> newRowConst = convert2d(newRowConstraints);
-        ArrayList<List<Integer>> newColConst = convert2d(newColConstraints);
-
-        int completed = 0;
-        final PuzzleUpload pu = new PuzzleUpload(id, newSize, newCurrState, newRowConst, newColConst, completed);
+        String user = MainActivity.getAccount().getId();
+        final PuzzleUpload pu = newPuzzle.convertToUpload(user);
         final DynamoDBMapper mapper = MainActivity.getMapper();
         new Thread(new Runnable() {
             public void run() {
@@ -361,24 +357,6 @@ public class CreatePuzzleFragment extends Fragment {
         }).start();
         return saved;
 
-    }
-
-    private ArrayList<Integer> convertSize(int[] s) {
-        ArrayList<Integer> arrayList = new ArrayList<Integer>();
-        arrayList.add(s[0]);
-        arrayList.add(s[1]);
-        return arrayList;
-    }
-    private ArrayList<List<Integer>> convert2d (int[][] arr) {
-        ArrayList<List<Integer>> arrayList = new ArrayList<List<Integer>>();
-        for(int i = 0; i < arr.length; i++) {
-            ArrayList<Integer> line = new ArrayList<Integer>();
-            for(int j = 0; j < arr[i].length; j++) {
-                line.add(arr[i][j]);
-            }
-            arrayList.add(line);
-        }
-        return arrayList;
     }
 
     // Auto-generated

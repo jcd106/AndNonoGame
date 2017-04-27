@@ -1,6 +1,10 @@
 package com.example.jcdug.andnonogame;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Puzzle Object Class
@@ -120,5 +124,33 @@ public class Puzzle implements Serializable {
      */
     public void setCompleted(int c) {
         completed = c;
+    }
+
+
+    public PuzzleUpload convertToUpload(String userID) {
+        ArrayList<Integer> newSize = convertSize(size);
+        ArrayList<List<Integer>> newCurrState = convert2d(solution);
+        ArrayList<List<Integer>> newRowConst = convert2d(rows);
+        ArrayList<List<Integer>> newColConst = convert2d(cols);
+        PuzzleUpload pu = new PuzzleUpload(ID, userID, newSize, newCurrState, newRowConst, newColConst, 0);
+        return pu;
+    }
+
+    private ArrayList<Integer> convertSize(int[] s) {
+        ArrayList<Integer> arrayList = new ArrayList<Integer>();
+        arrayList.add(s[0]);
+        arrayList.add(s[1]);
+        return arrayList;
+    }
+    private ArrayList<List<Integer>> convert2d (int[][] arr) {
+        ArrayList<List<Integer>> arrayList = new ArrayList<List<Integer>>();
+        for(int i = 0; i < arr.length; i++) {
+            ArrayList<Integer> line = new ArrayList<Integer>();
+            for(int j = 0; j < arr[i].length; j++) {
+                line.add(arr[i][j]);
+            }
+            arrayList.add(line);
+        }
+        return arrayList;
     }
 }

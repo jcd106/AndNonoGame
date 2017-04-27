@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -64,6 +65,9 @@ public class CreateColorPuzzleActivity extends AppCompatActivity implements Blan
         BlankFragment bf2 = (BlankFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_create_colors);
         FragmentTransaction childFT2 = bf2.getChildFragmentManager().beginTransaction();
         childFT2.add(R.id.fragment_create_colors, colorBar, "CreateColorSelect").commit();
+
+        boolean isSignedIn = MainActivity.getSignInStatus();
+        findViewById(R.id.upload_check).setEnabled(isSignedIn);
     }
 
     /**
@@ -77,7 +81,12 @@ public class CreateColorPuzzleActivity extends AppCompatActivity implements Blan
                 onBackPressed();
                 break;
             case R.id.save_color_puzzle_button:
-                boolean isSaved = createColorPuzzleFragment.savePuzzle();
+                CheckBox upload = (CheckBox) findViewById(R.id.upload_check);
+                boolean isSaved = false;
+                if (upload.isChecked())
+                    isSaved = createColorPuzzleFragment.saveUploadPuzzle();
+                else
+                    isSaved = createColorPuzzleFragment.savePuzzle();
                 if(isSaved) {
                     Intent i = new Intent(this, CreateOwnActivity.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

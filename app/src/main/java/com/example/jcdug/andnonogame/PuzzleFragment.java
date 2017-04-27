@@ -32,6 +32,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -71,6 +74,8 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
     Drawable empty;         //Color of empty puzzle boxes
     Drawable markedBlank;   //Color of boxes marked Blank
     String table;
+
+    private Puzzle puzzle;
 
     int[][] rowVals;
     int[][] colVals;
@@ -190,6 +195,7 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
             final Puzzle p = (Puzzle) in.readObject();
             bis.close();
             in.close();
+            puzzle = p;
 
             //Store all of the puzzle objects information in the PuzzleFragment
             currentState = p.getCurrentState();
@@ -658,5 +664,17 @@ public interface OnFragmentInteractionListener {
     public void resetCurrentState() {
         currentState = new int[numRows][numCols];
         complete = 0;
+    }
+
+    public void uploadPuzzle() {
+        String user = MainActivity.getAccount().getId();
+        final PuzzleUpload pu = puzzle.convertToUpload(user);
+        final DynamoDBMapper mapper = MainActivity.getMapper();
+        new Thread(new Runnable() {
+            public void run() {
+                //ddbClient.listTables();
+                mapper.save(pu);
+            }
+        }).start();
     }
 }
