@@ -5,10 +5,13 @@ import android.net.Uri;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoBar.OnFragmentInteractionListener, BarFragment.OnFragmentInteractionListener, BlankFragment.OnFragmentInteractionListener, ColorPuzzleFragment.OnFragmentInteractionListener, ColorSelect.OnFragmentInteractionListener {
 
+    private ColorPuzzleFragment puzzleFragment;
 
     /**
      * Creates the view for the activity and
@@ -35,8 +38,15 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
         bundle.putInt("puzzleID", id);
         bundle.putString("table", table);
 
+        Button uploadButton = (Button) findViewById(R.id.upload_puzzle_button);
+        boolean isYour = getString(R.string.yourColorTable).equals(table);
+        if (!isYour)
+            uploadButton.setVisibility(View.INVISIBLE);
+        else
+            uploadButton.setVisibility(View.VISIBLE);
+
         //Passes bundle to the PuzzleFragment
-        ColorPuzzleFragment puzzleFragment = new ColorPuzzleFragment();
+        puzzleFragment = new ColorPuzzleFragment();
         puzzleFragment.setArguments(bundle);
 
         //Passes bundle to the undoBar
@@ -84,8 +94,15 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
         bundle.putInt("puzzleID", id);
         bundle.putString("table", table);
 
+        Button uploadButton = (Button) findViewById(R.id.upload_puzzle_button);
+        boolean isYour = getString(R.string.yourColorTable).equals(table);
+        if (!isYour)
+            uploadButton.setVisibility(View.INVISIBLE);
+        else
+            uploadButton.setVisibility(View.VISIBLE);
+
         //Passes bundle to new PuzzleFragment
-        ColorPuzzleFragment puzzleFragment = new ColorPuzzleFragment();
+        puzzleFragment = new ColorPuzzleFragment();
         puzzleFragment.setArguments(bundle);
 
         //Adds the new PuzzleFragment to the BlankFragment
@@ -93,5 +110,12 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
         FragmentTransaction childFT = bf.getChildFragmentManager().beginTransaction();
         ColorPuzzleFragment pf = (ColorPuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("ColorPuzzleFragment");
         childFT.detach(pf).attach(pf).remove(pf).add(R.id.blank_fragment, puzzleFragment, "ColorPuzzleFragment").commit();
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.upload_puzzle_button:
+                puzzleFragment.uploadPuzzle();
+        }
     }
 }

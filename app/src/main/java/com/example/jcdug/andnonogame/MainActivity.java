@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 cols.add(new ArrayList<Integer>(Arrays.asList(3, 4, 1, 4, 3)));
 
                 int completed = 0;
-                final PuzzleUpload pu = new PuzzleUpload(id, size, solution, rows, cols, completed);
+                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), size, solution, rows, cols, completed);
                 new Thread(new Runnable() {
                     public void run() {
                         //ddbClient.listTables();

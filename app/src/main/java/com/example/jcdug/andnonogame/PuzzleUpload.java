@@ -77,6 +77,7 @@ public class PuzzleUpload implements Serializable {
      *
      * @return the solution state of the puzzle
      */
+    @DynamoDBAttribute(attributeName = "Solution")
     public List<List<Integer>> getSolution() {
         return solution;
     }

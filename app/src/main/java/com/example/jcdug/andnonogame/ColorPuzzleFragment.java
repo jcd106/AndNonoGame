@@ -20,6 +20,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -49,6 +51,8 @@ public class ColorPuzzleFragment extends Fragment {
     Drawable markedBlank;   //Color of boxes marked Blank
     int selectedColor;
     String table;
+
+    private ColorPuzzle puzzle;
 
     int[][][] rowVals;
     int[][][] colVals;
@@ -119,6 +123,7 @@ public class ColorPuzzleFragment extends Fragment {
             final ColorPuzzle p = (ColorPuzzle) in.readObject();
             bis.close();
             in.close();
+            puzzle = p;
 
             //Store all of the puzzle objects information in the PuzzleFragment
             currentState = p.getCurrentState();
@@ -550,4 +555,15 @@ public class ColorPuzzleFragment extends Fragment {
         selectedColor = color;
     }
 
+    public void uploadPuzzle() {
+        String user = MainActivity.getAccount().getId();
+        final ColorPuzzleUpload pu = puzzle.convertToUpload(user);
+        final DynamoDBMapper mapper = MainActivity.getMapper();
+        new Thread(new Runnable() {
+            public void run() {
+                //ddbClient.listTables();
+                mapper.save(pu);
+            }
+        }).start();
+    }
 }

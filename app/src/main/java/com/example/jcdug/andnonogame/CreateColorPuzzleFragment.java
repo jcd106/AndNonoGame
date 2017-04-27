@@ -205,6 +205,9 @@ public class CreateColorPuzzleFragment extends Fragment {
         return view;
     }
 
+    int[][][] newRowConstraints, newColConstraints;
+    ColorPuzzle newPuzzle;
+
     public boolean savePuzzle() {
         Context context = this.getActivity();
 
@@ -332,7 +335,7 @@ public class CreateColorPuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            ColorPuzzle newPuzzle = new ColorPuzzle(id, size, currentState, newRowConstraints, newColConstraints, colors, complete);
+            newPuzzle = new ColorPuzzle(id, size, currentState, newRowConstraints, newColConstraints, colors, complete);
             try {
                 db.insertPuzzle(getString(R.string.yourColorTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {
@@ -342,20 +345,10 @@ public class CreateColorPuzzleFragment extends Fragment {
         }
     }
 
-    int[][][] newRowConstraints, newColConstraints;
-
     public boolean saveUploadPuzzle() {
         boolean saved = savePuzzle();
-        ArrayList<Integer> newSize = convertSize(size);
-        ArrayList<List<Integer>> newCurrState = convert2d(currentState);
-        ArrayList<List<List<Integer>>> newRowConst = convert3d(newRowConstraints);
-        ArrayList<List<List<Integer>>> newColConst = convert3d(newColConstraints);
-        ArrayList<Integer> newColors = convertArray(colors);
-
-        int completed = 0;
         String user = MainActivity.getAccount().getId();
-        Log.d("UserID", user);
-        final ColorPuzzleUpload pu = new ColorPuzzleUpload(id, user, newSize, newCurrState, newRowConst, newColConst, newColors, completed);
+        final ColorPuzzleUpload pu = newPuzzle.convertToUpload(user);
         final DynamoDBMapper mapper = MainActivity.getMapper();
         new Thread(new Runnable() {
             public void run() {
@@ -365,49 +358,6 @@ public class CreateColorPuzzleFragment extends Fragment {
         }).start();
         return saved;
 
-    }
-
-    private ArrayList<Integer> convertSize(int[] s) {
-        ArrayList<Integer> arrayList = new ArrayList<Integer>();
-        arrayList.add(s[0]);
-        arrayList.add(s[1]);
-        return arrayList;
-    }
-
-    private ArrayList<Integer> convertArray(int[] arr) {
-        ArrayList<Integer> arrayList = new ArrayList<Integer>();
-        for(int i = 0; i < arr.length; i++) {
-            arrayList.add(arr[i]);
-        }
-        return arrayList;
-    }
-
-    private ArrayList<List<Integer>> convert2d (int[][] arr) {
-        ArrayList<List<Integer>> arrayList = new ArrayList<List<Integer>>();
-        for(int i = 0; i < arr.length; i++) {
-            ArrayList<Integer> line = new ArrayList<Integer>();
-            for(int j = 0; j < arr[i].length; j++) {
-                line.add(arr[i][j]);
-            }
-            arrayList.add(line);
-        }
-        return arrayList;
-    }
-
-    private ArrayList<List<List<Integer>>> convert3d (int[][][] arr) {
-        ArrayList<List<List<Integer>>> arrayList = new ArrayList<List<List<Integer>>>();
-        for(int i = 0; i < arr.length; i++) {
-            ArrayList<List<Integer>> line = new ArrayList<List<Integer>>();
-            for(int j = 0; j < arr[i].length; j++) {
-                ArrayList<Integer> inner = new ArrayList<Integer>();
-                for (int k = 0; k < arr[i][j].length; k++) {
-                    inner.add(arr[i][j][k]);
-                }
-                line.add(inner);
-            }
-            arrayList.add(line);
-        }
-        return arrayList;
     }
 
     // Auto-generated

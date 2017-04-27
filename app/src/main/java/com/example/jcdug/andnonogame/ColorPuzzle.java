@@ -1,6 +1,8 @@
 package com.example.jcdug.andnonogame;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jcdug on 11/18/2016.
@@ -129,5 +131,51 @@ public class ColorPuzzle implements Serializable {
      */
     public void setCompleted(int c) {
         completed = c;
+    }
+
+    public ColorPuzzleUpload convertToUpload(String userID) {
+        ArrayList<Integer> newSize = convertArray(size);
+        ArrayList<List<Integer>> newCurrState = convert2d(currentState);
+        ArrayList<List<List<Integer>>> newRowConst = convert3d(rows);
+        ArrayList<List<List<Integer>>> newColConst = convert3d(cols);
+        ArrayList<Integer> newColors = convertArray(colors);
+        ColorPuzzleUpload pu = new ColorPuzzleUpload(ID, userID, newSize, newCurrState, newRowConst, newColConst, newColors, 0);
+        return pu;
+    }
+
+    private ArrayList<Integer> convertArray(int[] arr) {
+        ArrayList<Integer> arrayList = new ArrayList<Integer>();
+        for(int i = 0; i < arr.length; i++) {
+            arrayList.add(arr[i]);
+        }
+        return arrayList;
+    }
+
+    private ArrayList<List<Integer>> convert2d (int[][] arr) {
+        ArrayList<List<Integer>> arrayList = new ArrayList<List<Integer>>();
+        for(int i = 0; i < arr.length; i++) {
+            ArrayList<Integer> line = new ArrayList<Integer>();
+            for(int j = 0; j < arr[i].length; j++) {
+                line.add(arr[i][j]);
+            }
+            arrayList.add(line);
+        }
+        return arrayList;
+    }
+
+    private ArrayList<List<List<Integer>>> convert3d (int[][][] arr) {
+        ArrayList<List<List<Integer>>> arrayList = new ArrayList<List<List<Integer>>>();
+        for(int i = 0; i < arr.length; i++) {
+            ArrayList<List<Integer>> line = new ArrayList<List<Integer>>();
+            for(int j = 0; j < arr[i].length; j++) {
+                ArrayList<Integer> inner = new ArrayList<Integer>();
+                for (int k = 0; k < arr[i][j].length; k++) {
+                    inner.add(arr[i][j][k]);
+                }
+                line.add(inner);
+            }
+            arrayList.add(line);
+        }
+        return arrayList;
     }
 }
