@@ -91,7 +91,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                         Puzzle puzzle = selectedPuzzle.convertToPuzzle();
                         try {
                             db.insertDownloadedPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
-                            Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "Downloaded puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
                         } catch (SQLiteConstraintException|IOException e) {
                             //Create a popup notifying the user that puzzle has been downloaded previously
                             AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
@@ -104,7 +104,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                         }
                                     });
                             alertDialog.show();
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                     }
                 });
@@ -130,11 +130,11 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
                     {
                         ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
-                        /*ColorPuzzle puzzle = selectedPuzzle;
+                        ColorPuzzle puzzle = selectedPuzzle.convertToPuzzle();
                         try {
                             db.insertDownloadedColorPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
-                            Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
-                        } catch (IOException e) {
+                            Toast.makeText(getApplicationContext(), "Downloaded puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                        } catch (SQLiteConstraintException|IOException e) {
                         //Create a popup notifying the user that puzzle has been downloaded previously
                             AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
                             alertDialog.setTitle("Duplicate Puzzle");
@@ -149,8 +149,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                             e.printStackTrace();
                             e.printStackTrace();
                         }
-                        */
-
                     }
                 });
             }

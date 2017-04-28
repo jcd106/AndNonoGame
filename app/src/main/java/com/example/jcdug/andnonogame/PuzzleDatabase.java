@@ -164,7 +164,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         db.insertOrThrow(downTable, null, contentValues);
     }
 
-    public void insertDownloadedPuzzle(String userid, int id, ColorPuzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
+    public void insertDownloadedColorPuzzle(String userid, int id, ColorPuzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
         //Create an output stream to serialize the puzzle
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = new ObjectOutputStream(bos);
