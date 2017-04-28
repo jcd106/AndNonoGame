@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TableLayout;
@@ -36,7 +38,7 @@ import java.util.Map;
 import java.util.Stack;
 
 
-public class ColorPuzzleFragment extends Fragment {
+public class ColorPuzzleFragment extends Fragment implements View.OnTouchListener {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     // Auto-Generated
     private static final String ARG_PARAM1 = "param1";
@@ -65,6 +67,17 @@ public class ColorPuzzleFragment extends Fragment {
 
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
     private Stack<Integer> prevColors = new Stack<Integer>();
+
+    private static final String TAG = "Touch";
+
+    static final int NONE = 0;
+    static final int DRAG = 1;
+    static final int ZOOM = 2;
+    int mode = NONE;
+
+    PointF start = new PointF();
+    PointF mid = new PointF();
+    float oldDist = 1f;
 
     /**
      * Default constructor for fragment
@@ -291,8 +304,17 @@ public class ColorPuzzleFragment extends Fragment {
         } catch (IOException e1) {
         } catch (ClassNotFoundException e2) {
         }
+        //view.setScaleX(0.5f);
+        //view.setScaleY(0.5f);
         return view;
     }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        getActivity().findViewById(R.id.blank_fragment).findViewById(R.id.fragment_color_puzzle).setOnTouchListener(this);
+    }
+
 
     /**
      * Checks if the puzzle is solved
@@ -479,6 +501,105 @@ public class ColorPuzzleFragment extends Fragment {
             checkIfSolved();
         }
     }
+
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        View view = v;
+        Log.d("view", v.toString());
+        Log.d("RawX", ""+event.getRawX());
+        Log.d("RawY", ""+event.getRawY());
+
+        switch (event.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                start.set(event.getRawX(), event.getRawY());
+                Log.d(TAG, "mode=DRAG");
+                mode = DRAG;
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                oldDist = fingerSpacing(v, event);
+                Log.d(TAG, "oldDist=" + oldDist);
+                if (oldDist > 200f) {
+                    midPoint(v, mid, event);
+                    mode = ZOOM;
+                    Log.d(TAG, "mode=ZOOM");
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+                mode = NONE;
+                Log.d(TAG, "mode=NONE");
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (mode == DRAG) {
+                    int loc[] = {0, 0};
+                    view.getLocationOnScreen(loc);
+                    view.setX(view.getX() + event.getRawX() - start.x);
+                    view.setY(view.getY() + event.getRawY() - start.y);
+                    start.set(event.getRawX(), event.getRawY());
+                    Log.d("StartX", ""+start.x);
+                    Log.d("StartY", ""+start.y);
+                    Log.d("ViewX", ""+view.getX());
+                    Log.d("ViewY", ""+view.getY());
+                }
+                else if (mode == ZOOM) {
+                    float newDist = fingerSpacing(v, event);
+                    Log.d(TAG, "newDist=" + newDist);
+                    if (newDist > 200f) {
+
+                        float scale = newDist / oldDist;
+
+                        Log.d("Mid x", ""+mid.x);
+                        Log.d("Mid y", ""+mid.y);
+                        view.setPivotX(mid.x);
+                        view.setPivotY(mid.y);
+                        view.setScaleX(scale);
+                        view.setScaleY(scale);
+                    }
+                }
+                break;
+        }
+
+        return true;
+
+    }
+
+    private float fingerSpacing(View v, MotionEvent event) {
+
+        int loc[] = {0, 0};
+
+        if(v.equals(this.getActivity().findViewById(R.id.fragment_color_puzzle)))
+            v.getLocationOnScreen(loc);
+
+        float x0 = /*event.getXPrecision()*/event.getRawX();
+        float x1 = /*event.getXPrecision()*/event.getX(1) + loc[0];
+        float x = x0 - x1;
+        Log.d("X0",""+x0);
+        Log.d("X1",""+x1);
+
+        float y0 = /*event.getYPrecision()*/event.getRawY();
+        float y1 = /*event.getYPrecision()*/event.getY(1) + loc[1];
+        float y = y0 - y1;
+        Log.d("Y0",""+y0);
+        Log.d("Y1",""+y1);
+        float dist = (float) (Math.sqrt(x*x + y*y));
+        Log.d("spacing",""+dist);
+        return (float) (Math.sqrt(x * x + y * y));
+    }
+
+    private void midPoint(View v, PointF point, MotionEvent event) {
+
+        int loc[] = {0, 0};
+
+        if(v.equals(this.getActivity().findViewById(R.id.fragment_color_puzzle)))
+            v.getLocationOnScreen(loc);
+
+        float x = /*event.getXPrecision()*/event.getRawX() + /*event.getXPrecision()*/event.getX(1) + loc[0];
+        float y = /*event.getYPrecision()*/event.getRawY() + /*event.getYPrecision()*/event.getY(1) + loc[1];
+        point.set(x / 2, y / 2);
+
+    }
+
 
     // Auto-generated
     @Override

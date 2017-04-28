@@ -146,8 +146,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                         }
                                     });
                             alertDialog.show();
-                            e.printStackTrace();
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                     }
                 });
