@@ -198,6 +198,7 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
             ByteArrayInputStream bis = new ByteArrayInputStream(b);
             ObjectInput in = new ObjectInputStream(bis);
             final Puzzle p = (Puzzle) in.readObject();
+            Log.d("User ", p.getUser());
             bis.close();
             in.close();
             puzzle = p;
@@ -691,5 +692,21 @@ public interface OnFragmentInteractionListener {
                 }
             }
         }).start();
+    }
+
+    public void updateRating(float newRating) {
+        final DynamoDBMapper mapper = MainActivity.getMapper();
+        final GoogleSignInAccount acct = MainActivity.getAccount();
+        final AmazonDynamoDBClient ddbClient = MainActivity.getClient();
+        PuzzleUpload pu = puzzle.getPuzzleUpload();
+        boolean added = pu.updateRatings(newRating, acct.getId());
+        final PuzzleUpload p2 = pu;
+        if (added) {
+            new Thread(new Runnable() {
+                public void run() {
+                    mapper.save(p2);
+                }
+            }).start();
+        }
     }
 }

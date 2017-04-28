@@ -32,6 +32,9 @@ public class PuzzleUpload implements Serializable {
     private List<List<Integer>> solution;       //The solution state
     private List<List<Integer>> rows;           //The row constraint values
     private List<List<Integer>> cols;
+    private List<Float> ratings;
+    private List<String> ratingsUser;
+    private Float averageRating;
 
     public PuzzleUpload(){
 
@@ -45,6 +48,8 @@ public class PuzzleUpload implements Serializable {
         rows = r;
         cols = c;
         completed = comp;
+        ratings = new ArrayList<Float>();
+        ratingsUser = new ArrayList<String>();
     }
 
     /**
@@ -74,7 +79,7 @@ public class PuzzleUpload implements Serializable {
      *
      * @return Puzzle size
      */
-    @DynamoDBIndexHashKey(attributeName = "Size")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "Size-PuzzleID-index", attributeName = "Size")
     public String getSize() {
         return size;
     }
@@ -92,6 +97,30 @@ public class PuzzleUpload implements Serializable {
     }
 
     public void setSolution(List<List<Integer>> s) { solution = s;}
+
+    /**
+     * Getter method for ratings
+     *
+     * @return the ratings of a puzzle
+     */
+    @DynamoDBAttribute(attributeName = "Ratings")
+    public List<Float> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Float> r) { ratings = r; }
+
+    /**
+     * Getter method for ratingsUser
+     *
+     * @return the userIDs of the users who rated a puzzle
+     */
+    @DynamoDBAttribute(attributeName = "Ratings UserIDs")
+    public List<String> getRatingsUser() {
+        return ratingsUser;
+    }
+
+    public void setRatingsUser(List<String> ru) { ratingsUser = ru; }
 
     /**
      * Getter method for rows
@@ -141,6 +170,23 @@ public class PuzzleUpload implements Serializable {
         return "Binary: " + ID + "," + size;
     }
 
+    public boolean updateRatings(Float newRating, String user) {
+        boolean canAdd = true;
+        for (int i = 0; i < ratingsUser.size(); i++) {
+            if (user.equals(ratingsUser.get(i)))
+                canAdd = false;
+        }
+        if (canAdd) {
+            ratings.add(newRating);
+            ratingsUser.add(user);
+            if (averageRating == null)
+                averageRating = newRating;
+            else
+                averageRating = ((averageRating*(ratings.size()-1)) + newRating)/(ratings.size());
+        }
+        return canAdd;
+    }
+
     public Puzzle convertToPuzzle() {
         int[][] pSolution, pRows, pCols;
         String[] splitSize = size.split("x");
@@ -148,7 +194,7 @@ public class PuzzleUpload implements Serializable {
         pSolution = convert2d(solution);
         pRows = convert2d(rows);
         pCols = convert2d(cols);
-        Puzzle p = new Puzzle(ID, pSize, pSolution, pRows, pCols, 0);
+        Puzzle p = new Puzzle(ID, userID, pSize, pSolution, pRows, pCols, 0);
         return p;
     }
 

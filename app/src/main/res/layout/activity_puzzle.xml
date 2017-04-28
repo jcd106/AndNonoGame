@@ -76,4 +76,14 @@
         android:textAllCaps="false"
         android:onClick="onClick" />
 
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:id="@+id/rating_bar"
+        android:layout_alignParentBottom="true"
+        android:layout_alignBaseline="@id/fragment_undo_bar_blank"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

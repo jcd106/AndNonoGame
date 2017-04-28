@@ -334,7 +334,7 @@ public class CreatePuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            newPuzzle = new Puzzle(id, size, currentState, newRowConstraints, newColConstraints, complete);
+            newPuzzle = new Puzzle(id, "AddUserIDLater", size, currentState, newRowConstraints, newColConstraints, complete);
             try {
                 db.insertPuzzle(getString(R.string.yourTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {

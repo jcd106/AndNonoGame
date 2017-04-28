@@ -36,6 +36,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     static final String color = "Color";            //Color attribute name in puzzle table
     static final String comp = "Complete";          //Complete attribute name in puzzle table
     static final String userID = "UserID";          //User id for downloaded puzzles
+    static final String defaultUser = "AndNonoGameApp";
 
     /**
      * Constructor for PuzzleDatabase
@@ -623,7 +624,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         int[][] c = {{0, 0, 3, 0, 0},
                 {3, 4, 1, 4, 3}};
         int completed = 0;
-        Puzzle firstPuzzle = new Puzzle(id, s, sol, r, c, completed);
+        Puzzle firstPuzzle = new Puzzle(id, defaultUser, s, sol, r, c, completed);
         int id2 = 2;
         int[] s2 = {10, 10};
         int[][] sol2 = {{0, 0, 0, 0, 0, 1, 1, 1, 1, 0},
@@ -641,7 +642,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 0, 0, 0, 1, 1, 1, 0, 0, 0},
                 {0, 2, 1, 4, 2, 2, 4, 1, 4, 0},
                 {7, 5, 5, 2, 1, 1, 2, 7, 5, 7}};
-        Puzzle second = new Puzzle(id2, s2, sol2, r2, c2, 0);
+        Puzzle second = new Puzzle(id2, defaultUser, s2, sol2, r2, c2, 0);
         int id3 = 3;
         int[] s3 = {5, 5};
         int[][] sol3 = {{0, 1, 0, 1, 0},
@@ -651,7 +652,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 0, 1, 0, 0}};
         int[][] r3 = {{1, 1}, {0, 5}, {0, 5}, {0, 3}, {0, 1}};
         int[][] c3 = {{2, 4, 4, 4, 2}};
-        Puzzle third = new Puzzle(id3, s3, sol3, r3, c3, 0);
+        Puzzle third = new Puzzle(id3, defaultUser, s3, sol3, r3, c3, 0);
 
         int id4 = 4;
         int[] s4 = {10, 5};
@@ -662,7 +663,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 0, 0, 0, 1, 1, 1, 1, 0, 0}};
         int[][] r4 = {{0, 8}, {0, 10}, {1, 8}, {0, 8}, {0, 4}};
         int[][] c4 = {{0, 1, 0, 0, 0, 0, 0, 0, 0, 0}, {2, 1, 4, 4, 5, 5, 5, 5, 4, 3}};
-        Puzzle fourth = new Puzzle(id4, s4, sol4, r4, c4, 0);
+        Puzzle fourth = new Puzzle(id4, defaultUser, s4, sol4, r4, c4, 0);
 
         int id5 = 5;
         int[] s5 = {5, 5};
@@ -673,7 +674,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {1, 0, 1, 0, 1}};
         int[][] r5 = {{0, 0, 1}, {0, 0, 3}, {0, 1, 1}, {0, 0, 5}, {1, 1, 1}};
         int[][] c5 = {{0, 0, 2, 0, 0}, {2, 3, 2, 3, 2}};
-        Puzzle fifth = new Puzzle(id5, s5, sol5, r5, c5, 0);
+        Puzzle fifth = new Puzzle(id5, defaultUser, s5, sol5, r5, c5, 0);
 
         int id6 = 6;
         int[] s6 = {5, 5};
@@ -684,7 +685,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {1, 1, 1, 0, 0}};
         int[][] r6 = {{0, 2}, {1, 1}, {0, 3}, {1, 1}, {0, 3}};
         int[][] c6 = {{0, 2, 1, 0, 0},{3, 1, 3, 1, 1}};
-        Puzzle sixth = new Puzzle(id6, s6, sol6, r6, c6, 0);
+        Puzzle sixth = new Puzzle(id6, defaultUser, s6, sol6, r6, c6, 0);
 
         int id7 = 7;
         int[] s7 = {5, 5};
@@ -695,7 +696,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 1, 1, 1, 1}};
         int[][] r7 = {{2}, {2}, {4}, {4}, {4}};
         int[][] c7 = {{0, 1, 1, 0, 2},{1, 3, 3, 4, 1}};
-        Puzzle seventh = new Puzzle(id7, s7, sol7, r7, c7, 0);
+        Puzzle seventh = new Puzzle(id7, defaultUser, s7, sol7, r7, c7, 0);
 
         int id8 = 8;
         int[] s8 = {5, 5};
@@ -706,7 +707,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {1, 0, 0, 1, 0}};
         int[][] r8 = {{0, 2}, {2, 1}, {0, 4}, {0, 2}, {1, 1}};
         int[][] c8 = {{2, 0, 1, 1, 0},{1, 4, 2, 1, 1}};
-        Puzzle eighth= new Puzzle(id8, s8, sol8, r8, c8, 0);
+        Puzzle eighth= new Puzzle(id8, defaultUser, s8, sol8, r8, c8, 0);
 
         int id9 = 9;
         int[] s9 = {5, 5};
@@ -717,7 +718,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {1, 1, 0, 1, 1}};
         int[][] r9 = {{0, 0, 1}, {0, 0, 2}, {1, 1, 1}, {0, 1, 2}, {0, 2, 2}};
         int[][] c9 = {{0, 1, 0, 0, 0}, {3, 1, 3, 2, 3}};
-        Puzzle ninth = new Puzzle(id9, s9, sol9, r9, c9, 0);
+        Puzzle ninth = new Puzzle(id9, defaultUser, s9, sol9, r9, c9, 0);
 
         int id10 = 10;
         int[] s10 = {5, 5};
@@ -728,7 +729,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {1, 0, 1, 0, 0}};
         int[][] r10 = {{0, 1}, {3, 1}, {0, 4}, {1, 1}, {1, 1}};
         int[][] c10 = {{4, 3, 4, 1, 1}};
-        Puzzle tenth = new Puzzle(id10, s10, sol10, r10, c10, 0);
+        Puzzle tenth = new Puzzle(id10, defaultUser, s10, sol10, r10, c10, 0);
 
         int id11 = 11;
         int[] s11 = {5, 5};
@@ -739,7 +740,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 0, 1, 0, 0}};
         int[][] r11 = {{0, 1}, {2, 2}, {0, 3}, {0, 3}, {0, 1}};
         int[][] c11 = {{1, 4, 3, 3, 1}};
-        Puzzle eleventh = new Puzzle(id11, s11, sol11, r11, c11, 0);
+        Puzzle eleventh = new Puzzle(id11, defaultUser, s11, sol11, r11, c11, 0);
 
         int id12 = 12;
         int[] s12 = {10, 10};
@@ -758,7 +759,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 0, 1, 2, 1, 1, 2, 1, 0, 0},
                 {0, 1, 1, 1, 2, 2, 1, 1, 1, 0},
                 {3, 5, 1, 1, 1, 1, 1, 1, 5, 3}};
-        Puzzle twelfth = new Puzzle(id12, s12, sol12, r12, c12, 0);
+        Puzzle twelfth = new Puzzle(id12, defaultUser, s12, sol12, r12, c12, 0);
 
         int id13 = 13;
         int[] s13 = {10, 10};
@@ -777,7 +778,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 {0, 1, 2, 1, 0, 2, 1, 2, 1, 0},
                 {0, 2, 1, 1, 2, 1, 1, 1, 2, 0},
                 {9, 2, 1, 1, 3, 1, 1, 1, 2, 9}};
-        Puzzle thirteenth = new Puzzle(id13, s13, sol13, r13, c13, 0);
+        Puzzle thirteenth = new Puzzle(id13, defaultUser, s13, sol13, r13, c13, 0);
 
         int id14 = 14;
         int[] s14 = {10, 10};
@@ -795,7 +796,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         int[][] c14 = {{0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
                 {1, 4, 5, 0, 3, 2, 2, 2, 0, 0},
                 {1, 1, 1, 5, 1, 1, 1, 1, 10, 10}};
-        Puzzle fourteenth = new Puzzle(id14, s14, sol14, r14, c14, 0);
+        Puzzle fourteenth = new Puzzle(id14, defaultUser, s14, sol14, r14, c14, 0);
 
         int idC1 = 1;
         int[] sC1 = {10,10};
