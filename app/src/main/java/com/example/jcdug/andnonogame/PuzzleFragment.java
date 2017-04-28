@@ -33,6 +33,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.io.ByteArrayInputStream;
@@ -40,6 +43,8 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -670,10 +675,20 @@ public interface OnFragmentInteractionListener {
         String user = MainActivity.getAccount().getId();
         final PuzzleUpload pu = puzzle.convertToUpload(user);
         final DynamoDBMapper mapper = MainActivity.getMapper();
+        final GoogleSignInAccount acct = MainActivity.getAccount();
+        final AmazonDynamoDBClient ddbClient = MainActivity.getClient();
+
+        final Map<String,AttributeValue> map = new HashMap<>();
+        map.put("UserID", new AttributeValue(acct.getId()));
+        //AttributeValue av = new AttributeValue();
+        //av.setN(""+id);
+        map.put("PuzzleID", new AttributeValue().withN(""+puzzle.getID()));
         new Thread(new Runnable() {
             public void run() {
-                //ddbClient.listTables();
-                mapper.save(pu);
+                GetItemResult item = ddbClient.getItem("Puzzles", map);
+                if (item.getItem() == null){
+                    mapper.save(pu);
+                }
             }
         }).start();
     }

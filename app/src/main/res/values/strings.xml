@@ -14,6 +14,8 @@
     <string name="yourTable">YourPuzzles</string>
     <string name="colorTable">ColorPuzzles</string>
     <string name="yourColorTable">YourColorPuzzles</string>
+    <string name="downTable">DownloadedPuzzles</string>
+    <string name="downColorTable">DownloadedColorPuzzles</string>
 
     <item name="x_loc" type="id" />
     <item name="y_loc" type="id" />

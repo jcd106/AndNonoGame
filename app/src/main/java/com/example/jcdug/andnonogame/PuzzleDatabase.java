@@ -27,6 +27,8 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     static final String colorTable = "ColorPuzzles";//Name of color puzzle table in database
     static final String yourTable = "YourPuzzles";  //Name of puzzle table in database for Create Your Own Puzzles
     static final String yourColorTable = "YourColorPuzzles";//Name of puzzle table in database for Create Your Own Color Puzzles
+    static final String downTable = "DownloadedPuzzles";    //Name of puzzle table in database for Downloaded Puzzles
+    static final String downColorTable = "DownloadedColorPuzzles";  //Name of puzzle table in database for Downloaded Color Puzzles
     static final String colID = "PuzzleID";         //ID attribute name in puzzle table
     static final String puzzle = "Puzzle";          //Puzzle attribute name in puzzle table
     static final String row = "Rows";               //Row size attribute name in puzzle table
@@ -57,6 +59,10 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + yourTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
                 + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
         db.execSQL("CREATE TABLE " + yourColorTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
+                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
+        db.execSQL("CREATE TABLE " + downTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
+                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
+        db.execSQL("CREATE TABLE " + downColorTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
                 + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
         addPuzzles(db);
     }
@@ -93,6 +99,8 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
             db.insert(puzzleTable, null, contentValues);
         } else if (table.equals(yourTable)) {
             db.insert(yourTable, null, contentValues);
+        } else if (table.equals(downTable)) {
+            db.insert(downTable, null, contentValues);
         }
     }
 
@@ -118,6 +126,8 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
             db.insert(colorTable, null, contentValues);
         } else if (table.equals(yourColorTable)) {
             db.insert(yourColorTable, null, contentValues);
+        } else if (table.equals(downColorTable)) {
+            db.insert(downColorTable, null, contentValues);
         }
     }
 
@@ -143,6 +153,10 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 return db.rawQuery("SELECT * FROM " + colorTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
             case yourColorTable:
                 return db.rawQuery("SELECT * FROM " + yourColorTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
+            case downTable:
+                return db.rawQuery("SELECT * FROM " + downTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
+            case downColorTable:
+                return db.rawQuery("SELECT * FROM " + downColorTable + " WHERE " + colID + " = ? ", new String[]{Integer.toString(id)});
             default:
                 return null;
         }
@@ -166,6 +180,10 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 return db.rawQuery("SELECT * FROM " + yourTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
             case yourColorTable:
                 return db.rawQuery("SELECT * FROM " + yourColorTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
+            case downTable:
+                return db.rawQuery("SELECT * FROM " + downTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
+            case downColorTable:
+                return db.rawQuery("SELECT * FROM " + downColorTable + " WHERE " + col + " = ? AND " + row + " = ?", new String[]{Integer.toString(c), Integer.toString(r)});
             default:
                 return null;
         }
@@ -188,6 +206,18 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         }
     }
 
+    public Cursor getAllDownPuzzles(String table) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        switch (table) {
+            case downTable:
+                return db.rawQuery("SELECT * FROM " + downTable, new String[]{});
+            case downColorTable:
+                return db.rawQuery("SELECT * FROM " + downColorTable, new String[]{});
+            default:
+                return null;
+        }
+    }
+
     /**
      * Queries the database for the count of the puzzles grouped by the size
      *
@@ -204,6 +234,10 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourTable + " GROUP BY " + col + ", " + row, new String[]{});
             case yourColorTable:
                 return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + yourColorTable + " GROUP BY " + col + ", " + row, new String[]{});
+            case downTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + downTable + " GROUP BY " + col + ", " + row, new String[]{});
+            case downColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + downColorTable + " GROUP BY " + col + ", " + row, new String[]{});
             default:
                 return null;
         }
@@ -225,6 +259,10 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
             case yourColorTable:
                 return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourColorTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
+            case downTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + downTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
+            case downColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + downColorTable + " WHERE " + comp + " = ? GROUP BY " + col + ", " + row, new String[]{Integer.toString(1)});
             default:
                 return null;
         }
@@ -247,6 +285,18 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         }
     }
 
+    public Cursor getCountDown(String table) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        switch (table) {
+            case downTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + downTable, new String[]{});
+            case downColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numPuzzles FROM " + downColorTable, new String[]{});
+            default:
+                return null;
+        }
+    }
+
     /**
      * Queries the database for the count completed
      *
@@ -259,6 +309,18 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
             case yourColorTable:
                 return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + yourColorTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
+            default:
+                return null;
+        }
+    }
+
+    public Cursor getCountCompletedDown(String table) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        switch (table) {
+            case downTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + downTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
+            case downColorTable:
+                return db.rawQuery("SELECT " + col + ", " + row + ", COUNT(*) AS numComplete FROM " + downColorTable + " WHERE " + comp + " = ?", new String[]{Integer.toString(1)});
             default:
                 return null;
         }
@@ -284,6 +346,12 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 break;
             case yourColorTable:
                 curs = db.rawQuery("SELECT " + colID + " FROM " + yourColorTable, new String[]{});
+                break;
+            case downTable:
+                curs = db.rawQuery("SELECT " + colID + " FROM " + downTable, new String[]{});
+                break;
+            case downColorTable:
+                curs = db.rawQuery("SELECT " + colID + " FROM " + downColorTable, new String[]{});
                 break;
             default:
                 return null;

@@ -2,6 +2,7 @@ package com.example.jcdug.andnonogame;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.amazonaws.regions.Region;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
+import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import com.amazonaws.services.securitytoken.model.AssumeRoleWithWebIdentityRequest;
 import com.amazonaws.services.securitytoken.model.AssumedRoleUser;
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleApiClient mGoogleApiClient;
 
     CognitoCachingCredentialsProvider credentialsProvider;
-    AmazonDynamoDBClient ddbClient;
+    private static AmazonDynamoDBClient ddbClient;
     private static GoogleSignInAccount acct;
     private static DynamoDBMapper mapper;
     Map<String, String> logins = new HashMap<String, String>();
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         db = new PuzzleDatabase(this);
+
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -267,7 +272,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         {3, 4, 1, 4, 3}};
                 */
                 ArrayList<Integer> size = new ArrayList<>(Arrays.asList(5, 5));
-                String sizeString = "5x5";
                 ArrayList<List<Integer>> solution = new ArrayList<List<Integer>>(size.get(1));
                 solution.add(new ArrayList<Integer>(Arrays.asList(0, 0, 1, 0, 0)));
                 solution.add(new ArrayList<Integer>(Arrays.asList(0, 1, 1, 1, 0)));
@@ -285,11 +289,18 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 cols.add(new ArrayList<Integer>(Arrays.asList(3, 4, 1, 4, 3)));
 
                 int completed = 0;
-                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), sizeString, solution, rows, cols, completed);
+                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), size, solution, rows, cols, completed);
+                final Map<String,AttributeValue> map = new HashMap<>();
+                map.put("UserID", new AttributeValue(acct.getId()));
+                AttributeValue av = new AttributeValue();
+                av.setN(""+id);
+                map.put("PuzzleID", av);
                 new Thread(new Runnable() {
                     public void run() {
-                        //ddbClient.listTables();
-                        mapper.save(pu);
+                        GetItemResult item = ddbClient.getItem("Puzzles", map);
+                        if(item.getItem()==null){
+                            mapper.save(pu);
+                        }
                     }
                 }).start();
                 break;
@@ -322,4 +333,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
      * @return the account
      */
     public static GoogleSignInAccount getAccount() { return acct; }
+
+    /**
+     * Returns the dynamoDB client
+     * @return ddbClient
+     */
+    public static AmazonDynamoDBClient getClient() { return ddbClient; }
 }
