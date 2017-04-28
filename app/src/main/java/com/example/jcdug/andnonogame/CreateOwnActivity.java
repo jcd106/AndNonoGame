@@ -11,7 +11,7 @@ import android.widget.Spinner;
 
 public class CreateOwnActivity extends AppCompatActivity {
 
-    Spinner spinner;    //Spinner storing color scheme options
+    Spinner spinner;    //Spinner storing sizes
     int[] size = {5,5};
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,6 +1,7 @@
 package com.example.jcdug.andnonogame;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +35,10 @@ public class MenuActivity extends AppCompatActivity implements BarFragment.OnFra
             case R.id.create_own_button:
                 Intent i3 = new Intent(this, CreateOwnActivity.class);
                 startActivity(i3);
+                break;
+            case R.id.download_puzzles_button:
+                Intent i4 = new Intent(this, QueryActivity.class);
+                startActivity(i4);
                 break;
         }
     }

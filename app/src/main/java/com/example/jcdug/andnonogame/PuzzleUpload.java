@@ -28,13 +28,16 @@ public class PuzzleUpload implements Serializable {
 
     private String userID;
 
-    private List<Integer> size;             //The size of the puzzle in the form {numColumns, numRows}
+    private String size;             //The size of the puzzle in the form "numColumnsxnumRows"
     private List<List<Integer>> solution;       //The solution state
     private List<List<Integer>> rows;           //The row constraint values
     private List<List<Integer>> cols;
 
+    public PuzzleUpload(){
 
-    public PuzzleUpload(int id, String user, List<Integer> s, List<List<Integer>> sol, List<List<Integer>> r, List<List<Integer>> c, int comp) {
+    }
+
+    public PuzzleUpload(int id, String user, String s, List<List<Integer>> sol, List<List<Integer>> r, List<List<Integer>> c, int comp) {
         ID = id;
         size = s;
         userID = user;
@@ -54,6 +57,8 @@ public class PuzzleUpload implements Serializable {
         return ID;
     }
 
+    public void setID(int id) { ID = id;}
+
     /**
      * Getter method for userID
      *
@@ -62,15 +67,19 @@ public class PuzzleUpload implements Serializable {
     @DynamoDBHashKey(attributeName = "UserID")
     public String getUserID() { return userID; }
 
+    public void setUserID(String id) { userID = id; }
+
     /**
      * Getter method for size
      *
      * @return Puzzle size
      */
     @DynamoDBIndexHashKey(attributeName = "Size")
-    public List<Integer> getSize() {
+    public String getSize() {
         return size;
     }
+
+    public void setSize(String s) { size = s;}
 
     /**
      * Getter method for solution
@@ -82,6 +91,8 @@ public class PuzzleUpload implements Serializable {
         return solution;
     }
 
+    public void setSolution(List<List<Integer>> s) { solution = s;}
+
     /**
      * Getter method for rows
      *
@@ -91,6 +102,8 @@ public class PuzzleUpload implements Serializable {
     public List<List<Integer>> getRows() {
         return rows;
     }
+
+    public void setRows(List<List<Integer>> r) { rows = r; }
 
     /**
      * Getter method for cols
@@ -102,13 +115,15 @@ public class PuzzleUpload implements Serializable {
         return cols;
     }
 
+    public void setCols(List<List<Integer>> c){ cols = c; }
+
     /**
      * Getter method for completed
      *
      * @return the value of of completed
      */
     @DynamoDBAttribute(attributeName = "Completed")
-    public int isCompleted() {
+    public int getCompleted() {
         return completed;
     }
 
@@ -119,5 +134,10 @@ public class PuzzleUpload implements Serializable {
      */
     public void setCompleted(int c) {
         completed = c;
+    }
+
+    @Override
+    public String toString(){
+        return ID + "," + size;
     }
 }

@@ -47,6 +47,7 @@
         android:layout_marginRight="100dp"
         android:layout_marginTop="79dp"
         android:layout_alignTop="@+id/color_puzzles_button"
+        android:layout_below="@id/color_puzzles_button"
         android:layout_centerHorizontal="true"
         android:textAllCaps="false" />
 
@@ -61,6 +62,21 @@
         android:layout_marginRight="100dp"
         android:layout_marginBottom="36dp"
         android:layout_above="@+id/color_puzzles_button"
+        android:layout_centerHorizontal="true"
+        android:textAllCaps="false" />
+
+    <Button
+        android:text="Download Puzzles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/download_puzzles_button"
+        android:onClick="onClicked"
+        android:background="@drawable/border_button"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="79dp"
+        android:layout_alignTop="@+id/create_own_button"
+        android:layout_below="@id/create_own_button"
         android:layout_centerHorizontal="true"
         android:textAllCaps="false" />
 

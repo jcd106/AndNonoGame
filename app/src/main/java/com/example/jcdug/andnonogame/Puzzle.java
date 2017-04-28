@@ -128,7 +128,8 @@ public class Puzzle implements Serializable {
 
 
     public PuzzleUpload convertToUpload(String userID) {
-        ArrayList<Integer> newSize = convertSize(size);
+        //ArrayList<Integer> newSize = convertSize(size);
+        String newSize = size[0] + "x" + size[1];
         ArrayList<List<Integer>> newCurrState = convert2d(solution);
         ArrayList<List<Integer>> newRowConst = convert2d(rows);
         ArrayList<List<Integer>> newColConst = convert2d(cols);

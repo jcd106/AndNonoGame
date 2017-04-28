@@ -28,7 +28,10 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 
@@ -60,6 +63,8 @@ public class CreateColorPuzzleFragment extends Fragment {
 
     int selectedColor = 1;
     int[] colors;
+
+    private Map<Integer, Integer> colorTracker = new HashMap<Integer,Integer>();
 
     private Stack<TextView> prevMoves = new Stack<TextView>();  //The previous moves the user made during this display of the puzzle
 
@@ -106,6 +111,11 @@ public class CreateColorPuzzleFragment extends Fragment {
         id = bundle.getInt("puzzleID");
         colors = bundle.getIntArray("colors");
 
+        //Initialize color tracker
+        for(int i = 1; i < colors.length; i++){
+            colorTracker.put(colors[i], 0);
+        }
+
         //Set drawable background for empty boxes to retrieved color choice
         empty = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
 
@@ -148,10 +158,24 @@ public class CreateColorPuzzleFragment extends Fragment {
 
                 //Handles switching of box colors and updates puzzle's current state
                 if (boxState != selectedColor) {
+                    int prevColor = colors[currentState[yLoc][xLoc]];
+                    Log.d("Color: ", prevColor + "");
+                    if(prevColor != Color.WHITE) {
+                        int prevColorCount = colorTracker.get(prevColor);
+                        colorTracker.put(prevColor, --prevColorCount);
+                    }
+
+                    int colorCount = colorTracker.get(colors[selectedColor]);
+                    colorTracker.put(colors[selectedColor], ++colorCount);
+
                     b.setTag(R.id.state, selectedColor);
                     currentState[yLoc][xLoc] = selectedColor;
                     b.setBackground(filled[selectedColor]);
                 } else {
+                    int prevColor = colors[currentState[yLoc][xLoc]];
+                    int prevColorCount = colorTracker.get(prevColor);
+                    colorTracker.put(prevColor, --prevColorCount);
+
                     b.setTag(R.id.state, 0);
                     currentState[yLoc][xLoc] = 0;
                     b.setBackground(empty);
@@ -211,9 +235,43 @@ public class CreateColorPuzzleFragment extends Fragment {
     public boolean savePuzzle() {
         Context context = this.getActivity();
 
+
+        //Check which colors have actually been used in the puzzle
+        int colorCount = 0;
+        for(int i = 1; i < colors.length; i++){
+            if(colorTracker.get(colors[i]) > 0){
+                colorCount++;
+            }
+        }
+
+        if(colorCount < colors.length - 1){
+            //Create a popup warning the user that not all of the colors have been used
+            AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+            alertDialog.setTitle("Missing Colors");
+            alertDialog.setMessage("You have not used all of the selected colors");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+            return false;
+        }
+
+//        int[] usedColors = new int[colorCount+1];
+//        usedColors[0] = Color.WHITE;
+//        int colorIndex = 1;
+//        for(int i = 1; i < colors.length; i++){
+//            if(colorTracker.get(colors[i]) > 0){
+//                usedColors[colorIndex] = colors[i];
+//                colorIndex++;
+//            }
+//        }
+
         //Checks if currentState is equal to the solutionState after each move
         if (Arrays.deepEquals(currentState, new int[numRows][numCols])) {
-            //Create a popup congratulating the user on puzzle completion
+            //Create a popup notifying the user no changes have been made to puzzle
             AlertDialog alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setTitle("Nothing to Save");
             alertDialog.setMessage("You have not made any changes to the grid");
@@ -329,7 +387,6 @@ public class CreateColorPuzzleFragment extends Fragment {
                     newRowConstraints[i][j] = rowConstraints[i][j+rowDiff];
                 }
             }
-
 
             //Get the PuzzleDatabase and update the current state of the puzzle as complete
             PuzzleDatabase db = MainActivity.getDB();

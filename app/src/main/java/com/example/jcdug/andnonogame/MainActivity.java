@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         setContentView(R.layout.activity_main);
         db = new PuzzleDatabase(this);
 
-
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
@@ -268,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         {3, 4, 1, 4, 3}};
                 */
                 ArrayList<Integer> size = new ArrayList<>(Arrays.asList(5, 5));
+                String sizeString = "5x5";
                 ArrayList<List<Integer>> solution = new ArrayList<List<Integer>>(size.get(1));
                 solution.add(new ArrayList<Integer>(Arrays.asList(0, 0, 1, 0, 0)));
                 solution.add(new ArrayList<Integer>(Arrays.asList(0, 1, 1, 1, 0)));
@@ -285,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 cols.add(new ArrayList<Integer>(Arrays.asList(3, 4, 1, 4, 3)));
 
                 int completed = 0;
-                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), size, solution, rows, cols, completed);
+                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), sizeString, solution, rows, cols, completed);
                 new Thread(new Runnable() {
                     public void run() {
                         //ddbClient.listTables();
