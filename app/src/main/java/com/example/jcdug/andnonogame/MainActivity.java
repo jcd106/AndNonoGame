@@ -272,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                         {3, 4, 1, 4, 3}};
                 */
                 ArrayList<Integer> size = new ArrayList<>(Arrays.asList(5, 5));
+                String sizeString = "5x5";
                 ArrayList<List<Integer>> solution = new ArrayList<List<Integer>>(size.get(1));
                 solution.add(new ArrayList<Integer>(Arrays.asList(0, 0, 1, 0, 0)));
                 solution.add(new ArrayList<Integer>(Arrays.asList(0, 1, 1, 1, 0)));
@@ -289,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 cols.add(new ArrayList<Integer>(Arrays.asList(3, 4, 1, 4, 3)));
 
                 int completed = 0;
-                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), size, solution, rows, cols, completed);
+                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), sizeString, solution, rows, cols, completed);
                 final Map<String,AttributeValue> map = new HashMap<>();
                 map.put("UserID", new AttributeValue(acct.getId()));
                 AttributeValue av = new AttributeValue();
