@@ -557,7 +557,7 @@ public class ColorPuzzleFragment extends Fragment {
         return colors;
     }
 
-    public void setSelectedsColor(int color) {
+    public void setSelectedColor(int color) {
         selectedColor = color;
     }
 
