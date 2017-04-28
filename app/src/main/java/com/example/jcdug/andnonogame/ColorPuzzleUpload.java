@@ -154,4 +154,42 @@ public class ColorPuzzleUpload implements Serializable {
     public String toString(){
         return "Color: " + ID + "," + size;
     }
+
+    public ColorPuzzle convertToPuzzle() {
+        int[] pColors = new int[colors.size()];
+        for (int i = 0; i < colors.size(); i++) {
+            pColors[i] = colors.get(i);
+        }
+        int[][] pSolution;
+        int[][][] pRows, pCols;
+        String[] splitSize = size.split("x");
+        int[] pSize = {Integer.parseInt(splitSize[0]),Integer.parseInt(splitSize[1])};
+        pSolution = convert2d(solution);
+        pRows = convert3d(rows);
+        pCols = convert3d(cols);
+        ColorPuzzle p = new ColorPuzzle(ID, pSize, pSolution, pRows, pCols, pColors, 0);
+        return p;
+    }
+
+    public int[][] convert2d(List<List<Integer>> list) {
+        int[][] arr = new int[list.size()][list.get(0).size()];
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).size(); j++) {
+                arr[i][j] = list.get(i).get(j);
+            }
+        }
+        return arr;
+    }
+
+    public int[][][] convert3d(List<List<List<Integer>>> list) {
+        int[][][] arr = new int[list.size()][list.get(0).size()][list.get(0).get(0).size()];
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.get(i).size(); j++) {
+                for (int k = 0; k < list.get(i).get(j).size(); k++) {
+                    arr[i][j][k] = list.get(i).get(j).get(k);
+                }
+            }
+        }
+        return arr;
+    }
 }
