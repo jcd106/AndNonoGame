@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -79,6 +80,10 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
     Drawable empty;         //Color of empty puzzle boxes
     Drawable markedBlank;   //Color of boxes marked Blank
     String table;
+    float mSquareWidth;
+    float mSquareHeight;
+    private final int marginVertical = 180;
+    private final int marginHorizontal = 32;
 
     private Puzzle puzzle;
 
@@ -213,6 +218,26 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
             rowVals = p.getRows();
             colVals = p.getCols();
 
+            final float scale = Resources.getSystem().getDisplayMetrics().density;
+            int viewW = Resources.getSystem().getDisplayMetrics().widthPixels - ((int) (marginHorizontal * scale));
+            int viewH = Resources.getSystem().getDisplayMetrics().heightPixels - ((int) (marginVertical * scale));
+            Log.d("Scale ", ""+scale);
+            Log.d("Screen width ", ""+viewW);
+            Log.d("Screen height ", ""+viewH);
+
+            // Set width and height to be used for the squares.
+            mSquareWidth = viewW / (float) (numCols + rowVals[0].length);
+            mSquareHeight = viewH / (float) (numRows + colVals.length);
+
+            if (mSquareHeight > mSquareWidth)
+                mSquareHeight = mSquareWidth;
+            else
+                mSquareWidth = mSquareHeight;
+            int mSquareWidthDP = (int) (mSquareWidth / scale);
+            int mSquareHeightDP = mSquareWidthDP;
+            Log.d("mSquareWidth ", ""+mSquareWidth);
+            Log.d("mSquareWidthDP ", ""+mSquareWidthDP);
+
             //Create TableLayout to organize puzzle boxes into a grid
             TableLayout puzzleLayout = (TableLayout) view.findViewById(R.id.fragment_puzzle);
             //puzzleLayout.setOnTouchListener(this);
@@ -270,6 +295,14 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
 
                     //Create a new blank box with a different size depending on puzzle size
                     TextView newBox;
+                    newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
+
+                    float boxScale = mSquareWidth / newBox.getLayoutParams().width;
+                    newBox.setTextSize(newBox.getTextSize()*boxScale/scale);
+
+                    newBox.getLayoutParams().height = (int) (mSquareHeight - 0.5);
+                    newBox.getLayoutParams().width = (int) (mSquareWidth - 0.5);
+
                     if (numRows < 10 && numCols < 10) {
                         newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
                     } else {

@@ -5,4 +5,5 @@
     android:layout_height="35dp"
     android:background="@drawable/border_button"
     android:gravity="center"
-    android:textColor="#000000"></TextView>
+    android:textColor="#000000"
+    android:textSize="21sp"></TextView>

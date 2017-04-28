@@ -3,6 +3,7 @@ package com.example.jcdug.andnonogame;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -13,6 +14,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,6 +61,10 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
     Drawable markedBlank;   //Color of boxes marked Blank
     int selectedColor;
     String table;
+    float mSquareWidth;
+    float mSquareHeight;
+    private final int marginVertical = 210;
+    private final int marginHorizontal = 32;
 
     private ColorPuzzle puzzle;
 
@@ -154,6 +160,27 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
             rowVals = p.getRows();
             colVals = p.getCols();
             colors = p.getColors();
+
+            final float scale = Resources.getSystem().getDisplayMetrics().density;
+            int viewW = Resources.getSystem().getDisplayMetrics().widthPixels - ((int) (marginHorizontal * scale));
+            int viewH = Resources.getSystem().getDisplayMetrics().heightPixels - ((int) (marginVertical * scale));
+            Log.d("Scale ", ""+scale);
+            Log.d("Screen width ", ""+viewW);
+            Log.d("Screen height ", ""+viewH);
+
+            // Set width and height to be used for the squares.
+            mSquareWidth = viewW / (float) (numCols + rowVals[0].length);
+            mSquareHeight = viewH / (float) (numRows + colVals.length);
+
+            if (mSquareHeight > mSquareWidth)
+                mSquareHeight = mSquareWidth;
+            else
+                mSquareWidth = mSquareHeight;
+            int mSquareWidthDP = (int) (mSquareWidth / scale);
+            int mSquareHeightDP = mSquareWidthDP;
+            Log.d("mSquareWidth ", ""+mSquareWidth);
+            Log.d("mSquareWidthDP ", ""+mSquareWidthDP);
+
             //Set drawable background for filled and empty boxes to retrieved color choice
             filled = new Drawable[colors.length];
             for(int i = 0; i < colors.length; i++) {
@@ -228,15 +255,18 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
 
                 for (int j = 0; j < numCols + rowVals[0].length; j++) {
 
-                    //TableLayout.LayoutParams params = new TableLayout.LayoutParams();
+                    //TableLayout.LayoutParams params = new TableLayout.LayoutParams(mSquareWidthDP, mSquareHeightDP);
 
                     //Create a new blank box with a different size depending on puzzle size
                     TextView newBox;
-                    if (numRows < 10 && numCols < 10) {
-                        newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
-                    } else {
-                        newBox = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                    }
+                    newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
+
+                    float boxScale = mSquareWidth / newBox.getLayoutParams().width;
+                    newBox.setTextSize(newBox.getTextSize()*boxScale/scale);
+
+                    newBox.getLayoutParams().height = (int) (mSquareHeight - 0.5);
+                    newBox.getLayoutParams().width = (int) (mSquareWidth - 0.5);
+
                     //Add blank spaces in top right of puzzle grid to leave room for constraint values
                     if (i < colVals.length && j < rowVals[0].length) {
                         //Create new TextView with empty box background color and add it to the table
