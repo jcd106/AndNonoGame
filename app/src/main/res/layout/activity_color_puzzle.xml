@@ -40,22 +40,19 @@
         android:layout_height="wrap_content"
         android:name="com.example.jcdug.andnonogame.BlankFragment"
         android:id="@+id/fragment_colors"
-        tools:layout="@layout/fragment_blank"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_above="@+id/fragment_undo_bar_blank"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        tools:layout="@layout/fragment_color_select"
+        android:layout_above="@id/fragment_undo_bar_blank"
+        android:layout_centerHorizontal="true"/>
 
     <fragment
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="100dp"
         tools:layout="@layout/fragment_blank"
         android:name="com.example.jcdug.andnonogame.BlankFragment"
         android:id="@+id/blank_fragment"
-        android:layout_above="@+id/fragment_colors"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:textSize="24sp"

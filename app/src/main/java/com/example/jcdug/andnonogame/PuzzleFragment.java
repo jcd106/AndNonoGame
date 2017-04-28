@@ -133,7 +133,7 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_puzzle, container, false);
-        getActivity().findViewById(R.id.blank_fragment).setOnTouchListener(this);
+        //getActivity().findViewById(R.id.blank_fragment).setOnTouchListener(this);
 
         //Retrieve ID of current puzzle from PuzzleActivity bundle
         Bundle bundle = this.getArguments();
@@ -342,6 +342,12 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
         } catch (ClassNotFoundException e2) {
         }
         return view;
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        getActivity().findViewById(R.id.blank_fragment).findViewById(R.id.fragment_puzzle).setOnTouchListener(this);
     }
 
     /**
