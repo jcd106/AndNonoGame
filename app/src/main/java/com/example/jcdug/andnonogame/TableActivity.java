@@ -3,11 +3,16 @@ package com.example.jcdug.andnonogame;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +32,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TableActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener{
 
+    private static PuzzleDatabase db;
     DynamoDBMapper mapper = MainActivity.getMapper();
     String size;
     String type;
@@ -48,6 +55,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_table);
+        db = MainActivity.getDB();
         Intent prev = this.getIntent();
         size = prev.getStringExtra("Size");
         Log.d("Size", size);
@@ -80,7 +88,24 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
                     {
                         PuzzleUpload selectedPuzzle = puzzles.get(position);
-                        Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                        Puzzle puzzle = selectedPuzzle.convertToPuzzle();
+                        try {
+                            db.insertDownloadedPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                            Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                        } catch (SQLiteConstraintException|IOException e) {
+                            //Create a popup notifying the user that puzzle has been downloaded previously
+                            AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                            alertDialog.setTitle("Duplicate Puzzle");
+                            alertDialog.setMessage("You have already downloaded this puzzle!");
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            alertDialog.show();
+                            e.printStackTrace();
+                        }
                     }
                 });
             }
@@ -105,7 +130,27 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
                     {
                         ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
-                        Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                        /*ColorPuzzle puzzle = selectedPuzzle;
+                        try {
+                            db.insertDownloadedColorPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                            Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                        } catch (IOException e) {
+                        //Create a popup notifying the user that puzzle has been downloaded previously
+                            AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                            alertDialog.setTitle("Duplicate Puzzle");
+                            alertDialog.setMessage("You have already downloaded this puzzle!");
+                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            alertDialog.show();
+                            e.printStackTrace();
+                            e.printStackTrace();
+                        }
+                        */
+
                     }
                 });
             }

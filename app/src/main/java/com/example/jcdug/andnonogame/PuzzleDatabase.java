@@ -35,6 +35,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
     static final String col = "Cols";               //Column size attribute name in puzzle table
     static final String color = "Color";            //Color attribute name in puzzle table
     static final String comp = "Complete";          //Complete attribute name in puzzle table
+    static final String userID = "UserID";          //User id for downloaded puzzles
 
     /**
      * Constructor for PuzzleDatabase
@@ -60,10 +61,10 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
         db.execSQL("CREATE TABLE " + yourColorTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
                 + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
-        db.execSQL("CREATE TABLE " + downTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
-                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
-        db.execSQL("CREATE TABLE " + downColorTable + " (" + colID + " INTEGER PRIMARY KEY , " + puzzle + " BLOB , "
-                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER)");
+        db.execSQL("CREATE TABLE " + downTable + " (" + userID + " INTEGER NOT NULL , " + colID + " INTEGER NOT NULL , " + puzzle + " BLOB , "
+                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER, PRIMARY KEY (" + userID + ", " + colID + "))");
+        db.execSQL("CREATE TABLE " + downColorTable + " (" + userID + " INTEGER NOT NULL , " + colID + " INTEGER NOT NULL , " + puzzle + " BLOB , "
+                + row + " INTEGER , " + col + " INTEGER , " + comp + " INTEGER, PRIMARY KEY (" + userID + ", " + colID + "))");
         addPuzzles(db);
     }
 
@@ -129,6 +130,60 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         } else if (table.equals(downColorTable)) {
             db.insert(downColorTable, null, contentValues);
         }
+    }
+
+    /**
+     * Inserts a puzzle to the database
+     *
+     * @param id        the id of the puzzle
+     * @param p         the puzzle to be put into the database
+     * @param s         the size of the puzzle
+     * @param completed the completed value of the puzzle (should be 0)
+     * @param db        the database
+     * @throws IOException Could be thrown using the output stream
+     */
+    public void insertDownloadedPuzzle(String userid, int id, Puzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
+        //Create an output stream to serialize the puzzle
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream(bos);
+
+        //Serialize the puzzle into a byte array
+        out.writeObject(p);
+        byte[] buf = bos.toByteArray();
+        out.close();
+        bos.close();
+
+        //Put the values of the puzzle into the database
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(userID, userid);
+        contentValues.put(colID, id);
+        contentValues.put(puzzle, buf);
+        contentValues.put(col, s[0]);
+        contentValues.put(row, s[1]);
+        contentValues.put(comp, completed);
+        db.insertOrThrow(downTable, null, contentValues);
+    }
+
+    public void insertDownloadedPuzzle(String userid, int id, ColorPuzzle p, int[] s, int completed, SQLiteDatabase db) throws IOException {
+        //Create an output stream to serialize the puzzle
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream(bos);
+
+        //Serialize the puzzle into a byte array
+        out.writeObject(p);
+        byte[] buf = bos.toByteArray();
+        out.close();
+        bos.close();
+
+        //Put the values of the puzzle into the database
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(userID, userid);
+        contentValues.put(colID, id);
+        contentValues.put(puzzle, buf);
+        contentValues.put(col, s[0]);
+        contentValues.put(row, s[1]);
+        contentValues.put(comp, completed);
+        db.insertOrThrow(downColorTable, null, contentValues);
     }
 
     public void deleteAllYourPuzzles() {
@@ -394,7 +449,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ByteArrayInputStream bis = new ByteArrayInputStream(b);
         ObjectInputStream in = new ObjectInputStream(bis);
 
-        if (table.equals(puzzleTable) || table.equals(yourTable)) {
+        if (table.equals(puzzleTable) || table.equals(yourTable) || table.equals(downTable)) {
             //Deserialize the puzzle object and close the input streams
             Puzzle p = (Puzzle) in.readObject();
             bis.close();

@@ -42,40 +42,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
     }
 
     /**
-     * Handles the button clicks on the screen
-     *
-     * @param view the button that was clicked
-     */
-    public void onButtonClick(View view) {
-        //Create a new intent to start PuzzleSelectActivity
-        Intent i = new Intent(this, PuzzleSelectActivity.class);
-        if (isColor) {
-            i.putExtra("color", true);
-        } else {
-            i.putExtra("color", false);
-        }
-
-        //Set the extra for the intent based on the button clicked
-        switch (view.getId()) {
-            case R.id.fivebyfive:
-                i.putExtra("size", "5 5");
-                break;
-            case R.id.tenbyten:
-                i.putExtra("size", "10 10");
-                break;
-            case R.id.tenbyfive:
-                i.putExtra("size", "10 5");
-                break;
-            case R.id.yourpuzzles:
-                i.putExtra("size", "your");
-                break;
-        }
-
-        //Start the intent
-        startActivity(i);
-    }
-
-    /**
      * Handles the resume of the activity
      */
     @Override
@@ -143,24 +109,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
 
         ArrayList<ArrayList<Integer>> sizesWithCount = new ArrayList<ArrayList<Integer>>();
 
-        //Gets the buttons by id from the view
-        Button fiveByFive = (Button) findViewById(R.id.fivebyfive);
-        Button tenByTen = (Button) findViewById(R.id.tenbyten);
-        Button tenByFive = (Button) findViewById(R.id.tenbyfive);
-        Button yourPuzzles = (Button) findViewById(R.id.yourpuzzles);
-        //yourPuzzles.setTransformationMethod(null);
-
         //Set the number of puzzles for the sizes to 0
-        int num5by5 = 0;
-        int num10by10 = 0;
-        int num10by5 = 0;
         int numYours = 0;
         int numDown = 0;
 
         //Set the number of completed puzzles for the sizes to 0
-        int comp5by5 = 0;
-        int comp10by10 = 0;
-        int comp10by5 = 0;
         int compYours = 0;
         int compDown = 0;
 
@@ -189,24 +142,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             size.add(0);
             sizesWithCount.add(size);
 
-            /*
-            //if Rows in c1 = 5 and Cols in c1 = 5 in the tuple, set num5by5 to numPuzzles from c1
-            if (c1.getInt(r1) == 5 && c1.getInt(col1) == 5) {
-                num5by5 = c1.getInt(i1);
-            }
-
-            //if Rows in c1 = 10 and Cols in c1 = 10 in the tuple, set num10by10 to numPuzzles from c1
-            if (c1.getInt(r1) == 10 && c1.getInt(col1) == 10) {
-                num10by10 = c1.getInt(i1);
-            }
-
-            //if Rows in c1 = 5 and Cols in c1 = 10 in the tuple, set num10by5 to numPuzzles from c1
-            if (c1.getInt(r1) == 5 && c1.getInt(col1) == 10) {
-                num10by5 = c1.getInt(i1);
-            }
-            */
-
-
             //Move to the next tuple
             c1.moveToNext();
         }
@@ -224,23 +159,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
                     sizesWithCount.get(j).add(3, c2.getInt(i2));
                 }
             }
-
-            /*
-            //if Rows in c2 = 5 and Cols in c2 = 5 in the tuple, set comp5by5 to numComplete from c2
-            if (c2.getInt(r2) == 5 && c2.getInt(col2) == 5) {
-                comp5by5 = c2.getInt(i2);
-            }
-
-            //if Rows in c2 = 10 and Cols in c2 = 10 in the tuple, set comp10by10 to numComplete from c2
-            if (c2.getInt(r2) == 10 && c2.getInt(col2) == 10) {
-                comp10by10 = c2.getInt(i2);
-            }
-
-            //if Rows in c2 = 5 and Cols in c2 = 10 in the tuple, set comp10by5 to numComplete from c2
-            if (c2.getInt(r2) == 5 && c2.getInt(col2) == 10) {
-                comp10by5 = c2.getInt(i2);
-            }
-            */
 
             //Move to the next tuple
             c2.moveToNext();
@@ -286,20 +204,6 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         compDown = c6.getInt(i6);
 
         sizesWithCount.add(new ArrayList<Integer>(Arrays.asList(-1, -1, numDown, compDown)));
-
-        /*
-
-        //Set the text for the buttons
-        String fiveFiveText = "5x5 (" + comp5by5 + "/" + num5by5 + ")";
-        fiveByFive.setText(fiveFiveText);
-        String tenTenText = "10x10 (" + comp10by10 + "/" + num10by10 + ")";
-        tenByTen.setText(tenTenText);
-        String tenFiveText = "10x5 (" + comp10by5 + "/" + num10by5 + ")";
-        tenByFive.setText(tenFiveText);
-        String yourText = "Your Puzzles (" + compYours + "/" + numYours + ")";
-        yourPuzzles.setText(yourText);
-
-        */
 
         int belowId = R.id.fragment_bar_size_select;
 
