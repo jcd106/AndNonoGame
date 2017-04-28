@@ -64,7 +64,7 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
     float mSquareWidth;
     float mSquareHeight;
     private final int marginVertical = 210;
-    private final int marginHorizontal = 32;
+    private final int marginHorizontal = 34;
 
     private ColorPuzzle puzzle;
 

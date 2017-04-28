@@ -83,7 +83,7 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
     float mSquareWidth;
     float mSquareHeight;
     private final int marginVertical = 180;
-    private final int marginHorizontal = 32;
+    private final int marginHorizontal = 34;
 
     private Puzzle puzzle;
 
@@ -303,11 +303,6 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
                     newBox.getLayoutParams().height = (int) (mSquareHeight - 0.5);
                     newBox.getLayoutParams().width = (int) (mSquareWidth - 0.5);
 
-                    if (numRows < 10 && numCols < 10) {
-                        newBox = (TextView) inflater.inflate(R.layout.border_box_large, tableRow, false);
-                    } else {
-                        newBox = (TextView) inflater.inflate(R.layout.border_box, tableRow, false);
-                    }
                     //Add blank spaces in top right of puzzle grid to leave room for constraint values
                     if (i < colVals.length && j < rowVals[0].length) {
                         //Create new TextView with empty box background color and add it to the table
