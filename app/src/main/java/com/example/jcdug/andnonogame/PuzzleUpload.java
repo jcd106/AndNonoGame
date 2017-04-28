@@ -23,15 +23,15 @@ import java.util.List;
  */
 @DynamoDBTable(tableName = "Puzzles")
 public class PuzzleUpload implements Serializable {
-    private static int ID;                 //The unique ID of the puzzle
+    private int ID;                 //The unique ID of the puzzle
     private int completed;          //completed = 1 if puzzle is complete, 0 otherwise
 
     private String userID;
 
-    private static String size;             //The size of the puzzle in the form "numColumnsxnumRows"
-    private static List<List<Integer>> solution;       //The solution state
-    private static List<List<Integer>> rows;           //The row constraint values
-    private static List<List<Integer>> cols;
+    private String size;             //The size of the puzzle in the form "numColumnsxnumRows"
+    private List<List<Integer>> solution;       //The solution state
+    private List<List<Integer>> rows;           //The row constraint values
+    private List<List<Integer>> cols;
 
     public PuzzleUpload(){
 
@@ -138,14 +138,13 @@ public class PuzzleUpload implements Serializable {
 
     @Override
     public String toString(){
-        return ID + "," + size;
+        return "Binary: " + ID + "," + size;
     }
 
-    public static Puzzle convertToPuzzle() {
-        int[][] pSolution, pRows, pCols, currentState;
+    public Puzzle convertToPuzzle() {
+        int[][] pSolution, pRows, pCols;
         String[] splitSize = size.split("x");
         int[] pSize = {Integer.parseInt(splitSize[0]),Integer.parseInt(splitSize[1])};
-        currentState = new int[pSize[1]][pSize[0]];
         pSolution = convert2d(solution);
         pRows = convert2d(rows);
         pCols = convert2d(cols);
@@ -153,7 +152,7 @@ public class PuzzleUpload implements Serializable {
         return p;
     }
 
-    public static int[][] convert2d(List<List<Integer>> list) {
+    public int[][] convert2d(List<List<Integer>> list) {
         int[][] arr = new int[list.size()][list.get(0).size()];
         for (int i = 0; i < list.size(); i++) {
             for (int j = 0; j < list.get(i).size(); j++) {

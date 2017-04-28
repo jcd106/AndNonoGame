@@ -37,6 +37,20 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="85dp" />
 
+    <CheckBox
+        android:text="Color Puzzles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_button"
+        android:layout_marginLeft="90dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginBottom="40dp"
+        android:layout_marginTop="17dp"
+        android:id="@+id/searchColorCheckBox"
+        android:layout_below="@+id/choose_query_puzzle_size"
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="10dp" />
+
 
     <Button
         android:id="@+id/search_button"

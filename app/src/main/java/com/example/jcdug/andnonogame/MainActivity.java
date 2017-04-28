@@ -36,6 +36,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.*;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -158,8 +159,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             acct = result.getSignInAccount();
             String authCode = acct.getServerAuthCode();
             String token = acct.getIdToken();
-
-            logins.put("accounts.google.com", token);
+            credentialsProvider.clear();
+            //if(logins.get("accounts.google.com") == null)
+                logins.put("accounts.google.com", token);
             credentialsProvider.setLogins(logins);
             new Thread(new Runnable() {
                 public void run() {

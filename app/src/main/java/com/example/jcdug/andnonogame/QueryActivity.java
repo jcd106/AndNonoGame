@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
@@ -49,8 +50,17 @@ public class QueryActivity extends AppCompatActivity implements BarFragment.OnFr
     public void onClicked(View view) {
         switch (view.getId()) {
             case R.id.search_button:
+                CheckBox searchColor = (CheckBox) findViewById(R.id.searchColorCheckBox);
                 Intent i1 = new Intent(this, TableActivity.class);
                 i1.putExtra("Size", spinner.getSelectedItem().toString());
+
+                if(searchColor.isChecked()){
+                    i1.putExtra("Type", "Color");
+                }
+                else{
+                    i1.putExtra("Type", "Binary");
+                }
+
                 startActivity(i1);
                 break;
         }

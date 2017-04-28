@@ -134,7 +134,8 @@ public class ColorPuzzle implements Serializable {
     }
 
     public ColorPuzzleUpload convertToUpload(String userID) {
-        ArrayList<Integer> newSize = convertArray(size);
+        //ArrayList<Integer> newSize = convertArray(size);
+        String newSize = size[0] + "x" + size[1];
         ArrayList<List<Integer>> newCurrState = convert2d(currentState);
         ArrayList<List<List<Integer>>> newRowConst = convert3d(rows);
         ArrayList<List<List<Integer>>> newColConst = convert3d(cols);

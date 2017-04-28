@@ -41,6 +41,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
 
     DynamoDBMapper mapper = MainActivity.getMapper();
     String size;
+    String type;
     private ListView puzzleList;
 
     @Override
@@ -50,7 +51,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         Intent prev = this.getIntent();
         size = prev.getStringExtra("Size");
         Log.d("Size", size);
-        puzzleList = (ListView) findViewById(R.id.result_list);
+        type = prev.getStringExtra("Type");
     }
 
     @Override
@@ -58,28 +59,56 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         super.onStart();
 
         try {
-            final ArrayList<PuzzleUpload> puzzles = performSizeQuery(size);
-            puzzleList = (ListView) findViewById(R.id.result_list);
-            puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+            if(type.equals("Binary")) {
+                final ArrayList<PuzzleUpload> puzzles = performSizeQuery(size);
 
-            Log.d("ListView", puzzleList.toString());
+                puzzleList = (ListView) findViewById(R.id.result_list);
+                puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
 
-            ArrayAdapter<PuzzleUpload> arrayAdapter = new ArrayAdapter<PuzzleUpload>(
-                    this,
-                    android.R.layout.simple_list_item_1,
-                    puzzles);
+                Log.d("ListView", puzzleList.toString());
 
-            puzzleList.setAdapter(arrayAdapter);
+                ArrayAdapter<PuzzleUpload> arrayAdapter = new ArrayAdapter<PuzzleUpload>(
+                        this,
+                        android.R.layout.simple_list_item_1,
+                        puzzles);
 
-            puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener()
-            {
-                // argument position gives the index of item which is clicked
-                public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
+                puzzleList.setAdapter(arrayAdapter);
+
+                puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener()
                 {
-                    PuzzleUpload selectedPuzzle = puzzles.get(position);
-                    Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
-                }
-            });
+                    // argument position gives the index of item which is clicked
+                    public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
+                    {
+                        PuzzleUpload selectedPuzzle = puzzles.get(position);
+                        Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+            else if(type.equals("Color")) {
+                final ArrayList<ColorPuzzleUpload> puzzles = performColorSizeQuery(size);
+
+                puzzleList = (ListView) findViewById(R.id.result_list);
+                puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+
+                Log.d("ListView", puzzleList.toString());
+
+                ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
+                        this,
+                        android.R.layout.simple_list_item_1,
+                        puzzles);
+
+                puzzleList.setAdapter(arrayAdapter);
+
+                puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
+                    // argument position gives the index of item which is clicked
+                    public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
+                    {
+                        ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
+                        Toast.makeText(getApplicationContext(), "Downloading puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,11 +122,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         ArrayList<PuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS); // Here the thread will be blocked
         // until the result came back.
         return puzzles;
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     public class PerformQuery implements Callable<ArrayList<PuzzleUpload>> {
@@ -117,4 +141,35 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         }
     }
 
+    public ArrayList<ColorPuzzleUpload> performColorSizeQuery(String size) throws Exception{
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<ArrayList<ColorPuzzleUpload>> futureCall = executor.submit(new PerformColorQuery());
+        ArrayList<ColorPuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS); // Here the thread will be blocked
+        // until the result came back.
+        return puzzles;
+    }
+
+    public class PerformColorQuery implements Callable<ArrayList<ColorPuzzleUpload>> {
+        @Override
+        public ArrayList<ColorPuzzleUpload> call() throws Exception {
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            eav.put(":val1", new AttributeValue().withS(size));
+
+            final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression("Size = :val1").withExpressionAttributeValues(eav);
+            List<ColorPuzzleUpload> scanResult = mapper.scan(ColorPuzzleUpload.class, scanExpression);
+            ArrayList<ColorPuzzleUpload> puzzles = new ArrayList<ColorPuzzleUpload>(scanResult);
+            for (ColorPuzzleUpload puzzle : scanResult) {
+                Log.d("Puzzle", puzzle.toString());
+            }
+            return puzzles;
+        }
+    }
+
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
 }

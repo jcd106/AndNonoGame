@@ -27,7 +27,7 @@ import java.util.List;
 public class SizeSelectActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener {
 
     boolean isColor;
-    String table, yourTable;
+    String table, yourTable, downTable;
 
     /**
      * Handles the creation of the view
@@ -94,9 +94,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         if (isColor) {
             table = getString(R.string.colorTable);
             yourTable = getString(R.string.yourColorTable);
+            downTable = "DownloadedColorPuzzles";
         } else {
             table = getString(R.string.puzzleTable);
             yourTable = getString(R.string.yourTable);
+            downTable = "DownloadedPuzzles";
         }
 
         final Context context = this;
@@ -116,15 +118,20 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
                 } else {
                     i.putExtra("color", false);
                 }
-                i.putExtra("table", table);
 
                 String size = (String) view.getTag(R.id.size);
                 if(size != null){
                     if(size.equals("your")){
                         i.putExtra("size", "your");
+                        i.putExtra("table", yourTable);
+                    }
+                    else if(size.equals("down")){
+                        i.putExtra("size", "down");
+                        i.putExtra("table", downTable);
                     }
                     else{
                         i.putExtra("size", size);
+                        i.putExtra("table", table);
                     }
                 }
                 startActivity(i);
@@ -148,12 +155,14 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         int num10by10 = 0;
         int num10by5 = 0;
         int numYours = 0;
+        int numDown = 0;
 
         //Set the number of completed puzzles for the sizes to 0
         int comp5by5 = 0;
         int comp10by10 = 0;
         int comp10by5 = 0;
         int compYours = 0;
+        int compDown = 0;
 
         //Get the database
         PuzzleDatabase db = MainActivity.getDB();
@@ -245,17 +254,38 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         Cursor c4 = db.getCountCompletedYour(yourTable);
         c4.moveToFirst();
 
-        //Get the index of numPuzzles, Rows, and Cols in c1
+        //Get the index of numPuzzles, Rows, and Cols in c3
         int i3 = c3.getColumnIndex("numPuzzles");
 
         numYours = c3.getInt(i3);
 
-        //Get the index of numComplete, Rows, and Cols in c2
-        int i4 = c2.getColumnIndex("numComplete");
+        //Get the index of numComplete, Rows, and Cols in c4
+        int i4 = c4.getColumnIndex("numComplete");
 
         compYours = c4.getInt(i4);
 
         sizesWithCount.add(new ArrayList<Integer>(Arrays.asList(0, 0, numYours, compYours)));
+
+
+        //Query the database for the count of puzzles grouped by size and move the cursor to the first tuple
+        Cursor c5 = db.getCountDown(downTable);
+        c5.moveToFirst();
+
+        //Query the database for the count completed grouped by size and move the cursor to the first tuple
+        Cursor c6 = db.getCountCompletedDown(downTable);
+        c6.moveToFirst();
+
+        //Get the index of numPuzzles, Rows, and Cols in c5
+        int i5 = c5.getColumnIndex("numPuzzles");
+
+        numDown = c5.getInt(i5);
+
+        //Get the index of numComplete, Rows, and Cols in c6
+        int i6 = c6.getColumnIndex("numComplete");
+
+        compDown = c6.getInt(i6);
+
+        sizesWithCount.add(new ArrayList<Integer>(Arrays.asList(-1, -1, numDown, compDown)));
 
         /*
 
@@ -294,13 +324,17 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
             int numPuzzles = sizesWithCount.get(j).get(2);
 
             String buttonText;
-            if(rowSize != 0 && colSize != 0) {
-                buttonText = colSize + "x" + rowSize + " (" + numComplete + "/" + numPuzzles + ")";
-                b.setTag(R.id.size, colSize + " " + rowSize);
-            }
-            else{
+            if(rowSize == 0 && colSize == 0) {
                 buttonText = "Your Puzzles (" + numComplete + "/" + numPuzzles + ")";
                 b.setTag(R.id.size, "your");
+            }
+            else if(rowSize == -1 && colSize == -1){
+                buttonText = "Downloaded Puzzles (" + numComplete + "/" + numPuzzles + ")";
+                b.setTag(R.id.size, "down");
+            }
+            else{
+                buttonText = colSize + "x" + rowSize + " (" + numComplete + "/" + numPuzzles + ")";
+                b.setTag(R.id.size, colSize + " " + rowSize);
             }
             b.setText(buttonText);
             b.setOnClickListener(listener);
