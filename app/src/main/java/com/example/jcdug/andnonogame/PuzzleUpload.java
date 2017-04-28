@@ -36,7 +36,7 @@ public class PuzzleUpload implements Serializable {
     private List<String> ratingsUser;
     private Float averageRating;
 
-    public PuzzleUpload(){
+    public PuzzleUpload() {
 
     }
 
@@ -50,6 +50,7 @@ public class PuzzleUpload implements Serializable {
         completed = comp;
         ratings = new ArrayList<Float>();
         ratingsUser = new ArrayList<String>();
+        averageRating = 0f;
     }
 
     /**
@@ -62,7 +63,9 @@ public class PuzzleUpload implements Serializable {
         return ID;
     }
 
-    public void setID(int id) { ID = id;}
+    public void setID(int id) {
+        ID = id;
+    }
 
     /**
      * Getter method for userID
@@ -70,9 +73,13 @@ public class PuzzleUpload implements Serializable {
      * @return UserID
      */
     @DynamoDBHashKey(attributeName = "UserID")
-    public String getUserID() { return userID; }
+    public String getUserID() {
+        return userID;
+    }
 
-    public void setUserID(String id) { userID = id; }
+    public void setUserID(String id) {
+        userID = id;
+    }
 
     /**
      * Getter method for size
@@ -84,7 +91,9 @@ public class PuzzleUpload implements Serializable {
         return size;
     }
 
-    public void setSize(String s) { size = s;}
+    public void setSize(String s) {
+        size = s;
+    }
 
     /**
      * Getter method for solution
@@ -96,7 +105,9 @@ public class PuzzleUpload implements Serializable {
         return solution;
     }
 
-    public void setSolution(List<List<Integer>> s) { solution = s;}
+    public void setSolution(List<List<Integer>> s) {
+        solution = s;
+    }
 
     /**
      * Getter method for ratings
@@ -108,7 +119,9 @@ public class PuzzleUpload implements Serializable {
         return ratings;
     }
 
-    public void setRatings(List<Float> r) { ratings = r; }
+    public void setRatings(List<Float> r) {
+        ratings = r;
+    }
 
     /**
      * Getter method for ratingsUser
@@ -120,7 +133,23 @@ public class PuzzleUpload implements Serializable {
         return ratingsUser;
     }
 
-    public void setRatingsUser(List<String> ru) { ratingsUser = ru; }
+    public void setRatingsUser(List<String> ru) {
+        ratingsUser = ru;
+    }
+
+    /**
+     * Getter method for average rating
+     *
+     * @return the average rating of a puzzle
+     */
+    @DynamoDBAttribute(attributeName = "Average Rating")
+    public Float getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Float aR) {
+        averageRating = aR;
+    }
 
     /**
      * Getter method for rows
@@ -132,7 +161,9 @@ public class PuzzleUpload implements Serializable {
         return rows;
     }
 
-    public void setRows(List<List<Integer>> r) { rows = r; }
+    public void setRows(List<List<Integer>> r) {
+        rows = r;
+    }
 
     /**
      * Getter method for cols
@@ -144,7 +175,9 @@ public class PuzzleUpload implements Serializable {
         return cols;
     }
 
-    public void setCols(List<List<Integer>> c){ cols = c; }
+    public void setCols(List<List<Integer>> c) {
+        cols = c;
+    }
 
     /**
      * Getter method for completed
@@ -166,31 +199,27 @@ public class PuzzleUpload implements Serializable {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Binary: " + ID + "," + size;
     }
 
     public boolean updateRatings(Float newRating, String user) {
-        boolean canAdd = true;
         for (int i = 0; i < ratingsUser.size(); i++) {
             if (user.equals(ratingsUser.get(i)))
-                canAdd = false;
+                return false;
         }
-        if (canAdd) {
-            ratings.add(newRating);
-            ratingsUser.add(user);
-            if (averageRating == null)
-                averageRating = newRating;
-            else
-                averageRating = ((averageRating*(ratings.size()-1)) + newRating)/(ratings.size());
-        }
-        return canAdd;
+
+        ratings.add(newRating);
+        ratingsUser.add(user);
+        averageRating = ((averageRating * (ratings.size() - 1)) + newRating) / (ratings.size());
+
+        return true;
     }
 
     public Puzzle convertToPuzzle() {
         int[][] pSolution, pRows, pCols;
         String[] splitSize = size.split("x");
-        int[] pSize = {Integer.parseInt(splitSize[0]),Integer.parseInt(splitSize[1])};
+        int[] pSize = {Integer.parseInt(splitSize[0]), Integer.parseInt(splitSize[1])};
         pSolution = convert2d(solution);
         pRows = convert2d(rows);
         pCols = convert2d(cols);

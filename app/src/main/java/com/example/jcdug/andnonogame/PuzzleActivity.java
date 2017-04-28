@@ -117,6 +117,8 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         RatingBar.OnRatingBarChangeListener listener = new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(final RatingBar ratingBar, float rating, boolean fromUser) {
+                if(rating == 0f)
+                    return;
                 AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                 alertDialog.setTitle("Rate Puzzle?");
                 alertDialog.setMessage("Would you like to rate the puzzle?");
@@ -133,7 +135,7 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
                 alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
                         new DialogInterface.OnClickListener() {
                            public void onClick(DialogInterface dialog, int which) {
-                               //do nothing
+                               ratingBar.setProgress(0);
                                dialog.dismiss();
                            }
                         });

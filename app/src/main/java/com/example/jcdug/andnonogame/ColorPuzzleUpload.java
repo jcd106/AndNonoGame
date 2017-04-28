@@ -33,6 +33,9 @@ public class ColorPuzzleUpload implements Serializable {
     private List<List<List<Integer>>> rows;           //The row constraint values
     private List<List<List<Integer>>> cols;
     private List<Integer> colors;
+    private List<Float> ratings;
+    private List<String> ratingsUser;
+    private Float averageRating;
 
     /**
      * Constructor for Uploading color puzzles to DynamoDB
@@ -53,6 +56,9 @@ public class ColorPuzzleUpload implements Serializable {
         cols = c;
         completed = comp;
         this.colors = colors;
+        ratings = new ArrayList<Float>();
+        ratingsUser = new ArrayList<String>();
+        averageRating = 0f;
     }
 
     public ColorPuzzleUpload(){
@@ -86,7 +92,7 @@ public class ColorPuzzleUpload implements Serializable {
      *
      * @return Puzzle size
      */
-    @DynamoDBIndexHashKey(attributeName = "Size")
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "Size-PuzzleID-index", attributeName = "Size")
     public String getSize() {
         return size;
     }
@@ -104,6 +110,48 @@ public class ColorPuzzleUpload implements Serializable {
     }
 
     public void setSolution(List<List<Integer>>  s) { solution = s; }
+
+    /**
+     * Getter method for ratings
+     *
+     * @return the ratings of a puzzle
+     */
+    @DynamoDBAttribute(attributeName = "Ratings")
+    public List<Float> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Float> r) {
+        ratings = r;
+    }
+
+    /**
+     * Getter method for ratingsUser
+     *
+     * @return the userIDs of the users who rated a puzzle
+     */
+    @DynamoDBAttribute(attributeName = "Ratings UserIDs")
+    public List<String> getRatingsUser() {
+        return ratingsUser;
+    }
+
+    public void setRatingsUser(List<String> ru) {
+        ratingsUser = ru;
+    }
+
+    /**
+     * Getter method for average rating
+     *
+     * @return the average rating of a puzzle
+     */
+    @DynamoDBAttribute(attributeName = "Average Rating")
+    public Float getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Float aR) {
+        averageRating = aR;
+    }
 
     /**
      * Getter method for rows
@@ -167,8 +215,21 @@ public class ColorPuzzleUpload implements Serializable {
         pSolution = convert2d(solution);
         pRows = convert3d(rows);
         pCols = convert3d(cols);
-        ColorPuzzle p = new ColorPuzzle(ID, pSize, pSolution, pRows, pCols, pColors, 0);
+        ColorPuzzle p = new ColorPuzzle(ID, userID, pSize, pSolution, pRows, pCols, pColors, 0);
         return p;
+    }
+
+    public boolean updateRatings(Float newRating, String user) {
+        for (int i = 0; i < ratingsUser.size(); i++) {
+            if (user.equals(ratingsUser.get(i)))
+                return false;
+        }
+
+        ratings.add(newRating);
+        ratingsUser.add(user);
+        averageRating = ((averageRating * (ratings.size() - 1)) + newRating) / (ratings.size());
+
+        return true;
     }
 
     public int[][] convert2d(List<List<Integer>> list) {

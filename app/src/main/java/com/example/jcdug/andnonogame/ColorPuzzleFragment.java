@@ -580,4 +580,20 @@ public class ColorPuzzleFragment extends Fragment {
             }
         }).start();
     }
+
+    public void updateRating(float newRating) {
+        final DynamoDBMapper mapper = MainActivity.getMapper();
+        final GoogleSignInAccount acct = MainActivity.getAccount();
+        final AmazonDynamoDBClient ddbClient = MainActivity.getClient();
+        ColorPuzzleUpload pu = puzzle.getPuzzleUpload();
+        boolean added = pu.updateRatings(newRating, acct.getId());
+        final ColorPuzzleUpload p2 = pu;
+        if (added) {
+            new Thread(new Runnable() {
+                public void run() {
+                    mapper.save(p2);
+                }
+            }).start();
+        }
+    }
 }

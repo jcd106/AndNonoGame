@@ -392,7 +392,7 @@ public class CreateColorPuzzleFragment extends Fragment {
             PuzzleDatabase db = MainActivity.getDB();
 
             int complete = 0;
-            newPuzzle = new ColorPuzzle(id, size, currentState, newRowConstraints, newColConstraints, colors, complete);
+            newPuzzle = new ColorPuzzle(id, "AddUserIDLater", size, currentState, newRowConstraints, newColConstraints, colors, complete);
             try {
                 db.insertPuzzle(getString(R.string.yourColorTable),id,newPuzzle,size,complete,db.getWritableDatabase());
             } catch (IOException e) {

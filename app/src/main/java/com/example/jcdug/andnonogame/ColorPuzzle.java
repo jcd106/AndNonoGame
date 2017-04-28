@@ -1,8 +1,21 @@
 package com.example.jcdug.andnonogame;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
+import com.amazonaws.services.dynamodbv2.model.Condition;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by jcdug on 11/18/2016.
@@ -10,6 +23,7 @@ import java.util.List;
 
 public class ColorPuzzle implements Serializable {
     private int ID;                 //The unique ID of the puzzle
+    private String User;
     private int[] size;             //The size of the puzzle in the form {numColumns, numRows}
     private int[][] currentState;   //The current state of the puzzle
     private int[][] solution;       //The solution state
@@ -33,8 +47,9 @@ public class ColorPuzzle implements Serializable {
      * @param c    The column constraint values
      * @param comp The value for complete
      */
-    public ColorPuzzle(int id, int[] s, int[][] sol, int[][][] r, int[][][] c, int[] color, int comp) {
+    public ColorPuzzle(int id, String user, int[] s, int[][] sol, int[][][] r, int[][][] c, int[] color, int comp) {
         ID = id;
+        User = user;
         size = s;
         currentState = new int[s[1]][s[0]];
         solution = sol;
@@ -51,6 +66,10 @@ public class ColorPuzzle implements Serializable {
      */
     public int getID() {
         return ID;
+    }
+
+    public String getUser() {
+        return User;
     }
 
     /**
@@ -132,6 +151,48 @@ public class ColorPuzzle implements Serializable {
     public void setCompleted(int c) {
         completed = c;
     }
+
+    public ColorPuzzleUpload getPuzzleUpload() {
+        ColorPuzzleUpload pu = performQuery(ID, User);
+        return pu;
+    }
+
+    public ColorPuzzleUpload performQuery(int id, String user) {
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<ColorPuzzleUpload> futureCall = executor.submit(new PerformQuery());
+        ColorPuzzleUpload puzzle = null; // Here the thread will be blocked
+        try {
+            puzzle = futureCall.get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+        // until the result came back.
+        return puzzle;
+    }
+
+    public class PerformQuery implements Callable<ColorPuzzleUpload> {
+        @Override
+        public ColorPuzzleUpload call() throws Exception {
+            final DynamoDBMapper mapper = MainActivity.getMapper();
+            ColorPuzzleUpload p2 = new ColorPuzzleUpload();
+            p2.setID(ID);
+            p2.setUserID(User);
+            final Condition rck = new Condition().withComparisonOperator(ComparisonOperator.EQ.toString())
+                    .withAttributeValueList(new AttributeValue().withN("" + ID));
+
+            final DynamoDBQueryExpression<ColorPuzzleUpload> queryExpression = new DynamoDBQueryExpression<ColorPuzzleUpload>()
+                    .withHashKeyValues(p2).withRangeKeyCondition("PuzzleID", rck);
+            List<ColorPuzzleUpload> pus = mapper.query(ColorPuzzleUpload.class, queryExpression);
+            ColorPuzzleUpload pu = pus.get(0);
+            return pu;
+        }
+    }
+
 
     public ColorPuzzleUpload convertToUpload(String userID) {
         //ArrayList<Integer> newSize = convertArray(size);
