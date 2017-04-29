@@ -65,13 +65,11 @@ public class ColorSelectActivity extends AppCompatActivity {
                     ctv.setChecked(false);
                     ctv.setCheckMarkDrawable(android.R.drawable.checkbox_off_background);
                     chosenColors.remove((Integer) ctv.getTag());
-                    //Log.d("Color List", "" + chosenColors.size());
                 }
                 else {
                     ctv.setChecked(true);
                     ctv.setCheckMarkDrawable(android.R.drawable.checkbox_on_background);
                     chosenColors.add((Integer) ctv.getTag());
-                    //Log.d("Color List", "" + chosenColors.size());
                 }
             }
         };
@@ -137,7 +135,7 @@ public class ColorSelectActivity extends AppCompatActivity {
                     i1.putExtra("size", size);
                     ArrayList<Integer> sendColors = new ArrayList<Integer>(chosenColors.size());
                     sendColors.addAll(chosenColors);
-                    i1.putExtra("colors", sendColors);//chosenColors.toArray());
+                    i1.putExtra("colors", sendColors);
                     startActivity(i1);
                     break;
                 }

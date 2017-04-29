@@ -102,7 +102,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                             }
                                         });
                                 alertDialog.show();
-                                //e.printStackTrace();
                             }
                         }
                     });
@@ -140,7 +139,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                             }
                                         });
                                 alertDialog.show();
-                                //e.printStackTrace();
                             }
                         }
                     });
@@ -178,7 +176,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                             }
                                         });
                                 alertDialog.show();
-                                //e.printStackTrace();
                             }
                         }
                     });
@@ -191,8 +188,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     puzzleList = (ListView) findViewById(R.id.result_list);
                     puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
 
-                    Log.d("ListView", puzzleList.toString());
-
                     ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
                             this,
                             android.R.layout.simple_list_item_1,
@@ -220,7 +215,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                             }
                                         });
                                 alertDialog.show();
-                                //e.printStackTrace();
                             }
                         }
                     });
@@ -231,8 +225,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     puzzleList = (ListView) findViewById(R.id.result_list);
                     puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
 
-                    Log.d("ListView", puzzleList.toString());
-
                     ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
                             this,
                             android.R.layout.simple_list_item_1,
@@ -260,7 +252,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                             }
                                         });
                                 alertDialog.show();
-                                //e.printStackTrace();
                             }
                         }
                     });
@@ -271,8 +262,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     puzzleList = (ListView) findViewById(R.id.result_list);
                     puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
 
-                    Log.d("ListView", puzzleList.toString());
-
                     ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
                             this,
                             android.R.layout.simple_list_item_1,
@@ -300,7 +289,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                                             }
                                         });
                                 alertDialog.show();
-                                //e.printStackTrace();
                             }
                         }
                     });
@@ -370,7 +358,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         public ArrayList<PuzzleUpload> call() throws Exception {
             Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
             int ratingVal = Integer.parseInt(rating.split(" ")[0]);
-            Log.d("Rating: ", ratingVal + "");
             eav.put(":val1", new AttributeValue().withN(ratingVal + ""));
             eav.put(":val2", new AttributeValue().withN(ratingVal+1 + ""));
 
@@ -396,7 +383,6 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         public ArrayList<PuzzleUpload> call() throws Exception {
             Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
             int ratingVal = Integer.parseInt(rating.split(" ")[0]);
-            Log.d("Rating: ", ratingVal + "");
             eav.put(":val1", new AttributeValue().withN(ratingVal + ""));
             eav.put(":val2", new AttributeValue().withN(ratingVal+1 + ""));
             eav.put(":val3", new AttributeValue().withS(size));

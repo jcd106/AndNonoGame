@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        //Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             acct = result.getSignInAccount();
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        //Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
     private void updateUI(boolean signedIn) {
