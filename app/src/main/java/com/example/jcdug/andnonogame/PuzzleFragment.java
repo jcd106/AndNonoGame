@@ -84,6 +84,7 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
     float mSquareHeight;
     private final int marginVertical = 180;
     private final int marginHorizontal = 34;
+    String user;
 
     private Puzzle puzzle;
 
@@ -144,6 +145,8 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
         table = bundle.getString("table");
+        user = bundle.getString("user");
+        Log.d("USER at first ", user);
 
         //Retrieve user color choice as string from shared preferences
         SharedPreferences preferences = this.getActivity().getSharedPreferences(COLOR_CHOICE, Context.MODE_PRIVATE);
@@ -194,9 +197,19 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
             PuzzleDatabase db = MainActivity.getDB();
 
             //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1 = db.getPuzzleByID(table, id);
+            Cursor c1;
+            c1 = db.getPuzzleByID(table, id);
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
+            int userIndex = c1.getColumnIndex("UserID");
+            if(table.equals("DownloadedPuzzles")){
+                while(!c1.isAfterLast()) {
+                    String thisUser = c1.getString(userIndex);
+                    if(thisUser.equals(user))
+                        break;
+                    c1.moveToNext();
+                }
+            }
             byte[] b = c1.getBlob(p1);
 
             //Create a new input stream and deserialize the puzzle to be displayed
@@ -704,6 +717,16 @@ public interface OnFragmentInteractionListener {
     public void resetCurrentState() {
         currentState = new int[numRows][numCols];
         complete = 0;
+    }
+
+    public void resetPuzzle(PuzzleDatabase db) {
+        try {
+            db.resetDownPuzzle(table, id, puzzle.getUser());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void uploadPuzzle() {

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -105,7 +106,8 @@ public class SettingsActivity extends AppCompatActivity {
                                 PuzzleDatabase db = MainActivity.getDB();
                                 String[] tables = {getString(R.string.puzzleTable),
                                         getString(R.string.colorTable),
-                                        getString(R.string.yourTable)};
+                                        getString(R.string.yourTable),
+                                        getString(R.string.yourColorTable)};
                                 for (int i = 0; i < tables.length; i++) {
                                     int[] ids = db.getAllPuzzleIDs(tables[i]);
                                     //Loop through the ids and reset the puzzle corresponding to the id
@@ -117,6 +119,27 @@ public class SettingsActivity extends AppCompatActivity {
                                         } catch (ClassNotFoundException e) {
                                             e.printStackTrace();
                                         }
+                                    }
+                                }
+                                String[] tables2 = {getString(R.string.downTable), getString(R.string.downColorTable)};
+                                for (int i = 0; i < tables2.length; i++) {
+                                    Cursor c = db.getAllPuzzles(tables2[i]);
+                                    int userIndex = c.getColumnIndex("UserID");
+                                    int idIndex = c.getColumnIndex("PuzzleID");
+                                    c.moveToFirst();
+                                    int count = 0;
+                                    while (!c.isAfterLast()) {
+                                        int id = c.getInt(idIndex);
+                                        String user = c.getString(userIndex);
+                                        try {
+                                            db.resetDownPuzzle(tables2[i], id, user);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        } catch (ClassNotFoundException e) {
+                                            e.printStackTrace();
+                                        }
+                                        count++;
+                                        c.moveToNext();
                                     }
                                 }
                                 dialog.dismiss();

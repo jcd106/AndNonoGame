@@ -22,5 +22,9 @@
     <item name="state" type="id" />
     <item name="color" type="id" />
     <item name="size" type="id" />
+    <item name="user1" type="id" />
+    <item name="user2" type="id" />
+    <item name="user3" type="id" />
+    <item name="user4" type="id" />
 
 </resources>
