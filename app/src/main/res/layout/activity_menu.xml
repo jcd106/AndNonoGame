@@ -24,17 +24,30 @@
         android:layout_alignParentStart="true" />
 
     <Button
-        android:text="Color Puzzles"
+        android:text="Normal Puzzles"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/color_puzzles_button"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
+        android:id="@+id/normal_puzzles_button"
         android:onClick="onClicked"
         android:background="@drawable/border_button"
         android:layout_marginLeft="100dp"
         android:layout_marginRight="100dp"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:layout_below="@+id/fragment_bar_puzzle_select"
+        android:layout_marginTop="68dp" />
+
+    <Button
+        android:text="Color Puzzles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/color_puzzles_button"
+        android:onClick="onClicked"
+        android:background="@drawable/border_button"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:textAllCaps="false"
+        android:layout_below="@+id/normal_puzzles_button"
+        android:layout_marginTop="36dp" />
 
     <Button
         android:text="Create Your Own Puzzles"
@@ -51,19 +64,6 @@
         android:layout_centerHorizontal="true"
         android:textAllCaps="false" />
 
-    <Button
-        android:text="Normal Puzzles"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/normal_puzzles_button"
-        android:onClick="onClicked"
-        android:background="@drawable/border_button"
-        android:layout_marginLeft="100dp"
-        android:layout_marginRight="100dp"
-        android:layout_marginBottom="36dp"
-        android:layout_above="@+id/color_puzzles_button"
-        android:layout_centerHorizontal="true"
-        android:textAllCaps="false" />
 
     <Button
         android:text="Download Puzzles"

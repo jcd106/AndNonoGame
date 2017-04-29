@@ -152,7 +152,13 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
             uploadButton.setVisibility(View.INVISIBLE);
         else
             uploadButton.setVisibility(View.VISIBLE);
-        if (!isDown)
+
+        if(MainActivity.getSignInStatus())
+            uploadButton.setEnabled(true);
+        else
+            uploadButton.setEnabled(false);
+
+        if (!isDown || !MainActivity.getSignInStatus())
             ratingBar.setVisibility(View.INVISIBLE);
         else
             ratingBar.setVisibility(View.VISIBLE);

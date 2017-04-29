@@ -128,7 +128,7 @@ public class PuzzleUpload implements Serializable {
      *
      * @return the userIDs of the users who rated a puzzle
      */
-    @DynamoDBAttribute(attributeName = "Ratings UserIDs")
+    @DynamoDBAttribute(attributeName = "RatingsUserIDs")
     public List<String> getRatingsUser() {
         return ratingsUser;
     }
@@ -142,7 +142,7 @@ public class PuzzleUpload implements Serializable {
      *
      * @return the average rating of a puzzle
      */
-    @DynamoDBAttribute(attributeName = "Average Rating")
+    @DynamoDBAttribute(attributeName = "AverageRating")
     public Float getAverageRating() {
         return averageRating;
     }

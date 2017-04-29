@@ -88,6 +88,12 @@ public class ColorPuzzleActivity extends AppCompatActivity implements ColorUndoB
             ratingBar.setVisibility(View.INVISIBLE);
         else
             ratingBar.setVisibility(View.VISIBLE);
+
+        if(MainActivity.getSignInStatus())
+            uploadButton.setEnabled(true);
+        else
+            uploadButton.setEnabled(false);
+
         if (!isYour)
             uploadButton.setVisibility(View.INVISIBLE);
         else

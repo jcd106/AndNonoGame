@@ -1,7 +1,9 @@
 package com.example.jcdug.andnonogame;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,23 +25,39 @@ import static com.example.jcdug.andnonogame.R.id.spinner;
 
 public class QueryActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener{
 
-    Spinner spinner;
+    Spinner sizeSpinner;
+    Spinner ratingSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_query);
 
-        spinner = (Spinner) findViewById(R.id.choose_query_puzzle_size);
+        sizeSpinner = (Spinner) findViewById(R.id.choose_query_puzzle_size);
         String[] sizes = new String[]{
+                "Size",
                 "5x5",
                 "5x10",
                 "10x5",
                 "10x10"
         };
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, R.layout.spinner_layout, sizes);
-        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
-        spinner.setAdapter(spinnerArrayAdapter);
+        ArrayAdapter<String> sizeSpinnerArrayAdapter = new ArrayAdapter<String>(this, R.layout.spinner_layout, sizes);
+        sizeSpinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
+        sizeSpinner.setAdapter(sizeSpinnerArrayAdapter);
+
+        ratingSpinner = (Spinner) findViewById(R.id.choose_query_puzzle_rating);
+        String[] ratings = new String[]{
+                "Rating",
+                "0 Stars",
+                "1 Star",
+                "2 Stars",
+                "3 Stars",
+                "4 Stars",
+                "5 Stars"
+        };
+        ArrayAdapter<String> ratingSpinnerArrayAdapter = new ArrayAdapter<String>(this, R.layout.spinner_layout, ratings);
+        ratingSpinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_layout);
+        ratingSpinner.setAdapter(ratingSpinnerArrayAdapter);
     }
 
     /**
@@ -50,18 +68,36 @@ public class QueryActivity extends AppCompatActivity implements BarFragment.OnFr
     public void onClicked(View view) {
         switch (view.getId()) {
             case R.id.search_button:
-                CheckBox searchColor = (CheckBox) findViewById(R.id.searchColorCheckBox);
-                Intent i1 = new Intent(this, TableActivity.class);
-                i1.putExtra("Size", spinner.getSelectedItem().toString());
 
-                if(searchColor.isChecked()){
-                    i1.putExtra("Type", "Color");
-                }
-                else{
-                    i1.putExtra("Type", "Binary");
-                }
+                String searchSize = sizeSpinner.getSelectedItem().toString();
+                String searchRating = ratingSpinner.getSelectedItem().toString();
 
-                startActivity(i1);
+                if(searchSize.equals("Size") && searchRating.equals("Rating")){
+                    //Create a popup notifying the user that no search parameters are given
+                    AlertDialog alertDialog = new AlertDialog.Builder(QueryActivity.this).create();
+                    alertDialog.setTitle("Search Failed");
+                    alertDialog.setMessage("You have not chosen a search criteria");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                }
+                else {
+                    CheckBox searchColor = (CheckBox) findViewById(R.id.searchColorCheckBox);
+                    Intent i1 = new Intent(this, TableActivity.class);
+                    i1.putExtra("Size", searchSize);
+                    i1.putExtra("Rating", searchRating);
+                    if (searchColor.isChecked()) {
+                        i1.putExtra("Type", "Color");
+                    } else {
+                        i1.putExtra("Type", "Binary");
+                    }
+
+                    startActivity(i1);
+                }
                 break;
         }
     }
