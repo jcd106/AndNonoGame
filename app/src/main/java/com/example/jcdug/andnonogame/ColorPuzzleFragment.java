@@ -164,9 +164,6 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
             final float scale = Resources.getSystem().getDisplayMetrics().density;
             int viewW = Resources.getSystem().getDisplayMetrics().widthPixels - ((int) (marginHorizontal * scale));
             int viewH = Resources.getSystem().getDisplayMetrics().heightPixels - ((int) (marginVertical * scale));
-            Log.d("Scale ", ""+scale);
-            Log.d("Screen width ", ""+viewW);
-            Log.d("Screen height ", ""+viewH);
 
             // Set width and height to be used for the squares.
             mSquareWidth = viewW / (float) (numCols + rowVals[0].length);
@@ -176,10 +173,6 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
                 mSquareHeight = mSquareWidth;
             else
                 mSquareWidth = mSquareHeight;
-            int mSquareWidthDP = (int) (mSquareWidth / scale);
-            int mSquareHeightDP = mSquareWidthDP;
-            Log.d("mSquareWidth ", ""+mSquareWidth);
-            Log.d("mSquareWidthDP ", ""+mSquareWidthDP);
 
             //Set drawable background for filled and empty boxes to retrieved color choice
             filled = new Drawable[colors.length];
@@ -221,7 +214,6 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
                         }
                     }
 
-
                     //Handles switching of box colors and updates puzzle's current state
                     if (boxState == -1) {
                         b.setTag(R.id.state, 0);
@@ -240,8 +232,6 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
 
                     //Checks if the puzzle is solved
                     checkIfSolved();
-
-
                 }
             };
 
@@ -334,8 +324,6 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         } catch (IOException e1) {
         } catch (ClassNotFoundException e2) {
         }
-        //view.setScaleX(0.5f);
-        //view.setScaleY(0.5f);
         return view;
     }
 
@@ -536,29 +524,21 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         View view = v;
-        Log.d("view", v.toString());
-        Log.d("RawX", ""+event.getRawX());
-        Log.d("RawY", ""+event.getRawY());
-
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 start.set(event.getRawX(), event.getRawY());
-                Log.d(TAG, "mode=DRAG");
                 mode = DRAG;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 oldDist = fingerSpacing(v, event);
-                Log.d(TAG, "oldDist=" + oldDist);
                 if (oldDist > 200f) {
                     midPoint(v, mid, event);
                     mode = ZOOM;
-                    Log.d(TAG, "mode=ZOOM");
                 }
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
                 mode = NONE;
-                Log.d(TAG, "mode=NONE");
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (mode == DRAG) {
@@ -567,20 +547,12 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
                     view.setX(view.getX() + event.getRawX() - start.x);
                     view.setY(view.getY() + event.getRawY() - start.y);
                     start.set(event.getRawX(), event.getRawY());
-                    Log.d("StartX", ""+start.x);
-                    Log.d("StartY", ""+start.y);
-                    Log.d("ViewX", ""+view.getX());
-                    Log.d("ViewY", ""+view.getY());
                 }
                 else if (mode == ZOOM) {
                     float newDist = fingerSpacing(v, event);
-                    Log.d(TAG, "newDist=" + newDist);
                     if (newDist > 200f) {
 
                         float scale = newDist / oldDist;
-
-                        Log.d("Mid x", ""+mid.x);
-                        Log.d("Mid y", ""+mid.y);
                         view.setPivotX(mid.x);
                         view.setPivotY(mid.y);
                         view.setScaleX(scale);
@@ -601,19 +573,15 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         if(v.equals(this.getActivity().findViewById(R.id.fragment_color_puzzle)))
             v.getLocationOnScreen(loc);
 
-        float x0 = /*event.getXPrecision()*/event.getRawX();
-        float x1 = /*event.getXPrecision()*/event.getX(1) + loc[0];
+        float x0 = event.getRawX();
+        float x1 = event.getX(1) + loc[0];
         float x = x0 - x1;
-        Log.d("X0",""+x0);
-        Log.d("X1",""+x1);
 
-        float y0 = /*event.getYPrecision()*/event.getRawY();
-        float y1 = /*event.getYPrecision()*/event.getY(1) + loc[1];
+        float y0 = event.getRawY();
+        float y1 = event.getY(1) + loc[1];
         float y = y0 - y1;
-        Log.d("Y0",""+y0);
-        Log.d("Y1",""+y1);
         float dist = (float) (Math.sqrt(x*x + y*y));
-        Log.d("spacing",""+dist);
+
         return (float) (Math.sqrt(x * x + y * y));
     }
 
@@ -624,8 +592,8 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         if(v.equals(this.getActivity().findViewById(R.id.fragment_color_puzzle)))
             v.getLocationOnScreen(loc);
 
-        float x = /*event.getXPrecision()*/event.getRawX() + /*event.getXPrecision()*/event.getX(1) + loc[0];
-        float y = /*event.getYPrecision()*/event.getRawY() + /*event.getYPrecision()*/event.getY(1) + loc[1];
+        float x = event.getRawX() + event.getX(1) + loc[0];
+        float y = event.getRawY() + event.getY(1) + loc[1];
         point.set(x / 2, y / 2);
 
     }

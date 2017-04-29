@@ -20,28 +20,30 @@
     <color name="violet">#EE82EE</color>
     <color name="yellowgreen">#9ACD32</color>
     <color name="navy">#000080</color>
+    <color name="darkgolden">#B8860B</color>
 
 
     <integer-array name="selectColors">
-        <item>@color/red</item>
-        <item>@color/green</item>
-        <item>@color/blue</item>
-        <item>@color/cyan</item>
-        <item>@color/dkgray</item>
-        <item>@color/ltgray</item>
-        <item>@color/gray</item>
-        <item>@color/magenta</item>
-        <item>@color/yellow</item>
+        <item>@color/darkgolden</item>
         <item>@color/orange</item>
-        <item>@color/pink</item>
+        <item>@color/yellow</item>
         <item>@color/brown</item>
-        <item>@color/indigo</item>
-        <item>@color/purple</item>
-        <item>@color/teal</item>
-        <item>@color/turqoise</item>
+        <item>@color/red</item>
+        <item>@color/magenta</item>
         <item>@color/violet</item>
+        <item>@color/pink</item>
+        <item>@color/cyan</item>
+        <item>@color/turqoise</item>
+        <item>@color/green</item>
         <item>@color/yellowgreen</item>
+        <item>@color/teal</item>
+        <item>@color/blue</item>
+        <item>@color/purple</item>
+        <item>@color/indigo</item>
         <item>@color/navy</item>
+        <item>@color/dkgray</item>
+        <item>@color/gray</item>
+        <item>@color/ltgray</item>
     </integer-array>
 
 

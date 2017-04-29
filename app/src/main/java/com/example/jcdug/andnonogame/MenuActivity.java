@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 public class MenuActivity extends AppCompatActivity implements BarFragment.OnFragmentInteractionListener{
 
@@ -13,6 +14,13 @@ public class MenuActivity extends AppCompatActivity implements BarFragment.OnFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        Button downloadButton = (Button) findViewById(R.id.download_puzzles_button);
+
+        if(MainActivity.getSignInStatus())
+            downloadButton.setEnabled(true);
+        else
+            downloadButton.setEnabled(false);
     }
 
     /**

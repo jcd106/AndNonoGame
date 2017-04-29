@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+        //Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             acct = result.getSignInAccount();
@@ -218,18 +218,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        //Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
     private void updateUI(boolean signedIn) {
         if (signedIn) {
             findViewById(R.id.sign_in_button).setVisibility(View.INVISIBLE);
             findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.button_upload).setEnabled(true);
         } else {
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_button).setVisibility(View.INVISIBLE);
-            findViewById(R.id.button_upload).setEnabled(false);
         }
     }
 
@@ -259,53 +257,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 break;
             case R.id.sign_out_button:
                 signOut();
-                break;
-            case R.id.button_upload:
-                int id = 1;
-                /*
-                int[] s = {5, 5};
-                int[][] sol = {{0, 0, 1, 0, 0},
-                        {0, 1, 1, 1, 0},
-                        {1, 1, 1, 1, 1},
-                        {1, 1, 0, 1, 1},
-                        {1, 1, 1, 1, 1}};
-                int[][] r = {{0, 1}, {0, 3}, {0, 5}, {2, 2}, {0, 5}};
-                int[][] c = {{0, 0, 3, 0, 0},
-                        {3, 4, 1, 4, 3}};
-                */
-                ArrayList<Integer> size = new ArrayList<>(Arrays.asList(5, 5));
-                String sizeString = "5x5";
-                ArrayList<List<Integer>> solution = new ArrayList<List<Integer>>(size.get(1));
-                solution.add(new ArrayList<Integer>(Arrays.asList(0, 0, 1, 0, 0)));
-                solution.add(new ArrayList<Integer>(Arrays.asList(0, 1, 1, 1, 0)));
-                solution.add(new ArrayList<Integer>(Arrays.asList(1, 1, 1, 1, 1)));
-                solution.add(new ArrayList<Integer>(Arrays.asList(1, 1, 0, 1, 1)));
-                solution.add(new ArrayList<Integer>(Arrays.asList(1, 1, 1, 1, 1)));
-                ArrayList<List<Integer>> rows = new ArrayList<List<Integer>>(size.get(1));
-                rows.add(new ArrayList<Integer>(Arrays.asList(0, 1)));
-                rows.add(new ArrayList<Integer>(Arrays.asList(0, 3)));
-                rows.add(new ArrayList<Integer>(Arrays.asList(0, 5)));
-                rows.add(new ArrayList<Integer>(Arrays.asList(2, 2)));
-                rows.add(new ArrayList<Integer>(Arrays.asList(0, 5)));
-                ArrayList<List<Integer>> cols = new ArrayList<List<Integer>>(2);
-                cols.add(new ArrayList<Integer>(Arrays.asList(0, 0, 3, 0, 0)));
-                cols.add(new ArrayList<Integer>(Arrays.asList(3, 4, 1, 4, 3)));
-
-                int completed = 0;
-                final PuzzleUpload pu = new PuzzleUpload(id, acct.getId(), sizeString, solution, rows, cols, completed);
-                final Map<String,AttributeValue> map = new HashMap<>();
-                map.put("UserID", new AttributeValue(acct.getId()));
-                AttributeValue av = new AttributeValue();
-                av.setN(""+id);
-                map.put("PuzzleID", av);
-                new Thread(new Runnable() {
-                    public void run() {
-                        GetItemResult item = ddbClient.getItem("Puzzles", map);
-                        if(item.getItem()==null){
-                            mapper.save(pu);
-                        }
-                    }
-                }).start();
                 break;
         }
     }

@@ -159,7 +159,6 @@ public class CreateColorPuzzleFragment extends Fragment {
                 //Handles switching of box colors and updates puzzle's current state
                 if (boxState != selectedColor) {
                     int prevColor = colors[currentState[yLoc][xLoc]];
-                    Log.d("Color: ", prevColor + "");
                     if(prevColor != Color.WHITE) {
                         int prevColorCount = colorTracker.get(prevColor);
                         colorTracker.put(prevColor, --prevColorCount);

@@ -49,6 +49,7 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
     DynamoDBMapper mapper = MainActivity.getMapper();
     String size;
     String type;
+    String rating;
     private ListView puzzleList;
 
     @Override
@@ -58,8 +59,8 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         db = MainActivity.getDB();
         Intent prev = this.getIntent();
         size = prev.getStringExtra("Size");
-        Log.d("Size", size);
         type = prev.getStringExtra("Type");
+        rating = prev.getStringExtra("Rating");
     }
 
     @Override
@@ -68,88 +69,230 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
 
         try {
             if(type.equals("Binary")) {
-                final ArrayList<PuzzleUpload> puzzles = performSizeQuery(size);
+                if(rating.equals("Rating")) {
+                    final ArrayList<PuzzleUpload> puzzles = performSizeQuery();
 
-                puzzleList = (ListView) findViewById(R.id.result_list);
-                puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+                    puzzleList = (ListView) findViewById(R.id.result_list);
+                    puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
 
-                Log.d("ListView", puzzleList.toString());
+                    ArrayAdapter<PuzzleUpload> arrayAdapter = new ArrayAdapter<PuzzleUpload>(
+                            this,
+                            android.R.layout.simple_list_item_1,
+                            puzzles);
 
-                ArrayAdapter<PuzzleUpload> arrayAdapter = new ArrayAdapter<PuzzleUpload>(
-                        this,
-                        android.R.layout.simple_list_item_1,
-                        puzzles);
+                    puzzleList.setAdapter(arrayAdapter);
 
-                puzzleList.setAdapter(arrayAdapter);
-
-                puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener()
-                {
-                    // argument position gives the index of item which is clicked
-                    public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
-                    {
-                        PuzzleUpload selectedPuzzle = puzzles.get(position);
-                        Puzzle puzzle = selectedPuzzle.convertToPuzzle();
-                        try {
-                            db.insertDownloadedPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
-                            Toast.makeText(getApplicationContext(), "Downloaded puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
-                        } catch (SQLiteConstraintException|IOException e) {
-                            //Create a popup notifying the user that puzzle has been downloaded previously
-                            AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
-                            alertDialog.setTitle("Duplicate Puzzle");
-                            alertDialog.setMessage("You have already downloaded this puzzle!");
-                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            alertDialog.show();
-                            //e.printStackTrace();
+                    puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        // argument position gives the index of item which is clicked
+                        public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+                            PuzzleUpload selectedPuzzle = puzzles.get(position);
+                            Puzzle puzzle = selectedPuzzle.convertToPuzzle();
+                            try {
+                                db.insertDownloadedPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                                Toast.makeText(getApplicationContext(), "Downloaded puzzle: " + selectedPuzzle, Toast.LENGTH_LONG).show();
+                            } catch (SQLiteConstraintException | IOException e) {
+                                //Create a popup notifying the user that puzzle has been downloaded previously
+                                AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                                alertDialog.setTitle("Duplicate Puzzle");
+                                alertDialog.setMessage("You have already downloaded this puzzle!");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else if(size.equals("Size")) {
+                    final ArrayList<PuzzleUpload> puzzles = performRatingQuery();
+
+                    puzzleList = (ListView) findViewById(R.id.result_list);
+                    puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+
+                    ArrayAdapter<PuzzleUpload> arrayAdapter = new ArrayAdapter<PuzzleUpload>(
+                            this,
+                            android.R.layout.simple_list_item_1,
+                            puzzles);
+
+                    puzzleList.setAdapter(arrayAdapter);
+
+                    puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        // argument position gives the index of item which is clicked
+                        public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+                            PuzzleUpload selectedPuzzle = puzzles.get(position);
+                            Puzzle puzzle = selectedPuzzle.convertToPuzzle();
+                            try {
+                                db.insertDownloadedPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                                Toast.makeText(getApplicationContext(), "Downloaded puzzle: " + selectedPuzzle, Toast.LENGTH_LONG).show();
+                            } catch (SQLiteConstraintException | IOException e) {
+                                //Create a popup notifying the user that puzzle has been downloaded previously
+                                AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                                alertDialog.setTitle("Duplicate Puzzle");
+                                alertDialog.setMessage("You have already downloaded this puzzle!");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                        }
+                    });
+                }
+                else{
+                    final ArrayList<PuzzleUpload> puzzles = performSizeRatingQuery();
+
+                    puzzleList = (ListView) findViewById(R.id.result_list);
+                    puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+
+                    ArrayAdapter<PuzzleUpload> arrayAdapter = new ArrayAdapter<PuzzleUpload>(
+                            this,
+                            android.R.layout.simple_list_item_1,
+                            puzzles);
+
+                    puzzleList.setAdapter(arrayAdapter);
+
+                    puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        // argument position gives the index of item which is clicked
+                        public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+                            PuzzleUpload selectedPuzzle = puzzles.get(position);
+                            Puzzle puzzle = selectedPuzzle.convertToPuzzle();
+                            try {
+                                db.insertDownloadedPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                                Toast.makeText(getApplicationContext(), "Downloaded puzzle: " + selectedPuzzle, Toast.LENGTH_LONG).show();
+                            } catch (SQLiteConstraintException | IOException e) {
+                                //Create a popup notifying the user that puzzle has been downloaded previously
+                                AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                                alertDialog.setTitle("Duplicate Puzzle");
+                                alertDialog.setMessage("You have already downloaded this puzzle!");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                        }
+                    });
+                }
             }
             else if(type.equals("Color")) {
-                final ArrayList<ColorPuzzleUpload> puzzles = performColorSizeQuery(size);
+                if(rating.equals("Rating")) {
+                    final ArrayList<ColorPuzzleUpload> puzzles = performColorSizeQuery();
 
-                puzzleList = (ListView) findViewById(R.id.result_list);
-                puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+                    puzzleList = (ListView) findViewById(R.id.result_list);
+                    puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
 
-                Log.d("ListView", puzzleList.toString());
+                    ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
+                            this,
+                            android.R.layout.simple_list_item_1,
+                            puzzles);
 
-                ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
-                        this,
-                        android.R.layout.simple_list_item_1,
-                        puzzles);
+                    puzzleList.setAdapter(arrayAdapter);
 
-                puzzleList.setAdapter(arrayAdapter);
-
-                puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener()
-                {
-                    // argument position gives the index of item which is clicked
-                    public void onItemClick(AdapterView<?> arg0, View v,int position, long arg3)
-                    {
-                        ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
-                        ColorPuzzle puzzle = selectedPuzzle.convertToPuzzle();
-                        try {
-                            db.insertDownloadedColorPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
-                            Toast.makeText(getApplicationContext(), "Downloaded puzzle: "+ selectedPuzzle,   Toast.LENGTH_LONG).show();
-                        } catch (SQLiteConstraintException|IOException e) {
-                        //Create a popup notifying the user that puzzle has been downloaded previously
-                            AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
-                            alertDialog.setTitle("Duplicate Puzzle");
-                            alertDialog.setMessage("You have already downloaded this puzzle!");
-                            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            alertDialog.show();
-                            //e.printStackTrace();
+                    puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        // argument position gives the index of item which is clicked
+                        public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+                            ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
+                            ColorPuzzle puzzle = selectedPuzzle.convertToPuzzle();
+                            try {
+                                db.insertDownloadedColorPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                                Toast.makeText(getApplicationContext(), "Downloaded puzzle: " + selectedPuzzle, Toast.LENGTH_LONG).show();
+                            } catch (SQLiteConstraintException | IOException e) {
+                                //Create a popup notifying the user that puzzle has been downloaded previously
+                                AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                                alertDialog.setTitle("Duplicate Puzzle");
+                                alertDialog.setMessage("You have already downloaded this puzzle!");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else if(size.equals("Size")){
+                    final ArrayList<ColorPuzzleUpload> puzzles = performColorRatingQuery();
+
+                    puzzleList = (ListView) findViewById(R.id.result_list);
+                    puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+
+                    ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
+                            this,
+                            android.R.layout.simple_list_item_1,
+                            puzzles);
+
+                    puzzleList.setAdapter(arrayAdapter);
+
+                    puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        // argument position gives the index of item which is clicked
+                        public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+                            ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
+                            ColorPuzzle puzzle = selectedPuzzle.convertToPuzzle();
+                            try {
+                                db.insertDownloadedColorPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                                Toast.makeText(getApplicationContext(), "Downloaded puzzle: " + selectedPuzzle, Toast.LENGTH_LONG).show();
+                            } catch (SQLiteConstraintException | IOException e) {
+                                //Create a popup notifying the user that puzzle has been downloaded previously
+                                AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                                alertDialog.setTitle("Duplicate Puzzle");
+                                alertDialog.setMessage("You have already downloaded this puzzle!");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                        }
+                    });
+                }
+                else{
+                    final ArrayList<ColorPuzzleUpload> puzzles = performColorSizeRatingQuery();
+
+                    puzzleList = (ListView) findViewById(R.id.result_list);
+                    puzzleList.setBackground(ContextCompat.getDrawable(this, R.drawable.border_button));
+
+                    ArrayAdapter<ColorPuzzleUpload> arrayAdapter = new ArrayAdapter<ColorPuzzleUpload>(
+                            this,
+                            android.R.layout.simple_list_item_1,
+                            puzzles);
+
+                    puzzleList.setAdapter(arrayAdapter);
+
+                    puzzleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        // argument position gives the index of item which is clicked
+                        public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+                            ColorPuzzleUpload selectedPuzzle = puzzles.get(position);
+                            ColorPuzzle puzzle = selectedPuzzle.convertToPuzzle();
+                            try {
+                                db.insertDownloadedColorPuzzle(selectedPuzzle.getUserID(), puzzle.getID(), puzzle, puzzle.getSize(), 0, db.getWritableDatabase());
+                                Toast.makeText(getApplicationContext(), "Downloaded puzzle: " + selectedPuzzle, Toast.LENGTH_LONG).show();
+                            } catch (SQLiteConstraintException | IOException e) {
+                                //Create a popup notifying the user that puzzle has been downloaded previously
+                                AlertDialog alertDialog = new AlertDialog.Builder(TableActivity.this).create();
+                                alertDialog.setTitle("Duplicate Puzzle");
+                                alertDialog.setMessage("You have already downloaded this puzzle!");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                        }
+                    });
+                }
             }
 
         } catch (Exception e) {
@@ -157,16 +300,15 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
         }
     }
 
-    public ArrayList<PuzzleUpload> performSizeQuery(String size) throws Exception{
+    public ArrayList<PuzzleUpload> performSizeQuery() throws Exception{
 
         ExecutorService executor = Executors.newCachedThreadPool();
-        Future<ArrayList<PuzzleUpload>> futureCall = executor.submit(new PerformQuery());
-        ArrayList<PuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS); // Here the thread will be blocked
-        // until the result came back.
+        Future<ArrayList<PuzzleUpload>> futureCall = executor.submit(new SizeQuery());
+        ArrayList<PuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS);
         return puzzles;
     }
 
-    public class PerformQuery implements Callable<ArrayList<PuzzleUpload>> {
+    public class SizeQuery implements Callable<ArrayList<PuzzleUpload>> {
         @Override
         public ArrayList<PuzzleUpload> call() throws Exception {
             Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
@@ -176,23 +318,19 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     .withFilterExpression("Size = :val1").withExpressionAttributeValues(eav);
             List<PuzzleUpload> scanResult = mapper.scan(PuzzleUpload.class, scanExpression);
             ArrayList<PuzzleUpload> puzzles = new ArrayList<PuzzleUpload>(scanResult);
-            for (PuzzleUpload puzzle : scanResult) {
-                Log.d("Puzzle", puzzle.toString());
-            }
             return puzzles;
         }
     }
 
-    public ArrayList<ColorPuzzleUpload> performColorSizeQuery(String size) throws Exception{
+    public ArrayList<ColorPuzzleUpload> performColorSizeQuery() throws Exception{
 
         ExecutorService executor = Executors.newCachedThreadPool();
-        Future<ArrayList<ColorPuzzleUpload>> futureCall = executor.submit(new PerformColorQuery());
-        ArrayList<ColorPuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS); // Here the thread will be blocked
-        // until the result came back.
+        Future<ArrayList<ColorPuzzleUpload>> futureCall = executor.submit(new ColorSizeQuery());
+        ArrayList<ColorPuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS);
         return puzzles;
     }
 
-    public class PerformColorQuery implements Callable<ArrayList<ColorPuzzleUpload>> {
+    public class ColorSizeQuery implements Callable<ArrayList<ColorPuzzleUpload>> {
         @Override
         public ArrayList<ColorPuzzleUpload> call() throws Exception {
             Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
@@ -202,13 +340,109 @@ public class TableActivity extends AppCompatActivity implements BarFragment.OnFr
                     .withFilterExpression("Size = :val1").withExpressionAttributeValues(eav);
             List<ColorPuzzleUpload> scanResult = mapper.scan(ColorPuzzleUpload.class, scanExpression);
             ArrayList<ColorPuzzleUpload> puzzles = new ArrayList<ColorPuzzleUpload>(scanResult);
-            for (ColorPuzzleUpload puzzle : scanResult) {
-                Log.d("Puzzle", puzzle.toString());
-            }
             return puzzles;
         }
     }
 
+
+    public ArrayList<PuzzleUpload> performRatingQuery() throws Exception{
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<ArrayList<PuzzleUpload>> futureCall = executor.submit(new RatingQuery());
+        ArrayList<PuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS);
+        return puzzles;
+    }
+
+    public class RatingQuery implements Callable<ArrayList<PuzzleUpload>> {
+        @Override
+        public ArrayList<PuzzleUpload> call() throws Exception {
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            int ratingVal = Integer.parseInt(rating.split(" ")[0]);
+            eav.put(":val1", new AttributeValue().withN(ratingVal + ""));
+            eav.put(":val2", new AttributeValue().withN(ratingVal+1 + ""));
+
+            final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression("AverageRating >= :val1 and AverageRating < :val2").withExpressionAttributeValues(eav);
+            List<PuzzleUpload> scanResult = mapper.scan(PuzzleUpload.class, scanExpression);
+            ArrayList<PuzzleUpload> puzzles = new ArrayList<PuzzleUpload>(scanResult);
+            return puzzles;
+        }
+    }
+
+
+    public ArrayList<PuzzleUpload> performSizeRatingQuery() throws Exception{
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<ArrayList<PuzzleUpload>> futureCall = executor.submit(new SizeRatingQuery());
+        ArrayList<PuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS);
+        return puzzles;
+    }
+
+    public class SizeRatingQuery implements Callable<ArrayList<PuzzleUpload>> {
+        @Override
+        public ArrayList<PuzzleUpload> call() throws Exception {
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            int ratingVal = Integer.parseInt(rating.split(" ")[0]);
+            eav.put(":val1", new AttributeValue().withN(ratingVal + ""));
+            eav.put(":val2", new AttributeValue().withN(ratingVal+1 + ""));
+            eav.put(":val3", new AttributeValue().withS(size));
+
+            final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression("AverageRating >= :val1 and AverageRating < :val2 and Size = :val3").withExpressionAttributeValues(eav);
+            List<PuzzleUpload> scanResult = mapper.scan(PuzzleUpload.class, scanExpression);
+            ArrayList<PuzzleUpload> puzzles = new ArrayList<PuzzleUpload>(scanResult);
+            return puzzles;
+        }
+    }
+
+    public ArrayList<ColorPuzzleUpload> performColorRatingQuery() throws Exception{
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<ArrayList<ColorPuzzleUpload>> futureCall = executor.submit(new ColorRatingQuery());
+        ArrayList<ColorPuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS);
+        return puzzles;
+    }
+
+    public class ColorRatingQuery implements Callable<ArrayList<ColorPuzzleUpload>> {
+        @Override
+        public ArrayList<ColorPuzzleUpload> call() throws Exception {
+            int ratingVal = Integer.parseInt(rating.split(" ")[0]);
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            eav.put(":val1", new AttributeValue().withN(ratingVal + ""));
+            eav.put(":val2", new AttributeValue().withN(ratingVal+1 + ""));
+
+            final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression("AverageRating >= :val1 and AverageRating < :val2").withExpressionAttributeValues(eav);
+            List<ColorPuzzleUpload> scanResult = mapper.scan(ColorPuzzleUpload.class, scanExpression);
+            ArrayList<ColorPuzzleUpload> puzzles = new ArrayList<ColorPuzzleUpload>(scanResult);
+            return puzzles;
+        }
+    }
+
+    public ArrayList<ColorPuzzleUpload> performColorSizeRatingQuery() throws Exception{
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Future<ArrayList<ColorPuzzleUpload>> futureCall = executor.submit(new ColorSizeRatingQuery());
+        ArrayList<ColorPuzzleUpload> puzzles = futureCall.get(10, TimeUnit.SECONDS);
+        return puzzles;
+    }
+
+    public class ColorSizeRatingQuery implements Callable<ArrayList<ColorPuzzleUpload>> {
+        @Override
+        public ArrayList<ColorPuzzleUpload> call() throws Exception {
+            int ratingVal = Integer.parseInt(rating.split(" ")[0]);
+            Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+            eav.put(":val1", new AttributeValue().withN(ratingVal + ""));
+            eav.put(":val2", new AttributeValue().withN(ratingVal+1 + ""));
+            eav.put(":val3", new AttributeValue().withS(size));
+
+            final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+                    .withFilterExpression("AverageRating >= :val1 and AverageRating < :val2 and Size = :val3").withExpressionAttributeValues(eav);
+            List<ColorPuzzleUpload> scanResult = mapper.scan(ColorPuzzleUpload.class, scanExpression);
+            ArrayList<ColorPuzzleUpload> puzzles = new ArrayList<ColorPuzzleUpload>(scanResult);
+            return puzzles;
+        }
+    }
 
     @Override
     public void onFragmentInteraction(Uri uri) {

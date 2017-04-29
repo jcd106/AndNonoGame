@@ -130,7 +130,7 @@ public class ColorPuzzleUpload implements Serializable {
      *
      * @return the userIDs of the users who rated a puzzle
      */
-    @DynamoDBAttribute(attributeName = "Ratings UserIDs")
+    @DynamoDBAttribute(attributeName = "RatingsUserIDs")
     public List<String> getRatingsUser() {
         return ratingsUser;
     }
@@ -144,7 +144,7 @@ public class ColorPuzzleUpload implements Serializable {
      *
      * @return the average rating of a puzzle
      */
-    @DynamoDBAttribute(attributeName = "Average Rating")
+    @DynamoDBAttribute(attributeName = "AverageRating")
     public Float getAverageRating() {
         return averageRating;
     }
@@ -200,7 +200,7 @@ public class ColorPuzzleUpload implements Serializable {
 
     @Override
     public String toString(){
-        return "Color: " + ID + "," + size;
+        return "Color: " + userID + ", " + ID + "," + size;
     }
 
     public ColorPuzzle convertToPuzzle() {

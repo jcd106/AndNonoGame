@@ -114,16 +114,4 @@
         android:layout_below="@+id/play_button_main"
         android:layout_alignEnd="@+id/sign_in_button" />
 
-    <Button
-        android:text="Test Upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/button_upload"
-        android:background="@drawable/border_button"
-        android:onClick="onClick"
-        android:layout_alignParentBottom="true"
-        android:layout_alignStart="@+id/sign_in_button"
-        android:layout_alignEnd="@+id/sign_in_button" />
-
 </RelativeLayout>
