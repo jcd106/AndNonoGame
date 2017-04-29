@@ -146,7 +146,6 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
         id = bundle.getInt("puzzleID");
         table = bundle.getString("table");
         user = bundle.getString("user");
-        Log.d("USER at first ", user);
 
         //Retrieve user color choice as string from shared preferences
         SharedPreferences preferences = this.getActivity().getSharedPreferences(COLOR_CHOICE, Context.MODE_PRIVATE);
