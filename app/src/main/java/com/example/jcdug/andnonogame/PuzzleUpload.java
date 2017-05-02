@@ -200,7 +200,7 @@ public class PuzzleUpload implements Serializable {
 
     @Override
     public String toString() {
-        return "Binary: " + userID + ", " + ID + ", " + size;
+        return "Binary: " + userID.substring(0,8) + ", " + ID + ", " + size + ", " + averageRating + " star(s)";
     }
 
     public boolean updateRatings(Float newRating, String user) {

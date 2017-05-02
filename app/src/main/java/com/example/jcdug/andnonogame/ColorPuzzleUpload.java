@@ -200,7 +200,7 @@ public class ColorPuzzleUpload implements Serializable {
 
     @Override
     public String toString(){
-        return "Color: " + userID + ", " + ID + "," + size;
+        return "Color: " + userID.substring(0,8) + ", " + ID + "," + size + ", " + averageRating + " star(s)";
     }
 
     public ColorPuzzle convertToPuzzle() {
