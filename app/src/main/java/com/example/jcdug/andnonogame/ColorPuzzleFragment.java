@@ -672,6 +672,16 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         complete = 0;
     }
 
+    public void resetPuzzle(PuzzleDatabase db) {
+        try {
+            db.resetDownPuzzle(table, id, puzzle.getUser());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int[] getColors() {
         return colors;
     }

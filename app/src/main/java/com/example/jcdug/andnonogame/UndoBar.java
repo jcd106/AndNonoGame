@@ -129,11 +129,14 @@ public class UndoBar extends Fragment implements View.OnClickListener {
                                 try {
                                     //Reset the current puzzle in the PuzzleDatabase
                                     PuzzleDatabase db = MainActivity.getDB();
-                                    db.resetPuzzle(table, id);
-
-                                    //Redraw the PuzzleFragment with the new reset state
                                     BlankFragment bf = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
                                     PuzzleFragment puzzleFragment = (PuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("PuzzleFragment");
+                                    if (!table.equals(R.string.downTable) && !table.equals(R.string.downColorTable))
+                                        db.resetPuzzle(table, id);
+                                    else
+                                        puzzleFragment.resetPuzzle(db);
+
+                                    //Redraw the PuzzleFragment with the new reset state
                                     puzzleFragment.resetCurrentState();
                                     bf.getChildFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
 

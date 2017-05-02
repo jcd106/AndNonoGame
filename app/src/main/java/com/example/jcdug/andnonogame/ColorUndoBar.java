@@ -36,6 +36,7 @@ public class ColorUndoBar extends Fragment implements View.OnClickListener {
     private String mParam2;
 
     int id;
+    String table;
 
     private OnFragmentInteractionListener mListener;
 
@@ -66,6 +67,7 @@ public class ColorUndoBar extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
+        table = bundle.getString("table");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_undo_bar, container, false);
         ImageButton undoButton = (ImageButton) view.findViewById(R.id.undo_button);
@@ -127,11 +129,14 @@ public class ColorUndoBar extends Fragment implements View.OnClickListener {
                                 try {
                                     //Reset the current puzzle in the PuzzleDatabase
                                     PuzzleDatabase db = MainActivity.getDB();
-                                    db.resetPuzzle(getString(R.string.colorTable), id);
-
-                                    //Redraw the PuzzleFragment with the new reset state
                                     BlankFragment bf = (BlankFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.blank_fragment);
                                     ColorPuzzleFragment puzzleFragment = (ColorPuzzleFragment) bf.getChildFragmentManager().findFragmentByTag("ColorPuzzleFragment");
+                                    if (!table.equals(R.string.downTable) && !table.equals(R.string.downColorTable))
+                                        db.resetPuzzle(table, id);
+                                    else
+                                        puzzleFragment.resetPuzzle(db);
+
+                                    //Redraw the PuzzleFragment with the new reset state
                                     puzzleFragment.resetCurrentState();
                                     bf.getChildFragmentManager().beginTransaction().detach(puzzleFragment).attach(puzzleFragment).commit();
 

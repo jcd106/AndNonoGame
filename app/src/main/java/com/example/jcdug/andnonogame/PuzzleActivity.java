@@ -53,7 +53,7 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         Intent i = getIntent();
         int id = Integer.parseInt(i.getStringExtra("puzzleID"));
         String table = i.getStringExtra("table");
-
+        String user = i.getStringExtra("user");
 
         TextView puzzleID = (TextView) findViewById(R.id.puzzle_id_activity);
         puzzleID.setText("Puzzle: " + id);
@@ -62,6 +62,7 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         Bundle bundle = new Bundle();
         bundle.putInt("puzzleID", id);
         bundle.putString("table", table);
+        bundle.putString("user", user);
 
         Button uploadButton = (Button) findViewById(R.id.upload_puzzle_button);
         boolean isYour = getString(R.string.yourTable).equals(table);
@@ -106,11 +107,13 @@ public class PuzzleActivity extends AppCompatActivity implements UndoBar.OnFragm
         Intent i = getIntent();
         int id = Integer.parseInt(i.getStringExtra("puzzleID"));
         String table = i.getStringExtra("table");
+        String user = i.getStringExtra("user");
 
         //Used to pass information to the new PuzzleFragment
         Bundle bundle = new Bundle();
         bundle.putInt("puzzleID", id);
         bundle.putString("table", table);
+        bundle.putString("user", user);
 
         Button uploadButton = (Button) findViewById(R.id.upload_puzzle_button);
         RatingBar ratingBar = (RatingBar) findViewById(R.id.rating_bar);

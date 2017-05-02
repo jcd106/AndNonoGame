@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,6 +177,8 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 @Override
                 public void onClick(View view) {
                     Intent i;
+                    String userid = view.getTag().toString();
+                    Log.d("userid in onClick ", userid);
                     if (isColor) {
                         i = new Intent(context, ColorPuzzleActivity.class);
                     } else {
@@ -183,6 +186,7 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                     }
                     i.putExtra("table", table);
                     i.putExtra("puzzleID", Integer.toString(view.getId()));
+                    i.putExtra("user", userid);
                     startActivity(i);
                 }
             };
@@ -204,7 +208,12 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 //Get the id from the cursor and set the button's id and text
                 int id = c1.getInt(i1);
                 int isComp = c1.getInt(complete);
+                int userIndex = c1.getColumnIndex("UserID");
+                String userId = c1.getString(userIndex);
+                Log.d("userID ", userId);
                 b.setId(id);
+                b.setTag(userId);
+                Log.d("getTag ", b.getTag().toString());
                 if (isComp == 1)
                     b.setText("Puzzle: " + id + " is complete");
                 else
