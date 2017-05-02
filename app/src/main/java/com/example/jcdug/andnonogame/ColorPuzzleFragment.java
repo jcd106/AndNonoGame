@@ -65,6 +65,7 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
     float mSquareHeight;
     private final int marginVertical = 210;
     private final int marginHorizontal = 34;
+    String user;
 
     private ColorPuzzle puzzle;
 
@@ -127,6 +128,7 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         Bundle bundle = this.getArguments();
         id = bundle.getInt("puzzleID");
         table = bundle.getString("table");
+        user = bundle.getString("user");
 
         //filled.setColorFilter(fillColor, PorterDuff.Mode.MULTIPLY);
         empty = ContextCompat.getDrawable(this.getActivity(), R.drawable.border_button);
@@ -137,9 +139,21 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
             PuzzleDatabase db = MainActivity.getDB();
 
             //Get the correct serialized puzzle by its ID from the PuzzleDatabase
-            Cursor c1 = db.getPuzzleByID(table,id);
+            Cursor c1;
+            c1 = db.getPuzzleByID(table, id);
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
+            int userIndex = c1.getColumnIndex("UserID");
+            if(table.equals(getString(R.string.downColorTable))){
+                while(!c1.isAfterLast()) {
+                    String thisUser = c1.getString(userIndex);
+                    if(thisUser.equals(user)) {
+                        break;
+                    }
+                    c1.moveToNext();
+                }
+            }
+
             byte[] b = c1.getBlob(p1);
 
             //Create a new input stream and deserialize the puzzle to be displayed
@@ -346,7 +360,10 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
             try {
-                db.updatePuzzle(table, id, currentState, complete);
+                if(table.equals(getString(R.string.downColorTable)))
+                    db.updateDownPuzzle(table, user, id, currentState, complete);
+                else
+                    db.updatePuzzle(table, id, currentState, complete);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -640,7 +657,10 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(table, id, currentState, complete);
+            if(table.equals(getString(R.string.downColorTable)))
+                db.updateDownPuzzle(table, user, id, currentState, complete);
+            else
+                db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -656,7 +676,10 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
         super.onPause();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(table, id, currentState, complete);
+            if(table.equals(getString(R.string.downColorTable)))
+                db.updateDownPuzzle(table, user, id, currentState, complete);
+            else
+                db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -674,7 +697,10 @@ public class ColorPuzzleFragment extends Fragment implements View.OnTouchListene
 
     public void resetPuzzle(PuzzleDatabase db) {
         try {
-            db.resetDownPuzzle(table, id, puzzle.getUser());
+            if (table.equals(getString(R.string.downColorTable)))
+                db.resetDownPuzzle(table, id, user);
+            else
+                db.resetPuzzle(table, id);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

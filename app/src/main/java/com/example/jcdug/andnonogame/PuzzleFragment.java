@@ -201,11 +201,12 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
             int p1 = c1.getColumnIndex("Puzzle");
             c1.moveToFirst();
             int userIndex = c1.getColumnIndex("UserID");
-            if(table.equals("DownloadedPuzzles")){
+            if(table.equals(getString(R.string.downTable))){
                 while(!c1.isAfterLast()) {
                     String thisUser = c1.getString(userIndex);
-                    if(thisUser.equals(user))
+                    if(thisUser.equals(user)) {
                         break;
+                    }
                     c1.moveToNext();
                 }
             }
@@ -395,7 +396,10 @@ public class PuzzleFragment extends Fragment implements View.OnTouchListener {
             PuzzleDatabase db = MainActivity.getDB();
             complete = 1;
             try {
-                db.updatePuzzle(table, id, currentState, complete);
+                if(table.equals(getString(R.string.downTable)))
+                    db.updateDownPuzzle(table, user, id, currentState, complete);
+                else
+                    db.updatePuzzle(table, id, currentState, complete);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -659,7 +663,10 @@ public interface OnFragmentInteractionListener {
         super.onDestroy();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(table, id, currentState, complete);
+            if(table.equals(getString(R.string.downTable)))
+                db.updateDownPuzzle(table, user, id, currentState, complete);
+            else
+                db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -675,7 +682,10 @@ public interface OnFragmentInteractionListener {
         super.onPause();
         PuzzleDatabase db = MainActivity.getDB();
         try {
-            db.updatePuzzle(table, id, currentState, complete);
+            if(table.equals(getString(R.string.downTable)))
+                db.updateDownPuzzle(table, user, id, currentState, complete);
+            else
+                db.updatePuzzle(table, id, currentState, complete);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -693,7 +703,10 @@ public interface OnFragmentInteractionListener {
 
     public void resetPuzzle(PuzzleDatabase db) {
         try {
-            db.resetDownPuzzle(table, id, puzzle.getUser());
+            if (table.equals(getString(R.string.downTable)))
+                db.resetDownPuzzle(table, id, user);
+            else
+                db.resetPuzzle(table, id);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

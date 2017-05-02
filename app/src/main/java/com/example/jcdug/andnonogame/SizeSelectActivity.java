@@ -60,11 +60,11 @@ public class SizeSelectActivity extends AppCompatActivity implements BarFragment
         if (isColor) {
             table = getString(R.string.colorTable);
             yourTable = getString(R.string.yourColorTable);
-            downTable = "DownloadedColorPuzzles";
+            downTable = getString(R.string.downColorTable);
         } else {
             table = getString(R.string.puzzleTable);
             yourTable = getString(R.string.yourTable);
-            downTable = "DownloadedPuzzles";
+            downTable = getString(R.string.downTable);
         }
 
         final Context context = this;

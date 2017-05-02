@@ -178,15 +178,15 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 public void onClick(View view) {
                     Intent i;
                     String userid = view.getTag().toString();
-                    Log.d("userid in onClick ", userid);
                     if (isColor) {
                         i = new Intent(context, ColorPuzzleActivity.class);
                     } else {
                         i = new Intent(context, PuzzleActivity.class);
                     }
                     i.putExtra("table", table);
-                    i.putExtra("puzzleID", Integer.toString(view.getId()));
                     i.putExtra("user", userid);
+                    int user8 = Integer.parseInt(userid.substring(0,8));
+                    i.putExtra("puzzleID", Integer.toString(view.getId()-user8));
                     startActivity(i);
                 }
             };
@@ -206,18 +206,17 @@ public class PuzzleSelectActivity extends AppCompatActivity implements BarFragme
                 Button b = (Button) li.inflate(R.layout.puzzle_button, puzzleSelectLayout, false);
 
                 //Get the id from the cursor and set the button's id and text
-                int id = c1.getInt(i1);
                 int isComp = c1.getInt(complete);
                 int userIndex = c1.getColumnIndex("UserID");
                 String userId = c1.getString(userIndex);
-                Log.d("userID ", userId);
+                int user8 = Integer.parseInt(userId.substring(0,8));
+                int id = c1.getInt(i1)+user8;
                 b.setId(id);
                 b.setTag(userId);
-                Log.d("getTag ", b.getTag().toString());
                 if (isComp == 1)
-                    b.setText("Puzzle: " + id + " is complete");
+                    b.setText("Puzzle: " + (id-user8) + " is complete");
                 else
-                    b.setText("Puzzle: " + id + " is incomplete");
+                    b.setText("Puzzle: " + (id-user8) + " is incomplete");
 
                 //Set the button's background and OnClickListener
                 //b.setBackgroundResource(R.drawable.border_button);

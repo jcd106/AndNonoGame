@@ -541,6 +541,93 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         }
     }
 
+    public void updateDownPuzzle(String table, String user, Integer id, int[][] currState, int completed) throws IOException, ClassNotFoundException {
+        //Query the database for the puzzle with the specified id
+        Cursor curs = getPuzzleByID(table, id);
+
+        //Get the index of puzzle attribute in the query
+        int index = curs.getColumnIndex(puzzle);
+
+        //Move the cursor to the first tuple
+        curs.moveToFirst();
+
+        int userIndex = curs.getColumnIndex("UserID");
+        if(table.equals(downTable) || table.equals(downColorTable)){
+            while(!curs.isAfterLast()) {
+                String thisUser = curs.getString(userIndex);
+                if(thisUser.equals(user)) {
+                    break;
+                }
+                curs.moveToNext();
+            }
+        }
+
+        //Get the serialized puzzle
+        byte[] b = curs.getBlob(index);
+
+        //Create input streams to deserialize the puzzle object
+        ByteArrayInputStream bis = new ByteArrayInputStream(b);
+        ObjectInputStream in = new ObjectInputStream(bis);
+
+        if (table.equals(downTable)) {
+            //Deserialize the puzzle object and close the input streams
+            Puzzle p = (Puzzle) in.readObject();
+            bis.close();
+            in.close();
+
+            //Set the puzzle object's current state and complete value
+            p.setCurrentState(currState);
+            p.setCompleted(completed);
+
+            //Create output streams to serialize the puzzle object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+
+            //Serialize the puzzle object and close the output streams
+            out.writeObject(p);
+            byte[] buf = bos.toByteArray();
+            out.close();
+            bos.close();
+
+            //Get the database
+            SQLiteDatabase db = getWritableDatabase();
+
+            //Update the puzzle values in the database
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(puzzle, buf);
+            contentValues.put(comp, completed);
+            db.update(table, contentValues, colID + " = ? AND " + userID + " = ? ", new String[]{Integer.toString(id), user});
+        } else {
+            //Deserialize the puzzle object and close the input streams
+            ColorPuzzle p = (ColorPuzzle) in.readObject();
+            bis.close();
+            in.close();
+
+            //Set the puzzle object's current state and complete value
+            p.setCurrentState(currState);
+            p.setCompleted(completed);
+
+            //Create output streams to serialize the puzzle object
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+
+            //Serialize the puzzle object and close the output streams
+            out.writeObject(p);
+            byte[] buf = bos.toByteArray();
+            out.close();
+            bos.close();
+
+            //Get the database
+            SQLiteDatabase db = getWritableDatabase();
+
+            //Update the puzzle values in the database
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(puzzle, buf);
+            contentValues.put(comp, completed);
+            db.update(table, contentValues, colID + " = ? AND " + userID + " = ? ", new String[]{Integer.toString(id), userID});
+        }
+    }
+
     /**
      * Resets the puzzle with the specified id in the database
      *
@@ -654,7 +741,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
         ObjectInputStream in = new ObjectInputStream(bis);
 
         //Deserializes the puzzle object and closes the input stream
-        if (table.equals(puzzleTable) || table.equals(yourTable) || table.equals(downTable)) {
+        if (table.equals(downTable)) {
             Puzzle p = (Puzzle) in.readObject();
             bis.close();
             in.close();
@@ -689,7 +776,7 @@ public class PuzzleDatabase extends SQLiteOpenHelper {
                 db.update(table, contentValues, colID + " = ? AND " + userID + " = ? ", new String[]{Integer.toString(id),p.getUser()});
             else
                 db.update(table, contentValues, colID + " = ? ", new String[]{Integer.toString(id)});
-        } else if (table.equals(colorTable) || table.equals(yourColorTable) || table.equals(downColorTable)) {
+        } else if (table.equals(downColorTable)) {
             ColorPuzzle p = (ColorPuzzle) in.readObject();
             bis.close();
             in.close();
